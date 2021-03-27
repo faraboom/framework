@@ -22,13 +22,4 @@ Global
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D3168757-02E7-475F-BF3E-D25ECE1A3516}
 	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 2
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.faraboom.co/faraboom
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = Faraboom.Framework\\Faraboom.Framework.csproj
-		SccProjectName1 = Faraboom.Framework
-		SccLocalPath1 = Faraboom.Framework
-	EndGlobalSection
 EndGlobal
