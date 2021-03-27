@@ -1,0 +1,86 @@
+﻿using Faraboom.Framework.Core.Extensions.Collections.Generic;
+
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Faraboom.Framework.DataAnnotation
+{
+    public sealed class StringLengthAttribute : System.ComponentModel.DataAnnotations.StringLengthAttribute, IClientModelValidator
+    {
+        public StringLengthAttribute(int maximumLength)
+            : base(maximumLength)
+        {
+            ErrorMessageResourceName = nameof(Resources.GlobalResource.Validation_StringLength);
+            ErrorMessageResourceType = typeof(Resources.GlobalResource);
+        }
+
+        public StringLengthAttribute(int maximumLength, int minimumLength)
+            : base(maximumLength)
+        {
+            MinimumLength = minimumLength;
+            ErrorMessageResourceName = nameof(Resources.GlobalResource.Validation_StringLength);
+        }
+
+        public override bool IsValid(object value)
+        {
+            if (string.IsNullOrWhiteSpace(value?.ToString()))
+                return true;
+
+            var lst = value as List<string>;
+            if (lst != null)
+                return lst.All(t => string.IsNullOrWhiteSpace(t) || base.IsValid(t));
+
+            return base.IsValid(value);
+        }
+
+        public void AddValidation(ClientModelValidationContext context)
+        {
+            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val", "true"));
+            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-length", FormatErrorMessage(context.ModelMetadata.GetDisplayName())));
+            if (MaximumLength != int.MaxValue)
+                context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-length-max", MaximumLength.ToString()));
+
+            if (MinimumLength != 0)
+                context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-length-min", MinimumLength.ToString()));
+        }
+
+        public new Type ErrorMessageResourceType
+        {
+            get
+            {
+                return base.ErrorMessageResourceType;
+            }
+            private set
+            {
+                base.ErrorMessageResourceType = value;
+            }
+        }
+
+        public new string ErrorMessageResourceName
+        {
+            get
+            {
+                return base.ErrorMessageResourceName;
+            }
+            private set
+            {
+                base.ErrorMessageResourceName = value;
+            }
+        }
+
+        public new string ErrorMessage
+        {
+            get
+            {
+                return base.ErrorMessage;
+            }
+            internal set
+            {
+                base.ErrorMessage = value;
+            }
+        }
+    }
+}

@@ -1,0 +1,19 @@
+﻿@using System.Text
+@using Faraboom.Framework.UI.FormBuilder
+
+@using Faraboom.Framework.UI.FormBuilder.Components
+@model PropertyViewModel
+@{
+    var model = (Element) Model.Value;
+    var sb = new StringBuilder();
+    sb.Append("<" + model.TagName);
+    foreach (var modelAttribute in model.Attributes)
+    {
+        sb.Append(" " + modelAttribute.Key + "=\"" + modelAttribute.Value + "\"");//TOdo: escaping
+    }
+    sb.Append(">");
+    sb.Append(model.Value);
+    sb.Append($"</{model.TagName}>");
+
+    @Html.Raw(sb);
+}

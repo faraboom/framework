@@ -1,0 +1,11 @@
+﻿@using Faraboom.Framework.UI.FormBuilder
+@model FormBuilder.PropertyViewModel
+
+@{
+    if (Model != null && Model.Value != null)
+    {
+        Model.Readonly = true;
+        @Html.BestPartial(Model, Model.Type, "FormBuilder/Property.")
+    }
+}
+

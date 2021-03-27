@@ -1,0 +1,9 @@
+﻿@using Faraboom.Framework.UI.FormBuilder
+
+@using Faraboom.Framework.UI.FormBuilder.Components
+@model PropertyViewModel
+@{
+    var model = (SubmitButton) Model.Value;
+
+}
+<input type="submit" class="btn btn-primary" value="@(model.Text)" />

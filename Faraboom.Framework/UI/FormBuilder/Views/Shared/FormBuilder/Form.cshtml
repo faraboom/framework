@@ -1,0 +1,25 @@
+﻿@using Faraboom.Framework.UI.FormBuilder.Attributes
+@using Faraboom.Framework.UI.FormBuilder
+
+@model FormViewModel
+<form role="form" action="@Model.ActionUrl" method="@Model.Method" enctype="multipart/form-data" encoding="multipart/form-data" class="@Model.AdditionalClasses">
+    @if (Model.RenderAntiForgeryToken)
+    {
+@Html.AntiForgeryToken()}
+    @if (!ViewData.ModelState.IsValid && Model.ShowValidationSummary)
+    {
+<div class="alert alert-error">
+    Sorry, there were some problems. Please correct them and try again.<br />
+    @Html.ValidationSummary(Model.ExcludePropertyErrorsFromValidationSummary)
+</div>}
+    <fieldset>
+        @foreach (var propertyVm in Model.Inputs)
+        {
+@Html.Partial("FormBuilder/Form.Property", propertyVm)}
+        <div class="form-actions">
+            @foreach (var button in Model.Buttons)
+            {
+@Html.Partial("FormBuilder/Property.FormBuilder.Components.SubmitButton", button)}
+        </div>
+    </fieldset>
+</form>

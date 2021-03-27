@@ -1,0 +1,1 @@
+nuget push ../Faraboom.Framework/bin/Release/Faraboom.Framework.1.1.98.nupkg Faraboom -Source https://tfs.faraboom.co/Faraboom/_packaging/Faraboom.Net/nuget/v3/index.json

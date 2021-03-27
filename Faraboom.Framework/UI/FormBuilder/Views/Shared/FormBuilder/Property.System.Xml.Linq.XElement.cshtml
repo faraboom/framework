@@ -1,0 +1,10 @@
+﻿@using Faraboom.Framework.UI.FormBuilder
+
+@model PropertyViewModel
+
+@{
+    var value = Model.Value as System.Xml.Linq.XElement;
+    if (value != null) { 
+        @Html.Raw(value.ToString())
+    }
+}

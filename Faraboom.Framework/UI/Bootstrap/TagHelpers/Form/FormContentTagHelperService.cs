@@ -1,0 +1,16 @@
+﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+
+namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
+{
+    [DataAnnotation.Injectable]
+    public class FormContentTagHelperService : TagHelperService<FormContentTagHelper>
+    {
+        public override void Process(TagHelperContext context, TagHelperOutput output)
+        {
+            output.Attributes.Clear();
+            output.TagName = "div";
+            output.TagMode = TagMode.StartTagAndEndTag;
+            output.Content.SetContent(FormContentPlaceHolder);
+        }
+    }
+}

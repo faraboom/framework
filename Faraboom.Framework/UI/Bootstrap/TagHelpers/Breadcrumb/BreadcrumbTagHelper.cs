@@ -1,0 +1,17 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
+
+namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Breadcrumb
+{
+    [DataAnnotation.Injectable]
+    [HtmlTargetElement("frb-bread-crumb")]
+    public class BreadcrumbTagHelper : TagHelper<BreadcrumbTagHelper, BreadcrumbTagHelperService>
+    {
+        public BreadcrumbTagHelper(BreadcrumbTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+
+        }
+    }
+}

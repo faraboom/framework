@@ -1,0 +1,20 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
+
+namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
+{
+    [DataAnnotation.Injectable]
+    [HtmlTargetElement("frb-accordion")]
+    public class AccordionTagHelper : TagHelper<AccordionTagHelper, AccordionTagHelperService>
+    {
+        [HtmlAttributeName("frb-id")]
+        public string Id { get; set; }
+
+        public AccordionTagHelper(AccordionTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+
+        }
+    }
+}
