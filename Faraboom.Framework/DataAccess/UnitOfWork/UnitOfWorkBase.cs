@@ -126,7 +126,7 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
             return $"SELECT {(!string.IsNullOrWhiteSpace(schema) ? $"{schema}." : "")}{sequence}.NEXTVAL FROM DUAL";
         }
 
-        private bool Prepare()
+        private void Prepare()
         {
             var changedEntities = context.ChangeTracker.Entries().Where(x => x.State == EntityState.Added || x.State == EntityState.Modified);
             foreach (var item in changedEntities)
@@ -163,11 +163,9 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
                     }
                 }
             }
-
-            return true;
         }
 
-        private async Task<bool> PrepareAsync()
+        private async Task PrepareAsync()
         {
             var changedEntities = context.ChangeTracker.Entries().Where(x => x.State == EntityState.Added || x.State == EntityState.Modified);
             foreach (var item in changedEntities)
@@ -180,7 +178,12 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
 
                 foreach (var property in properties)
                 {
-                    if (property.PropertyType == typeof(string))
+                    if (property.Name == nameof(Concurrency.IRowVersion.RowVersion))
+                    {
+                        var val = (short)property.GetValue(item.Entity, null);
+                        property.SetValue(item.Entity, val++, null);
+                    }
+                    else if (property.PropertyType == typeof(string))
                     {
                         var val = property.GetValue(item.Entity, null) as string;
                         if (!string.IsNullOrWhiteSpace(val))
@@ -204,8 +207,6 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
                     }
                 }
             }
-
-            return true;
         }
 
         #endregion

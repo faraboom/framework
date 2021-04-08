@@ -1,5 +1,0 @@
-﻿@using Faraboom.Framework.UI.FormBuilder
-@model PropertyViewModel
-
-
-<input class="form-control" id="@Model.Id" @Html.UnobtrusiveValidation(Model) name="@Model.Name" @Html.Raw(Model.Readonly?"readonly=\"readonly\"":"") @Html.Raw(Model.Disabled?"disabled=\"disabled\"":"") size="30" type="number" value="@(Model.Value ?? "")" />
