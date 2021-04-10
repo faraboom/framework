@@ -7,6 +7,6 @@ namespace Faraboom.Framework.DataAccess.Concurrency
     {
         [System.ComponentModel.DataAnnotations.ConcurrencyCheck]
         [Column(nameof(RowVersion), DataType.Short)]
-        short RowVersion { get; set; }
+        long RowVersion { get; set; }
     }
 }

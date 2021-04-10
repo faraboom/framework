@@ -180,7 +180,7 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
                 {
                     if (property.Name == nameof(Concurrency.IRowVersion.RowVersion))
                     {
-                        var val = (short)property.GetValue(item.Entity, null);
+                        var val = (long)property.GetValue(item.Entity, null);
                         property.SetValue(item.Entity, val++, null);
                     }
                     else if (property.PropertyType == typeof(string))
