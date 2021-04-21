@@ -11,8 +11,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Text.Json.Serialization;
 
 namespace Faraboom.Framework.Mvc.TagHelpers
 {
@@ -175,7 +177,7 @@ namespace Faraboom.Framework.Mvc.TagHelpers
             using (var writer = new System.IO.StringWriter())
             {
                 var name = ElementName + (isEnum is false || Multiple ? ".s" : "");
-                ViewContext.ViewData.Add(name, Multiple ? string.Join(",", currentValues): currentValues?.FirstOrDefault());
+                ViewContext.ViewData.Add(name, Multiple ? string.Join(",", currentValues) : currentValues?.FirstOrDefault());
                 output.Attributes.AddIfNotExist("name", name);
                 output.Attributes.AddIfNotExist("data-toggle", "select");
                 output.Attributes.AddIfNotExist("data-placeholder", placeholder);
@@ -206,8 +208,12 @@ namespace Faraboom.Framework.Mvc.TagHelpers
         private (IEnumerable<SelectListItem> Items, IEnumerable<string> CurrentValues) GenerateEnumItems(IEnumerable<Enum> values, bool flags)
         {
             var type = For.Metadata.ElementMetadata?.UnderlyingOrModelType ?? For.Metadata.UnderlyingOrModelType;
+            var ignoreFields = type.GetFields().Where(t => t.GetCustomAttribute<JsonIgnoreAttribute>(false) is not null).Select(t => (t.GetValue(null) as Enum)?.ToString("d"));
+
+
             var groupedDisplayNamesAndValues = For.Metadata.ElementMetadata?.EnumGroupedDisplayNamesAndValues ?? For.Metadata.EnumGroupedDisplayNamesAndValues;
             var lst = from t in groupedDisplayNamesAndValues
+                      where !ignoreFields.Contains(t.Value)
                       select new SelectListItem
                       {
                           Group = t.Key.Group.IsNullOrEmpty() ? null : new SelectListGroup { Name = t.Key.Group },
