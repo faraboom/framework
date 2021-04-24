@@ -38,8 +38,8 @@ namespace Faraboom.Framework.Startup
 {
     public abstract class Startup : Startup<Startup, Startup>
     {
-        protected Startup(IConfiguration configuration, ExceptionHandlerOptions exceptionHandlerOptions = null, bool localization = true, bool authentication = true, bool razorPages = true, bool antiforgery = true, bool https = true, bool views = true)
-            : base(configuration, exceptionHandlerOptions, localization, authentication, razorPages, antiforgery, https, views, false)
+        protected Startup(IConfiguration configuration, string defaultNamespace = null, ExceptionHandlerOptions exceptionHandlerOptions = null, bool localization = true, bool authentication = true, bool razorPages = true, bool antiforgery = true, bool https = true, bool views = true)
+            : base(configuration, defaultNamespace, exceptionHandlerOptions, localization, authentication, razorPages, antiforgery, https, views, false)
         {
         }
     }
@@ -56,8 +56,9 @@ namespace Faraboom.Framework.Startup
         private readonly bool https;
         private readonly bool views;
         private readonly bool identity;
+        private readonly string defaultNamespace;
 
-        protected Startup(IConfiguration configuration, ExceptionHandlerOptions exceptionHandlerOptions = null, bool localization = true, bool authentication = true,
+        protected Startup(IConfiguration configuration, string defaultNamespace = null, ExceptionHandlerOptions exceptionHandlerOptions = null, bool localization = true, bool authentication = true,
             bool razorPages = true, bool antiforgery = true, bool https = true, bool views = true, bool identity = true)
         {
             Configuration = configuration;
@@ -69,6 +70,7 @@ namespace Faraboom.Framework.Startup
             this.https = https;
             this.views = views;
             this.identity = identity;
+            this.defaultNamespace = defaultNamespace ?? "Faraboom";
         }
 
         protected abstract void ConfigureServicesCore(IServiceCollection services, IMvcBuilder mvcBuilder);
@@ -81,7 +83,7 @@ namespace Faraboom.Framework.Startup
         {
             Assembly frameworkAssembly = Assembly.GetExecutingAssembly();
             var dir = Path.GetDirectoryName(frameworkAssembly.Location);
-            var files = Directory.GetFiles(dir, "Faraboom.*.dll").Where(t => !t.Contains(frameworkAssembly.ManifestModule.Name));
+            var files = Directory.GetFiles(dir, $"{defaultNamespace}.*.dll").Where(t => !t.Contains(frameworkAssembly.ManifestModule.Name));
             var applicationName = Path.GetFileNameWithoutExtension(files.FirstOrDefault(t => t.EndsWith(".UI.Web.dll")));
 
             var mvcBuilder = ConfigureServicesInternal(services, dir, applicationName);
