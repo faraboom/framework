@@ -9,7 +9,7 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
     [ServiceLifetime(Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped)]
     public class UnitOfWorkProvider : IUnitOfWorkProvider
     {
-        private readonly ILogger logger;
+        private readonly ILogger<DataAccess> logger;
         private readonly IServiceProvider serviceProvider;
 
         public UnitOfWorkProvider()
@@ -30,10 +30,10 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
             if (!trackChanges)
                 context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
-            return new UnitOfWork(context, serviceProvider);
+            return new UnitOfWork(context, serviceProvider, logger);
         }
 
-        public IUnitOfWork CreateUnitOfWork<TEntityContext>(bool trackChanges = true, bool enableLogging = false) 
+        public IUnitOfWork CreateUnitOfWork<TEntityContext>(bool trackChanges = true, bool enableLogging = false)
             where TEntityContext : DbContext
         {
             var context = serviceProvider.GetService(typeof(IEntityContext)) as TEntityContext;
@@ -41,7 +41,7 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
             if (!trackChanges)
                 context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
-            return new UnitOfWork(context, serviceProvider);
+            return new UnitOfWork(context, serviceProvider, logger);
         }
     }
 }

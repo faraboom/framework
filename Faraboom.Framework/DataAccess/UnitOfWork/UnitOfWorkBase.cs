@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -11,6 +13,7 @@ using Faraboom.Framework.DataAccess.Repositories;
 using Faraboom.Framework.DataAnnotation.Schema;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Faraboom.Framework.DataAccess.UnitOfWork
 {
@@ -19,11 +22,13 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
     {
         protected TContext context;
         protected readonly IServiceProvider serviceProvider;
+        protected readonly ILogger logger;
 
-        protected internal UnitOfWorkBase(TContext context, IServiceProvider serviceProvider)
+        protected internal UnitOfWorkBase(TContext context, IServiceProvider serviceProvider, ILogger<DataAccess> logger)
         {
             this.context = context;
             this.serviceProvider = serviceProvider;
+            this.logger = logger;
         }
 
         public int SaveChanges()
@@ -64,6 +69,71 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
 
             (repository as IRepositoryInjection).SetContext(context);
             return repository;
+        }
+
+        public async Task<int> ExecuteSqlCommandAsync(string sql, IEnumerable<(string parameterName, object value)> param = null)
+        {
+            try
+            {
+                var connection = context.Database.GetDbConnection();
+                using var command = connection.CreateCommand();
+                command.CommandText = sql.Replace(Constants.SchemaIdentifier, context.Model.GetDefaultSchema());
+                await connection.OpenAsync();
+                command.CommandType = CommandType.Text;
+                command.CommandTimeout = 300;
+                if (param != null)
+                {
+                    foreach (var (parameterName, value) in param)
+                    {
+                        var parameter = command.CreateParameter();
+                        parameter.ParameterName = parameterName;
+                        parameter.Value = value;
+                        command.Parameters.Add(parameter);
+                    }
+                }
+
+                return await command.ExecuteNonQueryAsync();
+            }
+            catch (Exception exc)
+            {
+                logger.LogError(exc, "Error ExecuteSqlCommandAsync: {sql}", sql);
+                throw;
+            }
+        }
+
+        public async Task<DataTable> SqlQueryAsync(string sql, IList<(string parameterName, object value)> param = null)
+        {
+            try
+            {
+                var connection = context.Database.GetDbConnection();
+                using var command = connection.CreateCommand();
+                command.CommandText = sql.Replace(Constants.SchemaIdentifier, context.Model.GetDefaultSchema());
+                await connection.OpenAsync();
+                command.CommandType = CommandType.Text;
+                command.CommandTimeout = 300;
+
+                if (param != null)
+                {
+                    foreach (var (parameterName, value) in param)
+                    {
+                        var parameter = command.CreateParameter();
+                        parameter.ParameterName = parameterName;
+                        parameter.Value = value;
+                        command.Parameters.Add(parameter);
+                    }
+                }
+
+                var dt = new DataTable();
+                using var reader = await command.ExecuteReaderAsync();
+                dt.Load(reader);
+
+                return dt;
+            }
+            catch (Exception exc)
+            {
+                logger.LogError(exc, "Error SqlQueryAsync: {sql}", sql);
+                throw;
+            }
         }
 
         public async Task<int> GetSequenceValueAsync(string sequence)

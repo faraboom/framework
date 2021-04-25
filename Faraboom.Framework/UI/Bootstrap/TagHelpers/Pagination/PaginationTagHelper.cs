@@ -9,7 +9,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Pagination
     public class PaginationTagHelper : TagHelper<PaginationTagHelper, PaginationTagHelperService>
     {
         [HtmlAttributeName("frb-for")]
-        public PagerModel For { get; set; }
+        public new PagerModel For { get; set; }
 
         [HtmlAttributeName("frb-show-info")]
         public bool? ShowInfo { get; set; }
