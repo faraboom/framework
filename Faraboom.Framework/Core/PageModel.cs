@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
+using System.Linq;
+
 namespace Faraboom.Framework.Core
 {
     public abstract class PageModel<TClass, TUser> : Microsoft.AspNetCore.Mvc.RazorPages.PageModel
@@ -18,6 +20,24 @@ namespace Faraboom.Framework.Core
             Logger = logger;
             UserManager = userManager;
             Localizer = localizer;
+        }
+
+        public override void OnPageHandlerExecuting(Microsoft.AspNetCore.Mvc.Filters.PageHandlerExecutingContext context)
+        {
+            base.OnPageHandlerExecuting(context);
+
+            if (!context.ModelState.IsValid)
+            {
+                if (context.HttpContext.Request?.Headers["X-Requested-With"].FirstOrDefault() == "XMLHttpRequest")
+                {
+                    var errors = ModelState.Values.SelectMany(t => t.Errors.Select(e => e.ErrorMessage));
+                    context.Result = new BadRequestObjectResult(errors);
+                }
+                else
+                {
+                    context.Result = Page();
+                }
+            }
         }
 
         public RedirectToPageResult RedirectToAreaPage(string pageName, string area, object routeValues = null)
