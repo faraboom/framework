@@ -1,4 +1,5 @@
-﻿using Faraboom.Framework.Data;
+﻿using Faraboom.Framework.Core.Extensions;
+using Faraboom.Framework.Data;
 using Faraboom.Framework.DataAnnotation;
 
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -596,6 +598,11 @@ namespace Faraboom.Framework.Core
             using var target = new System.IO.MemoryStream();
             await file.CopyToAsync(target);
             return $"data:{file.ContentType};base64, {Convert.ToBase64String(target.ToArray())}";
+        }
+
+        public static bool IsImage(string fileName)
+        {
+            return fileName.IsNullOrEmpty() is false && (fileName.StartsWith("data:image") || Constants.ValidImageExtensions.Contains(Path.GetExtension(fileName)?.TrimStart('.'), StringComparison.OrdinalIgnoreCase));
         }
 
         #region Inner Classes

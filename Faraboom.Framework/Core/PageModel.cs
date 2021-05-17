@@ -22,6 +22,26 @@ namespace Faraboom.Framework.Core
             Localizer = localizer;
         }
 
+        public override BadRequestObjectResult BadRequest(object error)
+        {
+            return base.BadRequest(error);
+        }
+
+        public override NotFoundObjectResult NotFound(object value)
+        {
+            return base.NotFound(value);
+        }
+
+        public override ForbidResult Forbid()
+        {
+            return base.Forbid();
+        }
+
+        public override ObjectResult StatusCode(int statusCode, object value)
+        {
+            return base.StatusCode(statusCode, value);
+        }
+
         public override void OnPageHandlerExecuting(Microsoft.AspNetCore.Mvc.Filters.PageHandlerExecutingContext context)
         {
             base.OnPageHandlerExecuting(context);

@@ -1,4 +1,5 @@
-﻿using Faraboom.Framework.Core.Extensions;
+﻿using Faraboom.Framework.Core;
+using Faraboom.Framework.Core.Extensions;
 using Faraboom.Framework.Mvc.ViewFeatures;
 using Faraboom.Framework.UI.Bootstrap.TagHelpers;
 
@@ -39,7 +40,7 @@ namespace Faraboom.Framework.Mvc.TagHelpers
             output.TagName = null;
 
             StringBuilder sb = new();
-            sb.Append("<div class=\"form-control uploader\">");
+            sb.Append("<div class=\"uploader\">");
             sb.Append("<div class='custom-file'>");
 
             output.Attributes.AddIfNotExist("name", ElementName);
@@ -59,11 +60,11 @@ namespace Faraboom.Framework.Mvc.TagHelpers
             }
 
             var oldVal = OldValue?.ToString() ?? OldFor?.Model?.ToString();
-            sb.Append("<label class='custom-file-label' for='" + ElementName + "'>" + oldVal?.Split('/').LastOrDefault() + "</label>");
+            sb.Append($"<label class='custom-file-label' for='{ElementName}'>{(Globals.IsImage(oldVal) ? $"<img class='h-100' src='{oldVal}' alt='{For.Name}' />" : oldVal?.Split('/').LastOrDefault())}</label>");
             sb.Append("</div>");
 
-            sb.Append($"<a class='btn btn-light border float-right text-green {(oldVal.IsNullOrEmpty() ? "" : "disabled")}' href='{oldVal}'><i class='fas fa-download'></i></a>");
-            sb.Append($"<button class='btn btn-light border float-right margin-r-5 text-red {(oldVal.IsNullOrEmpty() ? "" : "disabled")}' type='button'><i class='fas fa-times'></i></button>");
+            sb.Append($"<a class='btn btn-light border float-right text-green {(oldVal.IsNullOrEmpty() ? "disabled" : "")}' {(Globals.IsImage(oldVal) ? "download='image.png'" : "")} href='{oldVal}'><i class='fas fa-download'></i></a>");
+            sb.Append($"<button class='btn btn-light border float-right margin-r-5 text-red' {(oldVal.IsNullOrEmpty() ? "disabled='disabled" : "'")} type='button'><i class='fas fa-times'></i></button>");
 
             using (var writer = new System.IO.StringWriter())
             {

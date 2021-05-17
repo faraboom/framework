@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -45,7 +44,7 @@ namespace Faraboom.Framework.Mvc.TagHelpers
             }
 
             var isEnum = For.Metadata.IsEnum || For.Metadata.ElementMetadata.IsEnum;
-            var isPrimitive = isEnum is false && For.Metadata.ElementType.IsPrimitive is true;
+            var isPrimitive = isEnum is false && For.Metadata.ElementType.IsSimpleType();
             var placeholder = For.Metadata.Placeholder ?? Framework.Resources.GlobalResource.Select;
             var isFlagsEnum = isEnum && (For.Metadata.IsFlagsEnum is true || For.Metadata.ElementMetadata?.IsFlagsEnum is true);
 
