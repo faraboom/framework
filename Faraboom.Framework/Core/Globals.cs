@@ -433,7 +433,7 @@
 
         public static CultureInfo GetCulture(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrEmpty(name))
             {
                 return new CultureInfo(Constants.DefaultLanguageCode);
             }
@@ -477,6 +477,7 @@
             persianCalture.NumberFormat.CurrencyDecimalDigits = 0;
             persianCalture.NumberFormat.PercentDecimalDigits = 0;
             persianCalture.NumberFormat.CurrencyPositivePattern = 1;
+            persianCalture.NumberFormat.NumberDecimalSeparator = ".";
 
             var persianCal = new MyPersianCalendar();
 

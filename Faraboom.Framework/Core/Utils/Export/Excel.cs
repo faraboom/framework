@@ -1,27 +1,17 @@
 ﻿namespace Faraboom.Framework.Core.Utils
 {
     using System;
-    using System.Collections;
-    using System.Collections.Generic;
     using System.Data;
     using System.Drawing.Imaging;
     using System.IO;
     using System.Linq;
-    using System.Reflection;
-    using System.Text.Json.Serialization;
 
     using DocumentFormat.OpenXml;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Spreadsheet;
 
-    using Faraboom.Framework.Converter;
     using Faraboom.Framework.Core.Utils.Export;
-    using Faraboom.Framework.Data;
-    using Faraboom.Framework.DataAnnotation;
     using Faraboom.Framework.Resources;
-
-    using Microsoft.AspNetCore.Html;
-    using Microsoft.AspNetCore.Mvc;
 
     using Border = DocumentFormat.OpenXml.Spreadsheet.Border;
     using Color = DocumentFormat.OpenXml.Spreadsheet.Color;
@@ -35,260 +25,16 @@
     {
         public override Constants.ExportType ProviderType => Constants.ExportType.Excel;
 
-        public override string Extension => ".xlsx";
+        protected override string Extension => ".xlsx";
 
-        public override FileContentResult Export(GridDataSource gridDataSource, ISearch search, string actionName = null)
+        protected override string ContentType => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+        protected override byte[] GenerateFile(DataSet dataSet, bool hasSearchItem)
         {
-            var hasSearchItem = false;
-            var ds = new DataSet();
-            var dt = new DataTable();
-            if (gridDataSource.Data?.Count > 0)
-            {
-                var localizedSearchColumnNames = new Dictionary<string, string>();
-                var localizedGridColumnNames = new Dictionary<string, string>();
-                bool dataIsDictionaryBase = (gridDataSource.Data[0] as Dictionary<string, string>) != null;
-                IEnumerable<PropertyInfo> properties = null;
-                if (search != null)
-                {
-                    hasSearchItem = true;
-                    var dtSearch = new DataTable();
-                    var searchItemType = search.GetType();
-                    properties = searchItemType.GetProperties().Where(t => t.GetCustomAttribute<JsonIgnoreAttribute>() == null && (t.GetCustomAttribute<ExportInfoAttribute>() == null || !t.GetCustomAttribute<ExportInfoAttribute>().Ignore));
-                    foreach (var info in properties)
-                    {
-                        var description = Globals.GetLocalizedDescription(info);
-                        var name = description != info.Name ? description : Globals.GetLocalizedDisplayName(info);
-                        var columnType = GetNullableType(info.PropertyType);
-                        if (columnType.IsGenericType)
-                        {
-                            if (columnType.GenericTypeArguments.Any())
-                            {
-                                if (columnType.GenericTypeArguments[0].Name == "ParameterDto")
-                                {
-                                    columnType = typeof(string);
-                                }
-                            }
-                        }
-
-                        if (columnType == typeof(DateTimeOffset) || columnType == typeof(DateTimeOffset?)
-                            || columnType == typeof(DateTime) || columnType == typeof(DateTime?))
-                        {
-                            columnType = typeof(string);
-                        }
-
-                        dtSearch.Columns.Add(new DataColumn(name, columnType));
-
-                        localizedSearchColumnNames.Add(info.Name, name);
-                    }
-
-                    var row = dtSearch.NewRow();
-                    foreach (var info in properties)
-                    {
-                        var pureValue = info.GetValue(search, null);
-                        if (pureValue != null)
-                        {
-                            var pureValueList = string.Empty;
-                            var converter = info.GetCustomAttribute<JsonConverterAttribute>();
-                            if (converter != null)
-                            {
-                                if (converter.CreateConverter(converter.ConverterType) is IJsonConverter instance && !instance.IgnoreOnExport)
-                                {
-                                    pureValue = instance.Convert(pureValue);
-                                }
-                            }
-
-                            var columnName = localizedSearchColumnNames[info.Name];
-
-                            if (pureValue is IList)
-                            {
-                                var pureValueCount = (pureValue as IList).Count;
-                                if (pureValue.GetType().IsGenericType)
-                                {
-                                    if (pureValue.GetType().GenericTypeArguments.Any())
-                                    {
-                                        if (pureValue.GetType().GenericTypeArguments[0].Name == "ParameterDto")
-                                        {
-                                            for (int j = 0; j < pureValueCount; j++)
-                                            {
-                                                pureValueList += ((pureValue as IList)[j] as dynamic).Value + (j != pureValueCount - 1 ? "," : string.Empty);
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    for (int j = 0; j < pureValueCount; j++)
-                                    {
-                                        pureValueList += ((pureValue as IList)[j] as dynamic).Value + (j != pureValueCount - 1 ? "," : string.Empty);
-                                    }
-                                }
-
-                                pureValue = pureValueList;
-                            }
-
-                            row[columnName] = pureValue;
-                        }
-                    }
-
-                    dtSearch.Rows.Add(row);
-                    ds.Tables.Add(dtSearch);
-                }
-
-                if (gridDataSource.DataTable != null)
-                {
-                    dataIsDictionaryBase = true;
-
-                    foreach (DataColumn column in gridDataSource.DataTable.Columns)
-                    {
-                        if (column.DataType == typeof(HtmlString))
-                        {
-                            break;
-                        }
-
-                        localizedGridColumnNames.Add(column.ColumnName, column.Caption);
-                        dt.Columns.Add(new DataColumn(column.Caption, typeof(string)));
-                    }
-                }
-                else
-                {
-                    if (gridDataSource.Data[0] is Dictionary<string, string> captions)
-                    {
-                        foreach (string key in captions.Keys)
-                        {
-                            localizedGridColumnNames.Add(key, key);
-                            dt.Columns.Add(new DataColumn(key, typeof(string)));
-                        }
-                    }
-                    else
-                    {
-                        localizedGridColumnNames = new Dictionary<string, string>();
-                        var type = gridDataSource.Data[0].GetType();
-                        properties = type.GetProperties().Where(t => t.GetCustomAttribute<JsonIgnoreAttribute>(false) == null && (t.GetCustomAttribute<ExportInfoAttribute>() == null || !t.GetCustomAttribute<ExportInfoAttribute>().Ignore));
-                        var i = 0;
-                        foreach (var info in properties)
-                        {
-                            var description = Globals.GetLocalizedDescription(info);
-                            var name = description != info.Name ? description : Globals.GetLocalizedDisplayName(info);
-                            if (dt.Columns.Contains(name))
-                            {
-                                name += i;
-                            }
-
-                            localizedGridColumnNames.Add(info.Name, name);
-                            var columnType = GetNullableType(info.PropertyType);
-
-                            if (columnType == typeof(bool))
-                            {
-                                var exportInfo = info.GetCustomAttribute<ExportInfoAttribute>();
-                                if (exportInfo != null && !string.IsNullOrWhiteSpace(exportInfo.TrueResourceKey))
-                                {
-                                    columnType = typeof(string);
-                                }
-                            }
-
-                            if (columnType == typeof(DateTimeOffset) || columnType == typeof(DateTimeOffset?)
-                                || columnType == typeof(DateTime) || columnType == typeof(DateTime?))
-                            {
-                                columnType = typeof(string);
-                            }
-
-                            dt.Columns.Add(new DataColumn(name, columnType));
-                            i++;
-                        }
-                    }
-                }
-
-                foreach (var t in gridDataSource.Data)
-                {
-                    var row = dt.NewRow();
-
-                    if (dataIsDictionaryBase)
-                    {
-                        var dictionaryValues = t as Dictionary<string, string>;
-                        foreach (var key in dictionaryValues.Keys)
-                        {
-                            if (gridDataSource.DataTable.Columns[key].DataType == typeof(HtmlString))
-                            {
-                                break;
-                            }
-
-                            var value = dictionaryValues[key];
-                            if (gridDataSource.DataTable != null)
-                            {
-                                if (gridDataSource.DataTable.Columns[key].ExtendedProperties[nameof(ExportInfoAttribute)] is ExportInfoAttribute exportInfo && !string.IsNullOrWhiteSpace(exportInfo.TrueResourceKey))
-                                {
-                                    if (exportInfo.ResourceType == null)
-                                    {
-                                        exportInfo.ResourceType = typeof(GlobalResource);
-                                    }
-
-                                    var resourceManager = new System.Resources.ResourceManager(exportInfo.ResourceType);
-                                    value = value.ValueOf<bool>() ? resourceManager.GetString(exportInfo.TrueResourceKey) : resourceManager.GetString(exportInfo.FalseResourceKey);
-                                }
-                            }
-
-                            row[localizedGridColumnNames[key]] = value;
-                        }
-                    }
-                    else
-                    {
-                        foreach (var info in properties)
-                        {
-                            var pureValue = info.GetValue(t, null);
-                            if (pureValue != null)
-                            {
-                                var converter = info.GetCustomAttribute<JsonConverterAttribute>();
-                                if (converter != null)
-                                {
-                                    if (converter.CreateConverter(converter.ConverterType) is IJsonConverter instance && !instance.IgnoreOnExport)
-                                    {
-                                        pureValue = instance.Convert(pureValue);
-                                    }
-                                }
-
-                                var typeValue = GetNullableTypeValue(info.PropertyType);
-                                if (typeValue.IsEnum)
-                                {
-                                    pureValue = EnumHelper.LocalizeEnum(pureValue);
-                                }
-                                else if (typeValue == typeof(bool))
-                                {
-                                    var exportInfo = info.GetCustomAttribute<ExportInfoAttribute>();
-                                    if (exportInfo != null && !string.IsNullOrWhiteSpace(exportInfo.TrueResourceKey))
-                                    {
-                                        if (exportInfo.ResourceType == null)
-                                        {
-                                            exportInfo.ResourceType = typeof(GlobalResource);
-                                        }
-
-                                        var resourceManager = new System.Resources.ResourceManager(exportInfo.ResourceType);
-                                        pureValue = (bool)pureValue ? resourceManager.GetString(exportInfo.TrueResourceKey) : resourceManager.GetString(exportInfo.FalseResourceKey);
-                                    }
-                                }
-                            }
-
-                            var columnName = localizedGridColumnNames[info.Name];
-                            if (!IsNullableType(info.PropertyType))
-                            {
-                                row[columnName] = pureValue;
-                            }
-                            else
-                            {
-                                row[columnName] = pureValue ?? DBNull.Value;
-                            }
-                        }
-                    }
-
-                    dt.Rows.Add(row);
-                }
-            }
-
-            ds.Tables.Add(dt);
-
-            var stream = new MemoryStream();
+            using var stream = new MemoryStream();
             using (var document = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook, true))
             {
-                WriteExcelFile(ds, document, hasSearchItem);
+                WriteExcelFile(dataSet, document, hasSearchItem);
             }
 
             stream.Flush();
@@ -298,112 +44,7 @@
             stream.Read(data, 0, data.Length);
             stream.Close();
 
-            return new FileContentResult(data, "application/ms-excel") { FileDownloadName = GenerateFileName(actionName) };
-        }
-
-        private static DocumentFormat.OpenXml.Spreadsheet.Columns AutoSize(SheetData sheetData)
-        {
-            var maxColWidth = GetMaxCharacterWidth(sheetData);
-
-            DocumentFormat.OpenXml.Spreadsheet.Columns columns = new();
-
-            // this is the width of my font - yours may be different
-            double maxWidth = 7;
-            foreach (var item in maxColWidth)
-            {
-                // width = Truncate([{Number of Characters} * {Maximum Digit Width} + {5 pixel padding}]/{Maximum Digit Width}*256)/256
-                double width = Math.Truncate(((item.Value * maxWidth) + 5) / maxWidth * 256) / 256;
-
-                // pixels=Truncate(((256 * {width} + Truncate(128/{Maximum Digit Width}))/256)*{Maximum Digit Width})
-                double pixels = Math.Truncate(((256 * width) + Math.Truncate(128 / maxWidth)) / 256 * maxWidth);
-
-                // character width=Truncate(({pixels}-5)/{Maximum Digit Width} * 100+0.5)/100
-                double charWidth = Math.Truncate(((pixels - 5) / maxWidth * 100) + 0.5) / 100;
-
-                DocumentFormat.OpenXml.Spreadsheet.Column col = new() { BestFit = true, Min = (uint)(item.Key + 1), Max = (uint)(item.Key + 1), CustomWidth = true, Width = width };
-                columns.Append(col);
-            }
-
-            return columns;
-        }
-
-        private static Dictionary<int, int> GetMaxCharacterWidth(SheetData sheetData)
-        {
-            // iterate over all cells getting a max char value for each column
-            Dictionary<int, int> maxColWidth = new Dictionary<int, int>();
-            var rows = sheetData.Elements<Row>();
-            uint[] numberStyles = new uint[] { 5, 6, 7, 8 }; // styles that will add extra chars
-            uint[] boldStyles = new uint[] { 1, 2, 3, 4, 6, 7, 8 }; // styles that will bold
-            foreach (var r in rows)
-            {
-                var cells = r.Elements<Cell>().ToArray();
-
-                // using cell index as my column
-                for (int i = 0; i < cells.Length; i++)
-                {
-                    var cell = cells[i];
-                    var cellValue = cell.CellValue == null ? string.Empty : cell.CellValue.InnerText;
-                    var cellTextLength = cellValue.Length;
-
-                    if (cell.StyleIndex != null && numberStyles.Contains(cell.StyleIndex))
-                    {
-                        int thousandCount = (int)Math.Truncate((double)cellTextLength / 4);
-
-                        // add 3 for '.00'
-                        cellTextLength += 3 + thousandCount;
-                    }
-
-                    if (cell.StyleIndex != null && boldStyles.Contains(cell.StyleIndex))
-                    {
-                        // add an extra char for bold - not 100% acurate but good enough for what i need.
-                        cellTextLength += 1;
-                    }
-
-                    if (maxColWidth.ContainsKey(i))
-                    {
-                        var current = maxColWidth[i];
-                        if (cellTextLength > current)
-                        {
-                            maxColWidth[i] = cellTextLength;
-                        }
-                    }
-                    else
-                    {
-                        maxColWidth.Add(i, cellTextLength);
-                    }
-                }
-            }
-
-            return maxColWidth;
-        }
-
-        private static Type GetNullableTypeValue(Type t)
-        {
-            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
-            {
-                return Nullable.GetUnderlyingType(t);
-            }
-
-            return t;
-        }
-
-        private static Type GetNullableType(Type t)
-        {
-            var returnType = GetNullableTypeValue(t);
-            if (returnType.IsEnum)
-            {
-                returnType = typeof(string);
-            }
-
-            return returnType;
-        }
-
-        private static bool IsNullableType(Type type)
-        {
-            return type == typeof(string) ||
-                         type.IsArray ||
-                         (type.IsGenericType &&
-                            type.GetGenericTypeDefinition() == typeof(Nullable<>));
+            return data;
         }
 
         private static void WriteExcelFile(DataSet ds, SpreadsheetDocument spreadsheet, bool hasSearchItem)
