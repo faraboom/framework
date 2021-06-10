@@ -5,6 +5,6 @@
         Default,
         Start,
         Center,
-        End
+        End,
     }
 }

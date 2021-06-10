@@ -1,15 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
-
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Faraboom.Framework.Mvc.ViewFeatures
+﻿namespace Faraboom.Framework.Mvc.ViewFeatures
 {
+    using System;
+    using System.Globalization;
+    using System.Threading;
+
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+
     internal static class FormatWeekHelper
     {
         public static string GetFormattedWeek(ModelExplorer modelExplorer)
@@ -29,7 +25,7 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
 
                 // Get the week number consistent with ISO 8601. See blog post:
                 // https://blogs.msdn.microsoft.com/shawnste/2006/01/24/iso-8601-week-of-year-format-in-microsoft-net/
-                if (day >= DayOfWeek.Monday && day <= DayOfWeek.Wednesday)
+                if (day is >= DayOfWeek.Monday and <= DayOfWeek.Wednesday)
                 {
                     date = date.AddDays(3);
                 }
@@ -38,7 +34,7 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
                 var year = calendar.GetYear(date);
                 var month = calendar.GetMonth(date);
 
-                // Last week (either 52 or 53) includes January dates (1st, 2nd, 3rd) 
+                // Last week (either 52 or 53) includes January dates (1st, 2nd, 3rd)
                 if (week >= 52 && month == 1)
                 {
                     year--;

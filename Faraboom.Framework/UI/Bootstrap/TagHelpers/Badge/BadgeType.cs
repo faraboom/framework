@@ -2,7 +2,9 @@
 {
     public enum BadgeType
     {
+#pragma warning disable SA1300 // Element should begin with upper-case letter
         _,
+#pragma warning restore SA1300 // Element should begin with upper-case letter
         Default,
         Primary,
         Secondary,
@@ -11,6 +13,6 @@
         Warning,
         Info,
         Light,
-        Dark
+        Dark,
     }
 }

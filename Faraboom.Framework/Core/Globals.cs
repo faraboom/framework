@@ -1,31 +1,29 @@
-﻿using Faraboom.Framework.Core.Extensions;
-using Faraboom.Framework.Data;
-using Faraboom.Framework.DataAnnotation;
-
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Primitives;
-
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Resources;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Faraboom.Framework.Core
+﻿namespace Faraboom.Framework.Core
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Resources;
+    using System.Security.Claims;
+    using System.Security.Cryptography;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Faraboom.Framework.Core.Extensions;
+    using Faraboom.Framework.Data;
+    using Faraboom.Framework.DataAnnotation;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Routing;
+    using Microsoft.Extensions.Primitives;
+
     public static class Globals
     {
-        private static readonly char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
+        private static readonly char[] Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
 
         public static CultureInfo CurrentCulture => Thread.CurrentThread.CurrentUICulture;
 
@@ -49,7 +47,9 @@ namespace Faraboom.Framework.Core
         {
             var xForwardedFor = httpRequest.Headers["X-Forwarded-For"];
             if (!string.IsNullOrWhiteSpace(xForwardedFor))
+            {
                 return xForwardedFor.ToString().Split(',').Last();
+            }
 
             return httpRequest.HttpContext?.Connection?.RemoteIpAddress?.ToString();
         }
@@ -89,7 +89,9 @@ namespace Faraboom.Framework.Core
         public static string GetLocalizedDisplayName(MemberInfo member)
         {
             if (member == null)
+            {
                 return null;
+            }
 
             string name;
             var displayAttribute = member.GetCustomAttribute<DisplayAttribute>(false);
@@ -112,83 +114,48 @@ namespace Faraboom.Framework.Core
             {
                 return GetLocalizedDisplayName(memberExpression.Member);
             }
-            var unaryExpression = expression.Body as UnaryExpression;
-            if (unaryExpression != null)
+
+            if (expression.Body is UnaryExpression unaryExpression)
             {
                 memberExpression = unaryExpression.Operand as MemberExpression;
                 if (memberExpression?.Member.MemberType == MemberTypes.Property)
+                {
                     return GetLocalizedDisplayName(memberExpression.Member);
+                }
             }
 
-            return "";
+            return string.Empty;
         }
 
         public static string GetLocalizedShortName(MemberInfo member)
         {
             if (member == null)
+            {
                 return null;
+            }
 
             var customDisplay = member.GetCustomAttribute<DisplayAttribute>(false);
             if (customDisplay != null)
+            {
                 return GetLocalizedValueInternal(customDisplay, member.Name, Constants.ResourceKey.ShortName);
+            }
 
             var customAttribute = member.GetCustomAttribute<System.ComponentModel.DataAnnotations.DisplayAttribute>(false);
             return customAttribute?.GetShortName();
         }
 
-        internal static string GetLocalizedValueInternal(DisplayAttribute displayAttribute, string propertyName, Constants.ResourceKey resourceKey, ResourceManager cachedResourceManager = null)
-        {
-            var result = "";
-            if (displayAttribute.ResourceType != null)
-            {
-                if (cachedResourceManager == null)
-                    cachedResourceManager = new ResourceManager(displayAttribute.ResourceType);
-
-                if (displayAttribute.EnumType == null)
-                {
-                    result = cachedResourceManager.GetString($"{propertyName}_{resourceKey}");
-                }
-                else
-                {
-                    result = cachedResourceManager.GetString($"{displayAttribute.EnumType.Name}_{propertyName}_{resourceKey}");
-                    if (resourceKey == Constants.ResourceKey.Name && string.IsNullOrWhiteSpace(result))
-                        result = cachedResourceManager.GetString($"{displayAttribute.EnumType.Name}_{propertyName}");
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(result))
-            {
-                switch (resourceKey)
-                {
-                    case Constants.ResourceKey.Name:
-                        result = displayAttribute.Name;
-                        break;
-                    case Constants.ResourceKey.ShortName:
-                        result = displayAttribute.ShortName;
-                        break;
-                    case Constants.ResourceKey.Description:
-                        result = displayAttribute.Description;
-                        break;
-                    case Constants.ResourceKey.Prompt:
-                        result = displayAttribute.Prompt;
-                        break;
-                    case Constants.ResourceKey.GroupName:
-                        result = displayAttribute.GroupName;
-                        break;
-                }
-            }
-
-            return result;
-        }
-
         public static string GetLocalizedDescription(MemberInfo member)
         {
             if (member == null)
+            {
                 return null;
+            }
 
             var customDisplay = member.GetCustomAttribute<DisplayAttribute>(false);
             if (customDisplay != null)
+            {
                 return GetLocalizedValueInternal(customDisplay, member.Name, Constants.ResourceKey.Description);
+            }
 
             var customAttribute = member.GetCustomAttribute<System.ComponentModel.DataAnnotations.DisplayAttribute>(false);
             return customAttribute?.GetDescription();
@@ -197,11 +164,15 @@ namespace Faraboom.Framework.Core
         public static string GetLocalizedPromt(MemberInfo member)
         {
             if (member == null)
+            {
                 return null;
+            }
 
             var customDisplay = member.GetCustomAttribute<DisplayAttribute>(false);
             if (customDisplay != null)
+            {
                 return GetLocalizedValueInternal(customDisplay, member.Name, Constants.ResourceKey.Prompt);
+            }
 
             var customAttribute = member.GetCustomAttribute<System.ComponentModel.DataAnnotations.DisplayAttribute>(false);
             return customAttribute?.GetPrompt();
@@ -210,11 +181,15 @@ namespace Faraboom.Framework.Core
         public static string GetLocalizedGroupName(MemberInfo member)
         {
             if (member == null)
+            {
                 return null;
+            }
 
             var customDisplay = member.GetCustomAttribute<DisplayAttribute>(false);
             if (customDisplay != null)
+            {
                 return GetLocalizedValueInternal(customDisplay, member.Name, Constants.ResourceKey.GroupName);
+            }
 
             var customAttribute = member.GetCustomAttribute<System.ComponentModel.DataAnnotations.DisplayAttribute>(false);
             return customAttribute?.GetGroupName();
@@ -236,10 +211,14 @@ namespace Faraboom.Framework.Core
             try
             {
                 if (string.IsNullOrWhiteSpace(value))
+                {
                     return defaultValue;
+                }
 
                 if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
                     type = Nullable.GetUnderlyingType(type);
+                }
 
                 if (type.IsEnum)
                 {
@@ -325,7 +304,7 @@ namespace Faraboom.Framework.Core
             }
             catch
             {
-                throw new ArgumentException(nameof(value));
+                throw new ArgumentException(value);
             }
         }
 
@@ -347,21 +326,26 @@ namespace Faraboom.Framework.Core
         public static T UserId<T>(this ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null)
+            {
                 return default;
+            }
 
             return claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier).ValueOf<T>();
         }
 
         public static IDictionary<string, object> ObjectToDictionary(object value)
         {
-            var dictionary = value as IDictionary<string, object>;
-            if (dictionary != null)
+            if (value is IDictionary<string, object> dictionary)
+            {
                 return new Dictionary<string, object>(dictionary, StringComparer.OrdinalIgnoreCase);
+            }
 
             dictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
             if (value != null)
+            {
                 dictionary = value.GetType().GetProperties().ToDictionary(t => t.Name, t => t.GetValue(value, null));
+            }
 
             return dictionary;
         }
@@ -375,9 +359,9 @@ namespace Faraboom.Framework.Core
             for (int i = 0; i < size; i++)
             {
                 var rnd = BitConverter.ToUInt32(secretKeyByteArray, i * 4);
-                var idx = rnd % chars.Length;
+                var idx = rnd % Chars.Length;
 
-                result.Append(chars[idx]);
+                result.Append(Chars[idx]);
             }
 
             return result.ToString();
@@ -386,10 +370,15 @@ namespace Faraboom.Framework.Core
         public static int WeekOfYear(this DateTime date, string cultureCode)
         {
             if (cultureCode.StartsWith("fa", StringComparison.InvariantCultureIgnoreCase))
+            {
                 return new PersianCalendar().GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Saturday);
+            }
 
             var day = CultureInfo.InvariantCulture.Calendar.GetDayOfWeek(date);
-            if (day >= DayOfWeek.Monday && day <= DayOfWeek.Wednesday) date = date.AddDays(3);
+            if (day is >= DayOfWeek.Monday and <= DayOfWeek.Wednesday)
+            {
+                date = date.AddDays(3);
+            }
 
             return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
         }
@@ -397,7 +386,9 @@ namespace Faraboom.Framework.Core
         public static DateTime FirstDateOfMonth(this DateTime dt, string cultureCode)
         {
             if (cultureCode.StartsWith("fa", StringComparison.InvariantCultureIgnoreCase))
+            {
                 return new MyPersianCalendar().ToDateTime(int.Parse(dt.ToString("yyyy")), int.Parse(dt.ToString("MM")), 1, 0, 0, 0, 0);
+            }
 
             return new DateTime(dt.Year, dt.Month, 1);
         }
@@ -410,14 +401,14 @@ namespace Faraboom.Framework.Core
                 return new[]
                 {
                     cal.ToDateTime(int.Parse(dt.ToString("yyyy")), 1, 1, 0, 0, 0, 0),
-                    cal.ToDateTime(int.Parse(dt.ToString("yyyy")) + 1, 1, 1, 0, 0, 0, 0).AddMilliseconds(-1)
+                    cal.ToDateTime(int.Parse(dt.ToString("yyyy")) + 1, 1, 1, 0, 0, 0, 0).AddMilliseconds(-1),
                 };
             }
 
             return new[]
                 {
                     new DateTime(dt.Year, 1, 1),
-                    new DateTime(dt.Year + 1, 1, 1).AddMilliseconds(-1)
+                    new DateTime(dt.Year + 1, 1, 1).AddMilliseconds(-1),
                 };
         }
 
@@ -428,29 +419,33 @@ namespace Faraboom.Framework.Core
                 var cal = new MyPersianCalendar();
                 return new[]
                 {
-                    cal.ToDateTime(int.Parse(dt.ToString("yyyy")),int.Parse(dt.ToString("MM")),1,0,0,0,0),
-                    cal.ToDateTime(int.Parse(dt.ToString("yyyy")),int.Parse(dt.ToString("MM")), 1, 0, 0, 0, 0).AddMonths(1).AddDays(-1)
+                    cal.ToDateTime(int.Parse(dt.ToString("yyyy")), int.Parse(dt.ToString("MM")), 1, 0, 0, 0, 0),
+                    cal.ToDateTime(int.Parse(dt.ToString("yyyy")), int.Parse(dt.ToString("MM")), 1, 0, 0, 0, 0).AddMonths(1).AddDays(-1),
                 };
             }
 
             return new[]
                 {
                     new DateTime(dt.Year, dt.Month, 1),
-                    new DateTime(dt.Year, dt.Month, 1).AddMonths(1).AddDays(-1)
+                    new DateTime(dt.Year, dt.Month, 1).AddMonths(1).AddDays(-1),
                 };
         }
 
         public static CultureInfo GetCulture(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
+            {
                 return new CultureInfo(Constants.DefaultLanguageCode);
+            }
 
             if (!name.StartsWith("fa", StringComparison.InvariantCultureIgnoreCase))
+            {
                 return new CultureInfo(name);
+            }
 
             var persianCalture = new CultureInfo(name);
             var info = persianCalture.DateTimeFormat;
-            var monthNames = new[] { "فروردين", "ارديبهشت", "خرداد", "تير", "مرداد", "شهريور", "مهر", "آبان", "آذر", "دي", "بهمن", "اسفند", "" };
+            var monthNames = new[] { "فروردين", "ارديبهشت", "خرداد", "تير", "مرداد", "شهريور", "مهر", "آبان", "آذر", "دي", "بهمن", "اسفند", string.Empty };
             var shortestDayNames = new[] { "ى", "د", "س", "چ", "پ", "ج", "ش" };
             var dayNames = new[] { "يکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنجشنبه", "جمعه", "شنبه" };
 
@@ -497,7 +492,9 @@ namespace Faraboom.Framework.Core
         public static string Sentencise(this string str, bool titlecase = false)
         {
             if (string.IsNullOrWhiteSpace(str))
+            {
                 return null;
+            }
 
             var retVal = new StringBuilder(32);
 
@@ -510,7 +507,7 @@ namespace Faraboom.Framework.Core
                 }
                 else
                 {
-                    retVal.Append(" ");
+                    retVal.Append(' ');
                     if (titlecase)
                     {
                         retVal.Append(str[i]);
@@ -549,7 +546,9 @@ namespace Faraboom.Framework.Core
             }
 
             if (!types?.Any() == true && mainType.IsClass && !mainType.IsAbstract)
+            {
                 types = new[] { mainType };
+            }
 
             return types;
         }
@@ -557,45 +556,31 @@ namespace Faraboom.Framework.Core
         public static string TrimEnd(this string input, string suffixToRemove, StringComparison comparisonType = StringComparison.CurrentCulture)
         {
             if (suffixToRemove != null && input.EndsWith(suffixToRemove, comparisonType))
+            {
                 return input.Substring(0, input.Length - suffixToRemove.Length);
+            }
 
             return input;
         }
 
         public static string Slugify(this string value)
         {
-            return value == null ? null : Regex.Replace(value,
-                                 "([a-z])([A-Z])",
-                                 "$1-$2",
-                                 RegexOptions.CultureInvariant,
-                                 TimeSpan.FromMilliseconds(100)).ToLowerInvariant();
-        }
-
-        internal static RouteValueDictionary PrepareValues(object routeValues, string area = null)
-        {
-            var rootValueDictionary = new RouteValueDictionary(routeValues);
-            if (!rootValueDictionary.ContainsKey(Constants.LanguageIdentifier))
-                rootValueDictionary.Add(Constants.LanguageIdentifier, CultureInfo.CurrentCulture.TwoLetterISOLanguageName);
-            else
-                rootValueDictionary[Constants.LanguageIdentifier] = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
-
-            if (!string.IsNullOrEmpty(area))
-            {
-                if (!rootValueDictionary.ContainsKey(Constants.AreaIdentifier))
-                    rootValueDictionary.Add(Constants.AreaIdentifier, area);
-                else
-                    rootValueDictionary[Constants.AreaIdentifier] = area;
-            }
-
-            return rootValueDictionary;
+            return value == null ? null : Regex.Replace(
+                value,
+                "([a-z])([A-Z])",
+                "$1-$2",
+                RegexOptions.CultureInvariant,
+                TimeSpan.FromMilliseconds(100)).ToLowerInvariant();
         }
 
         public static async Task<string> ConvertImageToBase64Async(IFormFile file)
         {
             if (file == null)
+            {
                 return null;
+            }
 
-            using var target = new System.IO.MemoryStream();
+            using var target = new MemoryStream();
             await file.CopyToAsync(target);
             return $"data:{file.ContentType};base64, {Convert.ToBase64String(target.ToArray())}";
         }
@@ -603,6 +588,82 @@ namespace Faraboom.Framework.Core
         public static bool IsImage(string fileName)
         {
             return fileName.IsNullOrEmpty() is false && (fileName.StartsWith("data:image") || Constants.ValidImageExtensions.Contains(Path.GetExtension(fileName)?.TrimStart('.'), StringComparison.OrdinalIgnoreCase));
+        }
+
+        internal static string GetLocalizedValueInternal(DisplayAttribute displayAttribute, string propertyName, Constants.ResourceKey resourceKey, ResourceManager cachedResourceManager = null)
+        {
+            var result = string.Empty;
+            if (displayAttribute.ResourceType != null)
+            {
+                if (cachedResourceManager == null)
+                {
+                    cachedResourceManager = new ResourceManager(displayAttribute.ResourceType);
+                }
+
+                if (displayAttribute.EnumType == null)
+                {
+                    result = cachedResourceManager.GetString($"{propertyName}_{resourceKey}");
+                }
+                else
+                {
+                    result = cachedResourceManager.GetString($"{displayAttribute.EnumType.Name}_{propertyName}_{resourceKey}");
+                    if (resourceKey == Constants.ResourceKey.Name && string.IsNullOrWhiteSpace(result))
+                    {
+                        result = cachedResourceManager.GetString($"{displayAttribute.EnumType.Name}_{propertyName}");
+                    }
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(result))
+            {
+                switch (resourceKey)
+                {
+                    case Constants.ResourceKey.Name:
+                        result = displayAttribute.Name;
+                        break;
+                    case Constants.ResourceKey.ShortName:
+                        result = displayAttribute.ShortName;
+                        break;
+                    case Constants.ResourceKey.Description:
+                        result = displayAttribute.Description;
+                        break;
+                    case Constants.ResourceKey.Prompt:
+                        result = displayAttribute.Prompt;
+                        break;
+                    case Constants.ResourceKey.GroupName:
+                        result = displayAttribute.GroupName;
+                        break;
+                }
+            }
+
+            return result;
+        }
+
+        internal static RouteValueDictionary PrepareValues(object routeValues, string area = null)
+        {
+            var rootValueDictionary = new RouteValueDictionary(routeValues);
+            if (!rootValueDictionary.ContainsKey(Constants.LanguageIdentifier))
+            {
+                rootValueDictionary.Add(Constants.LanguageIdentifier, CultureInfo.CurrentCulture.TwoLetterISOLanguageName);
+            }
+            else
+            {
+                rootValueDictionary[Constants.LanguageIdentifier] = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+            }
+
+            if (!string.IsNullOrEmpty(area))
+            {
+                if (!rootValueDictionary.ContainsKey(Constants.AreaIdentifier))
+                {
+                    rootValueDictionary.Add(Constants.AreaIdentifier, area);
+                }
+                else
+                {
+                    rootValueDictionary[Constants.AreaIdentifier] = area;
+                }
+            }
+
+            return rootValueDictionary;
         }
 
         #region Inner Classes

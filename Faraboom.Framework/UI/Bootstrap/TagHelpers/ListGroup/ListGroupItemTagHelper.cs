@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ListGroup
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ListGroup
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("frb-list-group-item")]
     public class ListGroupItemTagHelper : TagHelper<ListGroupItemTagHelper, ListGroupItemTagHelperService>
     {
+        public ListGroupItemTagHelper(ListGroupItemTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-active")]
         public bool? Active { get; set; }
 
@@ -22,11 +27,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ListGroup
 
         [HtmlAttributeName("frb-type")]
         public ListItemType Type { get; set; } = ListItemType.Default;
-
-        public ListGroupItemTagHelper(ListGroupItemTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
     }
 }

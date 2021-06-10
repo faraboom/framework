@@ -3,6 +3,6 @@
     public enum DropdownStyle
     {
         Single,
-        Split
+        Split,
     }
 }

@@ -5,6 +5,6 @@
         Default,
         Small,
         Large,
-        ExtraLarge
+        ExtraLarge,
     }
 }

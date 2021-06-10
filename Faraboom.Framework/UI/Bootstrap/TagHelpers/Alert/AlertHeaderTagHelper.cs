@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Alert
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Alert
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("h1", ParentTag = "frb-alert", TagStructure = TagStructure.NormalOrSelfClosing)]
     [HtmlTargetElement("h2", ParentTag = "frb-alert", TagStructure = TagStructure.NormalOrSelfClosing)]

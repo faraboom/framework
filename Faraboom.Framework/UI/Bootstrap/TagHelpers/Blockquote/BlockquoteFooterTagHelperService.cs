@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Blockquote
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Blockquote
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class BlockquoteFooterTagHelperService : TagHelperService<BlockquoteFooterTagHelper>
     {
@@ -9,6 +9,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Blockquote
         {
             output.Attributes.AddClass("blockquote-footer");
         }
-        
     }
 }

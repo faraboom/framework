@@ -1,14 +1,12 @@
-﻿using Faraboom.Framework.Core;
-
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Text.Json.Serialization;
-
-using static Faraboom.Framework.Data.PagingDto;
-
-namespace Faraboom.Framework.Data
+﻿namespace Faraboom.Framework.Data
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Text.Json.Serialization;
+    using Faraboom.Framework.Core;
+    using static Faraboom.Framework.Data.PagingDto;
+
     public class GridDataSource
     {
         [JsonPropertyName("current")]
@@ -30,6 +28,6 @@ namespace Faraboom.Framework.Data
         public int PageItemCount { get; set; }
 
         [JsonPropertyName("sort")]
-        public SortFilterDto SortFilter { get; set; }
+        public SortFilter SortFilter { get; set; }
     }
 }

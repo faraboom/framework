@@ -2,13 +2,14 @@
 {
     public class Mapper : MapsterMapper.Mapper, IMapper
     {
-        public Mapper() : base()
+        public Mapper()
+            : base()
         {
         }
 
-        public Mapper(TypeAdapterConfig config) : base(config)
+        public Mapper(TypeAdapterConfig config)
+            : base(config)
         {
-
         }
     }
 }

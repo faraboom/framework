@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Table
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Table
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class TableHeaderTagHelperService : TagHelperService<TableHeaderTagHelper>
     {

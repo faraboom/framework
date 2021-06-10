@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace Faraboom.Framework.UI
+﻿namespace Faraboom.Framework.UI
 {
+    using System.Collections.Generic;
+
     public interface IGridView<TModel, TSearch>
         where TModel : class
         where TSearch : class

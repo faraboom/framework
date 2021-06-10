@@ -1,11 +1,9 @@
-﻿using System.Text;
-
-using Faraboom.Framework.Resources;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
 {
+    using System.Text;
+    using Faraboom.Framework.Resources;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class ModalFooterTagHelperService : TagHelperService<ModalFooterTagHelper>
     {
@@ -18,6 +16,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
             {
                 output.PostContent.SetHtmlContent(CreateContent());
             }
+
             ProcessButtonsAlignment(output);
         }
 
@@ -55,6 +54,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
             {
                 return;
             }
+
             output.Attributes.AddClass("justify-content-" + TagHelper.ButtonAlignment.ToString().ToLowerInvariant());
         }
     }

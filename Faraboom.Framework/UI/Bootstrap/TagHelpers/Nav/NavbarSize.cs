@@ -6,6 +6,6 @@
         Sm,
         Md,
         Lg,
-        Xl
+        Xl,
     }
 }

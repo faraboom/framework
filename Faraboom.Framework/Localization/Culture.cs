@@ -2,7 +2,7 @@
 {
     public enum Culture
     {
-        fa,
-        en
+        Fa,
+        En,
     }
 }

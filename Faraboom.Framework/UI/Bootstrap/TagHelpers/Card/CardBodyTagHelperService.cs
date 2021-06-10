@@ -1,9 +1,9 @@
-﻿using Faraboom.Framework.Core.Extensions;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Card
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Card
 {
+    using Faraboom.Framework.Core.Extensions;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class CardBodyTagHelperService : TagHelperService<CardBodyTagHelper>
     {

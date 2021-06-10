@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Table
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Table
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("frb-table")]
     public class TableTagHelper : TagHelper<TableTagHelper, TableTagHelperService>
     {
+        public TableTagHelper(TableTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+        : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-responsive")]
         public bool? Responsive { get; set; }
 
@@ -37,10 +42,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Table
 
         [HtmlAttributeName("frb-border-style")]
         public TableBorderStyle BorderStyle { get; set; } = TableBorderStyle.Default;
-
-        public TableTagHelper(TableTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-        : base(tagHelperService, optionsAccessor)
-        {
-        }
     }
 }

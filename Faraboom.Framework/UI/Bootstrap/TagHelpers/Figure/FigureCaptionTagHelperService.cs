@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Figure
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Figure
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class FigureCaptionTagHelperService : TagHelperService<FigureCaptionTagHelper>
     {

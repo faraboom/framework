@@ -1,14 +1,13 @@
-﻿using Faraboom.Framework.Core;
-
-using System;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System;
+    using Faraboom.Framework.Core;
+
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Method)]
     public sealed class DisplayAttribute : Attribute
     {
         public Type ResourceType { get; set; }
-        
+
         public Type EnumType { get; set; }
 
         /// <summary>

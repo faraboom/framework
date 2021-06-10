@@ -1,10 +1,9 @@
-﻿using System.Linq;
-using System.Text;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
 {
+    using System.Linq;
+    using System.Text;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class ModalTagHelperService : TagHelperService<ModalTagHelper>
     {
@@ -40,13 +39,13 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
 
             if (TagHelper.Centered ?? false)
             {
-                classNames.Append(" ");
+                classNames.Append(' ');
                 classNames.Append("modal-dialog-centered");
             }
 
             if (TagHelper.Size != ModalSize.Default)
             {
-                classNames.Append(" ");
+                classNames.Append(' ');
                 classNames.Append(TagHelper.Size.ToClassName());
             }
 
@@ -64,6 +63,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
             {
                 return "data-backdrop=\"static\" ";
             }
+
             return string.Empty;
         }
 

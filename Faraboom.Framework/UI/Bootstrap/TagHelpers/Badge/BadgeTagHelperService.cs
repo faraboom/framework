@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Badge
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Badge
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class BadgeTagHelperService : TagHelperService<BadgeTagHelper>
     {
@@ -15,7 +15,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Badge
         {
             var badgeType = GetBadgeType(context, output);
 
-            if (badgeType != BadgeType.Default && badgeType != BadgeType._)
+            if (badgeType is not BadgeType.Default and not BadgeType._)
             {
                 output.Attributes.AddClass("badge-" + badgeType.ToString().ToLowerInvariant());
             }

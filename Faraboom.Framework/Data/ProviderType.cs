@@ -4,6 +4,6 @@
     {
         SqlServer,
 
-        DevartOracle
+        DevartOracle,
     }
 }

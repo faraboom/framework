@@ -1,15 +1,23 @@
-﻿using System.Collections.Generic;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 {
+    using System.Collections.Generic;
+
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [HtmlTargetElement("frb-form", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class FormTagHelper : TagHelper<FormTagHelper, FormTagHelperService>
     {
+        #region Constructors
+
+        public FormTagHelper(FormTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
+        #endregion
+
         [HtmlAttributeName("frb-display-submit-button")]
         public bool? DisplaySubmitButton { get; set; } = true;
 
@@ -42,15 +50,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 
         [HtmlAttributeName("frb-all-route-data", DictionaryAttributePrefix = "frb-route-")]
         public IDictionary<string, string> RouteValues { get; set; }
-
-        #region Constructors
-
-        public FormTagHelper(FormTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
-
-        #endregion
     }
 }

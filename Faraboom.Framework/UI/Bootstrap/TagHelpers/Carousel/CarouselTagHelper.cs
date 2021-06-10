@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("frb-carousel")]
     public class CarouselTagHelper : TagHelper<CarouselTagHelper, CarouselTagHelperService>
     {
+        public CarouselTagHelper(CarouselTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-id")]
         public string Id { get; set; }
 
@@ -19,11 +24,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
 
         [HtmlAttributeName("frb-indicators")]
         public bool? Indicators { get; set; }
-
-        public CarouselTagHelper(CarouselTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
     }
 }

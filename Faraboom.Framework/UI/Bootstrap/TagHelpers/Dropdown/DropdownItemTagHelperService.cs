@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class DropdownItemTagHelperService : TagHelperService<DropdownItemTagHelper>
     {
@@ -11,13 +11,13 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
             output.Attributes.AddClass("dropdown-item");
             output.TagMode = TagMode.StartTagAndEndTag;
 
-            SetActiveClassIfActive(context,output);
-            SetDisabledClassIfDisabled(context,output);
+            SetActiveClassIfActive(context, output);
+            SetDisabledClassIfDisabled(context, output);
         }
 
         protected virtual void SetActiveClassIfActive(TagHelperContext context, TagHelperOutput output)
         {
-            if (TagHelper.Active??false)
+            if (TagHelper.Active ?? false)
             {
                 output.Attributes.AddClass("active");
             }
@@ -25,7 +25,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
 
         protected virtual void SetDisabledClassIfDisabled(TagHelperContext context, TagHelperOutput output)
         {
-            if (TagHelper.Disabled??false)
+            if (TagHelper.Disabled ?? false)
             {
                 output.Attributes.AddClass("disabled");
             }

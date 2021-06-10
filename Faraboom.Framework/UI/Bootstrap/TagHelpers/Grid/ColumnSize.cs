@@ -16,6 +16,8 @@
         _11 = 11,
         _12 = 12,
         Auto = 13,
-        _ = -1
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+        _ = -1,
+#pragma warning restore SA1300 // Element should begin with upper-case letter
     }
 }

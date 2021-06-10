@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [HtmlTargetElement("frb-grid-view-columns", ParentTag = "frb-grid-view")]
     public class GridViewColumnsTagHelper : TagHelper<GridViewColumnsTagHelper, GridViewColumnsTagHelperService>
     {
@@ -12,7 +12,6 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         public GridViewColumnsTagHelper(GridViewColumnsTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
             : base(tagHelperService, optionsAccessor)
         {
-
         }
 
         #endregion

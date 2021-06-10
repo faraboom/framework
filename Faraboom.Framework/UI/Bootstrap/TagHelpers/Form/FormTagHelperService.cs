@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-
-using Faraboom.Framework.DataAnnotation;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Button;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
-
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+    using Faraboom.Framework.DataAnnotation;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Button;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.DependencyInjection;
+
     [Injectable]
     public class FormTagHelperService : TagHelperService<FormTagHelper>
     {
@@ -51,6 +49,90 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             await SetSubmitButton(context, output);
         }
 
+        private static void NormalizeTagMode(TagHelperContext context, TagHelperOutput output)
+        {
+            output.TagMode = TagMode.StartTagAndEndTag;
+            output.TagName = "form";
+        }
+
+        private static List<FormGroupItem> InitilizeFormGroupContentsContext(TagHelperContext context, TagHelperOutput output)
+        {
+            var items = new List<FormGroupItem>();
+            context.Items[FormGroupContents] = items;
+            return items;
+        }
+
+        private static ModelExpression ModelExplorerToModelExpressionConverter(ModelExplorer explorer)
+        {
+            var temp = explorer;
+            var propertyName = explorer.Metadata.PropertyName;
+
+            while (temp?.Container?.Metadata?.PropertyName != null)
+            {
+                temp = temp.Container;
+                propertyName = temp.Metadata.PropertyName + "." + propertyName;
+            }
+
+            return new ModelExpression(propertyName, explorer);
+        }
+
+        private static bool IsCsharpClassOrPrimitive(Type type)
+        {
+            if (type == null)
+            {
+                return false;
+            }
+
+            return type.IsPrimitive ||
+                   type.IsValueType ||
+                   type == typeof(string) ||
+                   type == typeof(Guid) ||
+                   type == typeof(DateTime) ||
+                   type == typeof(ValueType) ||
+                   type == typeof(TimeSpan) ||
+                   type == typeof(DateTimeOffset) ||
+                   type.IsEnum;
+        }
+
+        private static bool IsSelectGroup(TagHelperContext context, ModelExpression model)
+        {
+            return model.ModelExplorer?.Metadata?.IsEnum == true
+                || model.ModelExplorer?.Metadata?.ElementType?.IsEnum == true
+                || model.ModelExplorer.GetAttribute<SelectItemsAttribute>() != null;
+        }
+
+        private static bool IsListOfCsharpClassOrPrimitive(Type type)
+        {
+            var genericType = type.GenericTypeArguments.FirstOrDefault();
+
+            if (genericType == null || !IsCsharpClassOrPrimitive(genericType))
+            {
+                return false;
+            }
+
+            return type.ToString().StartsWith("System.Collections.Generic.IEnumerable`") || type.ToString().StartsWith("System.Collections.Generic.List`");
+        }
+
+        private static void SetContent(TagHelperContext context, TagHelperOutput output, List<FormGroupItem> items, string childContent)
+        {
+            var contentBuilder = new StringBuilder(string.Empty);
+
+            var orderedItems = items.OrderBy(o => o.Order);
+            foreach (var item in orderedItems)
+            {
+                contentBuilder.AppendLine(item.HtmlContent);
+            }
+
+            if (childContent.Contains(FormContentPlaceHolder))
+            {
+                output.Content.SetHtmlContent(childContent.Replace(FormContentPlaceHolder, contentBuilder.ToString()));
+            }
+            else
+            {
+                output.Content.SetHtmlContent(contentBuilder + childContent);
+            }
+        }
+
         private async Task ConvertToMvcForm(TagHelperContext context, TagHelperOutput output)
         {
             var formTagHelper = new Microsoft.AspNetCore.Mvc.TagHelpers.FormTagHelper(htmlGenerator)
@@ -76,42 +158,15 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             output.PreContent.SetHtmlContent(output.PreContent.GetContent() + formTagOutput.PreContent.GetContent());
         }
 
-        private void NormalizeTagMode(TagHelperContext context, TagHelperOutput output)
-        {
-            output.TagMode = TagMode.StartTagAndEndTag;
-            output.TagName = "form";
-        }
-
-        private void SetContent(TagHelperContext context, TagHelperOutput output, List<FormGroupItem> items, string childContent)
-        {
-            var contentBuilder = new StringBuilder("");
-
-            var orderedItems = items.OrderBy(o => o.Order);
-            foreach (var item in orderedItems)
-            {
-                contentBuilder.AppendLine(item.HtmlContent);
-            }
-
-            if (childContent.Contains(FormContentPlaceHolder))
-                output.Content.SetHtmlContent(childContent.Replace(FormContentPlaceHolder, contentBuilder.ToString()));
-            else
-                output.Content.SetHtmlContent(contentBuilder + childContent);
-        }
-
         private async Task SetSubmitButton(TagHelperContext context, TagHelperOutput output)
         {
             if (!TagHelper.DisplaySubmitButton.GetValueOrDefault())
+            {
                 return;
+            }
 
             var buttonHtml = await ProcessSubmitButtonAndGetContentAsync(context, output);
             output.PostContent.SetHtmlContent(output.PostContent.GetContent() + buttonHtml);
-        }
-
-        private List<FormGroupItem> InitilizeFormGroupContentsContext(TagHelperContext context, TagHelperOutput output)
-        {
-            var items = new List<FormGroupItem>();
-            context.Items[FormGroupContents] = items;
-            return items;
         }
 
         private async Task ProcessFieldsAsync(TagHelperContext context, TagHelperOutput output)
@@ -122,9 +177,13 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 var model = models[i];
 
                 if (IsSelectGroup(context, model))
+                {
                     await ProcessSelectGroupAsync(context, output, model);
+                }
                 else
+                {
                     await ProcessInputGroupAsync(context, output, model);
+                }
             }
         }
 
@@ -194,7 +253,9 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         {
             var scaffoldColumnAttribute = model.GetAttribute<ScaffoldColumnAttribute>();
             if (scaffoldColumnAttribute != null && !scaffoldColumnAttribute.Scaffold)
+            {
                 return list;
+            }
 
             if (IsCsharpClassOrPrimitive(model.ModelType) || IsListOfCsharpClassOrPrimitive(model.ModelType))
             {
@@ -203,56 +264,11 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             }
 
             if (model.ModelType == typeof(List<SelectListItem>) || model.ModelType == typeof(IEnumerable<SelectListItem>))
-                return list;
-
-            return model.Properties.Aggregate(list, ExploreModelsRecursively);
-        }
-
-        private ModelExpression ModelExplorerToModelExpressionConverter(ModelExplorer explorer)
-        {
-            var temp = explorer;
-            var propertyName = explorer.Metadata.PropertyName;
-
-            while (temp?.Container?.Metadata?.PropertyName != null)
             {
-                temp = temp.Container;
-                propertyName = temp.Metadata.PropertyName + "." + propertyName;
+                return list;
             }
 
-            return new ModelExpression(propertyName, explorer);
-        }
-
-        private bool IsListOfCsharpClassOrPrimitive(Type type)
-        {
-            var genericType = type.GenericTypeArguments.FirstOrDefault();
-
-            if (genericType == null || !IsCsharpClassOrPrimitive(genericType))
-                return false;
-
-            return type.ToString().StartsWith("System.Collections.Generic.IEnumerable`") || type.ToString().StartsWith("System.Collections.Generic.List`");
-        }
-
-        private bool IsCsharpClassOrPrimitive(Type type)
-        {
-            if (type == null)
-                return false;
-
-            return type.IsPrimitive ||
-                   type.IsValueType ||
-                   type == typeof(string) ||
-                   type == typeof(Guid) ||
-                   type == typeof(DateTime) ||
-                   type == typeof(ValueType) ||
-                   type == typeof(TimeSpan) ||
-                   type == typeof(DateTimeOffset) ||
-                   type.IsEnum;
-        }
-
-        private bool IsSelectGroup(TagHelperContext context, ModelExpression model)
-        {
-            return model.ModelExplorer?.Metadata?.IsEnum == true
-                || model.ModelExplorer?.Metadata?.ElementType?.IsEnum == true
-                || model.ModelExplorer.GetAttribute<SelectItemsAttribute>() != null;
+            return model.Properties.Aggregate(list, ExploreModelsRecursively);
         }
     }
 }

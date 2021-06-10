@@ -19,6 +19,6 @@
         Outline_Info,
         Outline_Light,
         Outline_Dark,
-        Link
+        Link,
     }
 }

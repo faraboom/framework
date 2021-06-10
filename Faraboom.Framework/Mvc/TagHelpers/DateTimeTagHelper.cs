@@ -1,26 +1,29 @@
-﻿using Faraboom.Framework.Core.Extensions;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-using System;
-using System.Text;
-using System.Text.Encodings.Web;
-
-namespace Faraboom.Framework.Mvc.TagHelpers
+﻿namespace Faraboom.Framework.Mvc.TagHelpers
 {
+    using System;
+    using System.Text;
+    using System.Text.Encodings.Web;
+    using Faraboom.Framework.Core.Extensions;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.TagHelpers;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
+    public enum PickerType
+    {
+        Date,
+        DateTime,
+        TimeSpan,
+        Month,
+    }
+
     [HtmlTargetElement("frb-date-time", TagStructure = TagStructure.WithoutEndTag)]
     public class DateTimeTagHelper : UI.Bootstrap.TagHelpers.TagHelper
     {
         private readonly IHtmlGenerator generator;
         private readonly HtmlEncoder encoder;
-
-        [HtmlAttributeName("frb-type")]
-        public PickerType PickerType { get; set; }
 
         public DateTimeTagHelper(IHtmlGenerator generator, HtmlEncoder encoder, IOptions<MvcViewOptions> optionsAccessor)
             : base(optionsAccessor)
@@ -28,6 +31,9 @@ namespace Faraboom.Framework.Mvc.TagHelpers
             this.generator = generator;
             this.encoder = encoder;
         }
+
+        [HtmlAttributeName("frb-type")]
+        public PickerType PickerType { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
@@ -42,21 +48,27 @@ namespace Faraboom.Framework.Mvc.TagHelpers
             {
                 case PickerType.DateTime:
                     if (For.Metadata.ModelType != typeof(DateTime) && For.Metadata.ModelType != typeof(DateTime?) && For.Metadata.ModelType != typeof(DateTimeOffset) && For.Metadata.ModelType != typeof(DateTimeOffset?))
+                    {
                         throw new ArgumentException(nameof(For.Metadata.ModelType));
+                    }
 
                     toggle = "datetimepicker";
                     format = "yyyy/MM/dd HH:mm";
                     break;
                 case PickerType.TimeSpan:
                     if (For.Metadata.ModelType != typeof(TimeSpan) && For.Metadata.ModelType != typeof(TimeSpan?))
+                    {
                         throw new ArgumentException(nameof(For.Metadata.ModelType));
+                    }
 
                     toggle = "timepicker";
                     format = "hh\\:mm";
                     break;
                 case PickerType.Month:
                     if (For.Metadata.ModelType != typeof(DateTime) && For.Metadata.ModelType != typeof(DateTime?) && For.Metadata.ModelType != typeof(DateTimeOffset) && For.Metadata.ModelType != typeof(DateTimeOffset?))
+                    {
                         throw new ArgumentException(nameof(For.Metadata.ModelType));
+                    }
 
                     toggle = "monthpicker";
                     format = "yyyy/MM";
@@ -78,8 +90,11 @@ namespace Faraboom.Framework.Mvc.TagHelpers
             {
                 val = (For.Model as TimeSpan?)?.ToString(format) ?? (For.Model as DateTimeOffset?)?.ToString(format) ?? (For.Model as DateTime?)?.ToString(format);
             }
+
             if (!val.IsNullOrEmpty())
+            {
                 output.Attributes.AddIfNotExist("value", val);
+            }
 
             using (var writer = new System.IO.StringWriter())
             {
@@ -96,13 +111,5 @@ namespace Faraboom.Framework.Mvc.TagHelpers
             sb.Append("</div>");
             output.Content.SetHtmlContent(sb.ToString());
         }
-    }
-
-    public enum PickerType
-    {
-        Date,
-        DateTime,
-        TimeSpan,
-        Month
     }
 }

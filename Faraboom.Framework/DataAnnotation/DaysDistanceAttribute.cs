@@ -1,20 +1,14 @@
-﻿using DynamicExpresso;
-using Faraboom.Framework.Core;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Linq;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System;
+    using System.ComponentModel.DataAnnotations;
+    using System.Globalization;
+    using System.Linq;
+    using DynamicExpresso;
+    using Faraboom.Framework.Core;
+
     public sealed class DaysDistanceAttribute : ValidationAttribute
     {
-        public string OtherProperty { get; set; }
-
-        public int MaxDistance { get; set; }
-
-        public string Expression { get; set; }
-
         public DaysDistanceAttribute(string otherProperty, int maxDistance, string expression = null)
             : base(() => "ValidationError")
         {
@@ -23,6 +17,17 @@ namespace Faraboom.Framework.DataAnnotation
             Expression = expression;
 
             ErrorMessageResourceName = nameof(Resources.GlobalResource.Validation_DaysDistance);
+        }
+
+        public string OtherProperty { get; internal set; }
+
+        public int MaxDistance { get; internal set; }
+
+        public string Expression { get; internal set; }
+
+        public string FormatErrorMessage(string name, string otherName)
+        {
+            return string.Format(CultureInfo.CurrentCulture, ErrorMessageString, name, otherName, MaxDistance);
         }
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
@@ -47,11 +52,6 @@ namespace Faraboom.Framework.DataAnnotation
             return ((DateTime)value - otherValue).TotalDays > MaxDistance
                 ? new ValidationResult(FormatErrorMessage(displayName, otherDisplayName))
                 : null;
-        }
-
-        public string FormatErrorMessage(string name, string otherName)
-        {
-            return string.Format(CultureInfo.CurrentCulture, ErrorMessageString, name, otherName, MaxDistance);
         }
     }
 }

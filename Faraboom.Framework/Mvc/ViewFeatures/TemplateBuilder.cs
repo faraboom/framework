@@ -1,29 +1,27 @@
-﻿using System;
-using System.Diagnostics;
-using System.Globalization;
-
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
-
-namespace Faraboom.Framework.Mvc.ViewFeatures
+﻿namespace Faraboom.Framework.Mvc.ViewFeatures
 {
+    using System;
+    using System.Globalization;
+    using Microsoft.AspNetCore.Html;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.AspNetCore.Mvc.ViewEngines;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
+
     internal class TemplateBuilder
     {
-        private readonly IViewEngine _viewEngine;
-        private readonly IViewBufferScope _bufferScope;
-        private readonly ViewContext _viewContext;
-        private readonly ViewDataDictionary _viewData;
-        private readonly ModelExplorer _modelExplorer;
-        private object _model;
-        private readonly ModelMetadata _metadata;
-        private readonly string _htmlFieldName;
-        private readonly string _templateName;
-        private readonly bool _readOnly;
-        private readonly object _additionalViewData;
+        private readonly IViewEngine viewEngine;
+        private readonly IViewBufferScope bufferScope;
+        private readonly ViewContext viewContext;
+        private readonly ViewDataDictionary viewData;
+        private readonly ModelExplorer modelExplorer;
+        private readonly ModelMetadata metadata;
+        private readonly string htmlFieldName;
+        private readonly string templateName;
+        private readonly bool readOnly;
+        private readonly object additionalViewData;
+        private object model;
 
         public TemplateBuilder(
             IViewEngine viewEngine,
@@ -36,96 +34,69 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
             bool readOnly,
             object additionalViewData)
         {
-            if (viewEngine == null)
-            {
-                throw new ArgumentNullException(nameof(viewEngine));
-            }
+            this.viewEngine = viewEngine ?? throw new ArgumentNullException(nameof(viewEngine));
+            this.bufferScope = bufferScope ?? throw new ArgumentNullException(nameof(bufferScope));
+            this.viewContext = viewContext ?? throw new ArgumentNullException(nameof(viewContext));
+            this.viewData = viewData ?? throw new ArgumentNullException(nameof(viewData));
+            this.modelExplorer = modelExplorer ?? throw new ArgumentNullException(nameof(modelExplorer));
+            this.htmlFieldName = htmlFieldName;
+            this.templateName = templateName;
+            this.readOnly = readOnly;
+            this.additionalViewData = additionalViewData;
 
-            if (bufferScope == null)
-            {
-                throw new ArgumentNullException(nameof(bufferScope));
-            }
-
-            if (viewContext == null)
-            {
-                throw new ArgumentNullException(nameof(viewContext));
-            }
-
-            if (viewData == null)
-            {
-                throw new ArgumentNullException(nameof(viewData));
-            }
-
-            if (modelExplorer == null)
-            {
-                throw new ArgumentNullException(nameof(modelExplorer));
-            }
-
-            _viewEngine = viewEngine;
-            _bufferScope = bufferScope;
-            _viewContext = viewContext;
-            _viewData = viewData;
-            _modelExplorer = modelExplorer;
-            _htmlFieldName = htmlFieldName;
-            _templateName = templateName;
-            _readOnly = readOnly;
-            _additionalViewData = additionalViewData;
-
-            _model = modelExplorer.Model;
-            _metadata = modelExplorer.Metadata;
+            model = modelExplorer.Model;
+            metadata = modelExplorer.Metadata;
         }
 
         public IHtmlContent Build()
         {
-            if (_metadata.ConvertEmptyStringToNull && string.Empty.Equals(_model))
+            if (metadata.ConvertEmptyStringToNull && string.Empty.Equals(model))
             {
-                _model = null;
+                model = null;
             }
 
             // Normally this shouldn't happen, unless someone writes their own custom Object templates which
             // don't check to make sure that the object hasn't already been displayed
-            if (_viewData.TemplateInfo.Visited(_modelExplorer))
+            if (this.viewData.TemplateInfo.Visited(modelExplorer))
             {
                 return HtmlString.Empty;
             }
 
             // Create VDD of type object so any model type is allowed.
-            var viewData = new ViewDataDictionary<object>(_viewData)
+            var viewData = new ViewDataDictionary<object>(this.viewData)
             {
-
                 // Create a new ModelExplorer in order to preserve the model metadata of the original _viewData even
                 // though _model may have been reset to null. Otherwise we might lose track of the model type /property.
-                ModelExplorer = _modelExplorer.GetExplorerForModel(_model)
+                ModelExplorer = modelExplorer.GetExplorerForModel(model),
             };
 
-            var formatString = _readOnly ?
+            var formatString = readOnly ?
                 viewData.ModelMetadata.DisplayFormatString :
                 viewData.ModelMetadata.EditFormatString;
 
-            var formattedModelValue = _model;
-            if (_model == null)
+            var formattedModelValue = model;
+            if (model == null)
             {
-                if (_readOnly)
+                if (readOnly)
                 {
-                    formattedModelValue = _metadata.NullDisplayText;
+                    formattedModelValue = metadata.NullDisplayText;
                 }
             }
             else if (!string.IsNullOrEmpty(formatString))
             {
-                formattedModelValue = string.Format(CultureInfo.CurrentCulture, formatString, _model);
+                formattedModelValue = string.Format(CultureInfo.CurrentCulture, formatString, model);
             }
-            else if ((string.Equals("week", _templateName, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals("week", viewData.ModelMetadata.DataTypeName, StringComparison.OrdinalIgnoreCase)))
+            else if (string.Equals("week", templateName, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals("week", viewData.ModelMetadata.DataTypeName, StringComparison.OrdinalIgnoreCase))
             {
                 // "week" is a new HTML5 input type that only will be rendered in Rfc3339 mode
-                formattedModelValue = FormatWeekHelper.GetFormattedWeek(_modelExplorer);
+                formattedModelValue = FormatWeekHelper.GetFormattedWeek(modelExplorer);
             }
-            else if (viewData.ModelMetadata.IsEnum && _model is Enum modelEnum)
+            else if (viewData.ModelMetadata.IsEnum && model is Enum modelEnum)
             {
                 // Cover the case where the model is an enum and we want the string value of it
                 var value = modelEnum.ToString("d");
                 var enumGrouped = viewData.ModelMetadata.EnumGroupedDisplayNamesAndValues;
-                Debug.Assert(enumGrouped != null);
                 foreach (var kvp in enumGrouped)
                 {
                     if (kvp.Value == value)
@@ -138,26 +109,26 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
             }
 
             viewData.TemplateInfo.FormattedModelValue = formattedModelValue;
-            viewData.TemplateInfo.HtmlFieldPrefix = _viewData.TemplateInfo.GetFullHtmlFieldName(_htmlFieldName);
+            viewData.TemplateInfo.HtmlFieldPrefix = this.viewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
 
-            if (_additionalViewData != null)
+            if (additionalViewData != null)
             {
-                foreach (var kvp in Microsoft.AspNetCore.Mvc.ViewFeatures.HtmlHelper.ObjectToDictionary(_additionalViewData))
+                foreach (var kvp in Microsoft.AspNetCore.Mvc.ViewFeatures.HtmlHelper.ObjectToDictionary(additionalViewData))
                 {
                     viewData[kvp.Key] = kvp.Value;
                 }
             }
 
-            var visitedObjectsKey = _model ?? _modelExplorer.ModelType;
+            var visitedObjectsKey = model ?? modelExplorer.ModelType;
             viewData.TemplateInfo.AddVisited(visitedObjectsKey);
 
             var templateRenderer = new TemplateRenderer(
-                _viewEngine,
-                _bufferScope,
-                _viewContext,
+                viewEngine,
+                bufferScope,
+                viewContext,
                 viewData,
-                _templateName,
-                _readOnly);
+                templateName,
+                readOnly);
 
             return templateRenderer.Render();
         }

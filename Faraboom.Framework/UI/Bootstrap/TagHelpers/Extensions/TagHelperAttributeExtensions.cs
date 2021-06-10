@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-using System.Collections.Generic;
-using System.Text;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions
 {
+    using System.Collections.Generic;
+    using System.Text;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     public static class TagHelperAttributeExtensions
     {
         public static string ToHtmlAttributeAsString(this TagHelperAttribute attribute)
@@ -19,6 +18,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions
             {
                 sb.Append(attributes[i].ToHtmlAttributeAsString() + " ");
             }
+
             return sb.ToString();
         }
     }

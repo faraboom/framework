@@ -11,6 +11,6 @@
         Warning,
         Info,
         Light,
-        Dark
+        Dark,
     }
 }

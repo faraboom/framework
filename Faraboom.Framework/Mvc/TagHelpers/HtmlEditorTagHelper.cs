@@ -1,18 +1,16 @@
-﻿using Faraboom.Framework.Core;
-using Faraboom.Framework.Core.Extensions;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-using System.Text;
-using System.Text.Encodings.Web;
-
-namespace Faraboom.Framework.Mvc.TagHelpers
+﻿namespace Faraboom.Framework.Mvc.TagHelpers
 {
+    using System.Text;
+    using System.Text.Encodings.Web;
+    using Faraboom.Framework.Core;
+    using Faraboom.Framework.Core.Extensions;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.TagHelpers;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [HtmlTargetElement("frb-editor", TagStructure = TagStructure.WithoutEndTag)]
     public class HtmlEditorTagHelper : UI.Bootstrap.TagHelpers.TagHelper
     {
@@ -40,7 +38,9 @@ namespace Faraboom.Framework.Mvc.TagHelpers
 
             var val = Value?.ToString() ?? For.Model?.ToString();
             if (!val.IsNullOrEmpty())
+            {
                 output.Attributes.AddIfNotExist("value", val);
+            }
 
             using (var writer = new System.IO.StringWriter())
             {

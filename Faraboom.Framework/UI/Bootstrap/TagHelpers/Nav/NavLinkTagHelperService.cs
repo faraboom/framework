@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Nav
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Nav
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class NavLinkTagHelperService : TagHelperService<NavLinkTagHelper>
     {
@@ -32,7 +32,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Nav
 
         protected virtual void SetActiveClass(TagHelperContext context, TagHelperOutput output)
         {
-            if (TagHelper.Active??false)
+            if (TagHelper.Active ?? false)
             {
                 output.Attributes.AddClass("active");
             }

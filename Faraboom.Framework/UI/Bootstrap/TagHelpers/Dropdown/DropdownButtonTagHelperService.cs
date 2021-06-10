@@ -1,29 +1,26 @@
-﻿using System;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Button;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
 {
+    using System;
+    using System.Text;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Button;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.DependencyInjection;
+
     [DataAnnotation.Injectable]
     public class DropdownButtonTagHelperService : TagHelperService<DropdownButtonTagHelper>
     {
-
-        private readonly HtmlEncoder _htmlEncoder;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly HtmlEncoder htmlEncoder;
+        private readonly IServiceProvider serviceProvider;
 
         public DropdownButtonTagHelperService(
             HtmlEncoder htmlEncoder,
             IServiceProvider serviceProvider)
         {
-            _htmlEncoder = htmlEncoder;
-            _serviceProvider = serviceProvider;
+            this.htmlEncoder = htmlEncoder;
+            this.serviceProvider = serviceProvider;
         }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -36,14 +33,14 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
 
             output.TagName = "div";
             output.TagMode = TagMode.StartTagAndEndTag;
-            output.Content.SetContent("");
+            output.Content.SetContent(string.Empty);
             output.Attributes.Clear();
         }
 
         protected virtual async Task<string> GetButtonsAsHtmlAsync(TagHelperContext context, TagHelperOutput output,
             TagHelperContent content)
         {
-            var buttonBuilder = new StringBuilder("");
+            var buttonBuilder = new StringBuilder(string.Empty);
 
             var mainButton = await GetMainButtonAsync(context, output, content);
 
@@ -61,7 +58,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
 
         protected virtual async Task<string> GetMainButtonAsync(TagHelperContext context, TagHelperOutput output, TagHelperContent content)
         {
-            var buttonTagHelper = _serviceProvider.GetRequiredService<ButtonTagHelper>();
+            var buttonTagHelper = serviceProvider.GetRequiredService<ButtonTagHelper>();
 
             buttonTagHelper.Icon = TagHelper.Icon;
             buttonTagHelper.Text = TagHelper.Text;
@@ -77,26 +74,25 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
             if ((TagHelper.NavLink ?? false) || (TagHelper.Link ?? false))
             {
                 var linkTag = ConvertButtonToLink(buttonTag);
-                return linkTag.Render(_htmlEncoder);
+                return linkTag.Render(htmlEncoder);
             }
 
-            return buttonTag.Render(_htmlEncoder);
+            return buttonTag.Render(htmlEncoder);
         }
 
         protected virtual async Task<string> GetSplitButtonAsync(TagHelperContext context, TagHelperOutput output)
         {
-            var buttonTagHelper = _serviceProvider.GetRequiredService<ButtonTagHelper>();
+            var buttonTagHelper = serviceProvider.GetRequiredService<ButtonTagHelper>();
 
             buttonTagHelper.Size = TagHelper.Size;
             buttonTagHelper.ButtonType = TagHelper.ButtonType;
             var attributes = GetAttributesForSplitButton(context, output);
 
-            return await buttonTagHelper.RenderAsync(attributes, context, _htmlEncoder, "button", TagMode.StartTagAndEndTag);
+            return await buttonTagHelper.RenderAsync(attributes, context, htmlEncoder, "button", TagMode.StartTagAndEndTag);
         }
 
         protected virtual TagHelperAttributeList GetAttributesForMainButton(TagHelperContext context, TagHelperOutput output)
         {
-
             var attributes = new TagHelperAttributeList();
 
             foreach (var tagHelperAttribute in output.Attributes)
@@ -119,9 +115,9 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
         {
             var attributes = new TagHelperAttributeList
             {
-                {"data-toggle", "dropdown"},
-                {"aria-haspopup", "true"},
-                {"aria-expanded", "false"},
+                { "data-toggle", "dropdown" },
+                { "aria-haspopup", "true" },
+                { "aria-expanded", "false" },
             };
 
             attributes.AddClass("dropdown-toggle");
@@ -141,6 +137,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
             {
                 buttonTag.Attributes.AddClass("nav-link");
             }
+
             return buttonTag;
         }
     }

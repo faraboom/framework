@@ -3,6 +3,6 @@
     public enum DropdownAlign
     {
         Left,
-        Right
+        Right,
     }
 }

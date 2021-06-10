@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
 {
+    using System;
+
     public static class ModalSizeExtensions
     {
         public static string ToClassName(this ModalSize size)
@@ -15,7 +15,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
                 case ModalSize.ExtraLarge:
                     return "modal-xl";
                 case ModalSize.Default:
-                    return "";
+                    return string.Empty;
                 default:
                     throw new ArgumentOutOfRangeException($"Unknown {nameof(ModalSize)}: {size}");
             }

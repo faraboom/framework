@@ -1,15 +1,19 @@
-﻿using Faraboom.Framework.UI.Bootstrap.TagHelpers.Button;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
 {
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Button;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("frb-dropdown-button")]
     public class DropdownButtonTagHelper : TagHelper<DropdownButtonTagHelper, DropdownButtonTagHelperService>
     {
+        public DropdownButtonTagHelper(DropdownButtonTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-text")]
         public string Text { get; set; }
 
@@ -33,11 +37,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
 
         [HtmlAttributeName("frb-nva-link")]
         public bool? NavLink { get; set; }
-
-        public DropdownButtonTagHelper(DropdownButtonTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
     }
 }

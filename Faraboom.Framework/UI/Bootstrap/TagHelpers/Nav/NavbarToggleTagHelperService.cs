@@ -1,8 +1,8 @@
-﻿using System;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Nav
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Nav
 {
+    using System;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class NavbarToggleTagHelperService : TagHelperService<NavbarToggleTagHelper>
     {
@@ -12,8 +12,8 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Nav
             output.TagName = "div";
             output.Attributes.AddClass("collapse");
             output.Attributes.AddClass("navbar-collapse");
-            output.Attributes.Add("id",TagHelper.Id);
-            SetToggleButton(context,output);
+            output.Attributes.Add("id", TagHelper.Id);
+            SetToggleButton(context, output);
         }
 
         protected virtual void SetToggleButton(TagHelperContext context, TagHelperOutput output)

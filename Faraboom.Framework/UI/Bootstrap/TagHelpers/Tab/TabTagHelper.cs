@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("frb-tab")]
     public class TabTagHelper : TagHelper<TabTagHelper, TabTagHelperService>
     {
+        public TabTagHelper(TabTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-title")]
         public string Title { get; set; }
 
@@ -16,10 +21,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
 
         [HtmlAttributeName("frb-parent-dropdown-name")]
         public string ParentDropdownName { get; set; }
-
-        public TabTagHelper(TabTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-        }
     }
 }

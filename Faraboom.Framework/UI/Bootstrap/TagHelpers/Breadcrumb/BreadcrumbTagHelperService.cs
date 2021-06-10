@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Breadcrumb
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Breadcrumb
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class BreadcrumbTagHelperService : TagHelperService<BreadcrumbTagHelper>
     {
@@ -29,11 +28,11 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Breadcrumb
             output.PostContent.SetHtmlContent("</ol>");
         }
 
-        protected virtual void SetInnerList(TagHelperContext context, TagHelperOutput output, List<BreadcrumbItem> list)
+        protected virtual void SetInnerList(TagHelperContext context, TagHelperOutput output, IList<BreadcrumbItem> list)
         {
             SetLastOneActiveIfThereIsNotAny(context, output, list);
 
-            var html = new StringBuilder("");
+            var html = new StringBuilder(string.Empty);
 
             foreach (var breadcrumbItem in list)
             {
@@ -45,14 +44,14 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Breadcrumb
             output.Content.SetHtmlContent(html.ToString());
         }
 
-        protected virtual List<BreadcrumbItem> InitilizeFormGroupContentsContext(TagHelperContext context, TagHelperOutput output)
+        protected virtual IList<BreadcrumbItem> InitilizeFormGroupContentsContext(TagHelperContext context, TagHelperOutput output)
         {
             var items = new List<BreadcrumbItem>();
             context.Items[BreadcrumbItemsContent] = items;
             return items;
         }
 
-        protected virtual void SetLastOneActiveIfThereIsNotAny(TagHelperContext context, TagHelperOutput output, List<BreadcrumbItem> list)
+        protected virtual void SetLastOneActiveIfThereIsNotAny(TagHelperContext context, TagHelperOutput output, IList<BreadcrumbItem> list)
         {
             if (list.Count > 0 && !list.Any(bc => bc.Active))
             {
@@ -64,8 +63,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Breadcrumb
         {
             return item.Active ?
                 item.Html.Replace(BreadcrumbItemActivePlaceholder, " active") :
-                item.Html.Replace(BreadcrumbItemActivePlaceholder, "");
+                item.Html.Replace(BreadcrumbItemActivePlaceholder, string.Empty);
         }
-
     }
 }

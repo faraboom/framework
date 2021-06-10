@@ -1,7 +1,8 @@
-﻿using System;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System;
+
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
     public sealed class ExportInfoAttribute : Attribute
     {
         public bool Ignore { get; set; }

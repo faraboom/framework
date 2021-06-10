@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Faraboom.Framework.Core.Extensions.Collections.Generic
+﻿namespace Faraboom.Framework.Core.Extensions.Collections.Generic
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public static class EnumerableExtensions
     {
         /// <summary>

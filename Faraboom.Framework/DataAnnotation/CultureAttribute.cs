@@ -1,12 +1,10 @@
 ﻿namespace Faraboom.Framework.DataAnnotation
 {
-    using Faraboom.Framework.Core.Extensions.Collections.Generic;
-
-    using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using Faraboom.Framework.Core.Extensions.Collections.Generic;
+    using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
     public sealed class CultureAttribute : ValidationAttribute, IClientModelValidator
     {

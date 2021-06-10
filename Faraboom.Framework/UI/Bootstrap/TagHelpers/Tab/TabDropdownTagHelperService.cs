@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class TabDropdownTagHelperService : TagHelperService<TabDropdownTagHelper>
     {
@@ -21,7 +21,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
 
             var tabHeaderItems = context.GetValue<List<TabItem>>(TabItems);
 
-            tabHeaderItems.Add(new TabItem(tabHeader, "", false, TagHelper.Name, "", true));
+            tabHeaderItems.Add(new TabItem(tabHeader, string.Empty, false, TagHelper.Name, string.Empty, true));
 
             output.SuppressOutput();
         }

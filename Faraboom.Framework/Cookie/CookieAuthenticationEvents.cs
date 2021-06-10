@@ -1,20 +1,20 @@
-﻿using Faraboom.Framework.Core;
-using Faraboom.Framework.Mvc;
-
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Routing;
-
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-
-namespace Faraboom.Framework.Cookie
+﻿namespace Faraboom.Framework.Cookie
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Web;
+
+    using Faraboom.Framework.Core;
+    using Faraboom.Framework.Mvc;
+
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Abstractions;
+    using Microsoft.AspNetCore.Mvc.Routing;
+    using Microsoft.AspNetCore.Routing;
+
     public class CookieAuthenticationEvents : Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents
     {
         private readonly IUrlHelperFactory urlHelperFactory;
@@ -32,7 +32,9 @@ namespace Faraboom.Framework.Cookie
             this.page = page;
 
             if (string.IsNullOrEmpty(page) && string.IsNullOrEmpty(action))
+            {
                 throw new ArgumentException("One of Page/Action parameter is Required");
+            }
         }
 
         public override Task RedirectToLogin(RedirectContext<CookieAuthenticationOptions> context)
@@ -41,7 +43,7 @@ namespace Faraboom.Framework.Cookie
             var routeValues = new RouteValueDictionary
                         {
                             { Constants.LanguageIdentifier, GetCurrentCulture(returnUrl) },
-                            { context.Options.ReturnUrlParameter, returnUrl},
+                            { context.Options.ReturnUrlParameter, returnUrl },
                         };
 
             var data = new RouteData(routeValues);
@@ -49,13 +51,17 @@ namespace Faraboom.Framework.Cookie
             var url = urlHelperFactory.GetUrlHelper(new ActionContext(context.HttpContext, data, new ActionDescriptor()));
 
             if (string.IsNullOrEmpty(page))
+            {
                 context.RedirectUri = url.Action(action, controller, area, routeValues);
+            }
             else
+            {
                 context.RedirectUri = Mvc.UrlHelperExtensions.Page(url, page, area, routeValues);
+            }
 
             return base.RedirectToLogin(context);
         }
 
-        private string GetCurrentCulture(string url) => url?.Split("/", StringSplitOptions.RemoveEmptyEntries)?.FirstOrDefault() ?? Constants.DefaultLanguageCode;
+        private static string GetCurrentCulture(string url) => url?.Split("/", StringSplitOptions.RemoveEmptyEntries)?.FirstOrDefault() ?? Constants.DefaultLanguageCode;
     }
 }

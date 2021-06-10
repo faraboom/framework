@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Card
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Card
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class CardTextColorTagHelperService : TagHelperService<CardTextColorTagHelper>
     {

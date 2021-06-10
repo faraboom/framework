@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System;
+
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public sealed class ValidateInputAttribute : Attribute
     {

@@ -1,29 +1,27 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-
-using Faraboom.Framework.Mvc.ViewFeatures.Buffers;
-
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace Faraboom.Framework.Mvc.ViewFeatures
+﻿namespace Faraboom.Framework.Mvc.ViewFeatures
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Faraboom.Framework.Mvc.ViewFeatures.Buffers;
+    using Microsoft.AspNetCore.Html;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.AspNetCore.Mvc.ViewEngines;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
+    using Microsoft.Extensions.DependencyInjection;
+
     internal class TemplateRenderer
     {
+        public const string IEnumerableOfIFormFileName = "IEnumerable`" + nameof(IFormFile);
         private const string DisplayTemplateViewPath = "DisplayTemplates";
         private const string EditorTemplateViewPath = "EditorTemplates";
-        public const string IEnumerableOfIFormFileName = "IEnumerable`" + nameof(IFormFile);
 
-        private static readonly Dictionary<string, Func<IHtmlHelper, IHtmlContent>> _defaultDisplayActions =
-            new Dictionary<string, Func<IHtmlHelper, IHtmlContent>>(StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, Func<IHtmlHelper, IHtmlContent>> DefaultDisplayActions =
+            new(StringComparer.OrdinalIgnoreCase)
             {
                 { "Collection", DefaultDisplayTemplates.CollectionTemplate },
                 { "EmailAddress", DefaultDisplayTemplates.EmailAddressTemplate },
@@ -31,14 +29,14 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
                 { "Html", DefaultDisplayTemplates.HtmlTemplate },
                 { "Text", DefaultDisplayTemplates.StringTemplate },
                 { "Url", DefaultDisplayTemplates.UrlTemplate },
-                { typeof(bool).Name, DefaultDisplayTemplates.BooleanTemplate },
-                { typeof(decimal).Name, DefaultDisplayTemplates.DecimalTemplate },
-                { typeof(string).Name, DefaultDisplayTemplates.StringTemplate },
-                { typeof(object).Name, DefaultDisplayTemplates.ObjectTemplate },
+                { nameof(Boolean), DefaultDisplayTemplates.BooleanTemplate },
+                { nameof(Decimal), DefaultDisplayTemplates.DecimalTemplate },
+                { nameof(String), DefaultDisplayTemplates.StringTemplate },
+                { nameof(Object), DefaultDisplayTemplates.ObjectTemplate },
             };
 
-        private static readonly Dictionary<string, Func<IHtmlHelper, IHtmlContent>> _defaultEditorActions =
-            new Dictionary<string, Func<IHtmlHelper, IHtmlContent>>(StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, Func<IHtmlHelper, IHtmlContent>> DefaultEditorActions =
+            new(StringComparer.OrdinalIgnoreCase)
             {
                 { "Collection", DefaultEditorTemplates.CollectionTemplate },
                 { "EmailAddress", DefaultEditorTemplates.EmailAddressInputTemplate },
@@ -55,28 +53,28 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
                 { "Time", DefaultEditorTemplates.TimeInputTemplate },
                 { "Month", DefaultEditorTemplates.MonthInputTemplate },
                 { "Week", DefaultEditorTemplates.WeekInputTemplate },
-                { typeof(byte).Name, DefaultEditorTemplates.NumberInputTemplate },
-                { typeof(sbyte).Name, DefaultEditorTemplates.NumberInputTemplate },
-                { typeof(short).Name, DefaultEditorTemplates.NumberInputTemplate },
-                { typeof(ushort).Name, DefaultEditorTemplates.NumberInputTemplate },
-                { typeof(int).Name, DefaultEditorTemplates.NumberInputTemplate },
-                { typeof(uint).Name, DefaultEditorTemplates.NumberInputTemplate },
-                { typeof(long).Name, DefaultEditorTemplates.NumberInputTemplate },
-                { typeof(ulong).Name, DefaultEditorTemplates.NumberInputTemplate },
-                { typeof(bool).Name, DefaultEditorTemplates.BooleanTemplate },
-                { typeof(decimal).Name, DefaultEditorTemplates.DecimalTemplate },
-                { typeof(string).Name, DefaultEditorTemplates.StringTemplate },
-                { typeof(object).Name, DefaultEditorTemplates.ObjectTemplate },
-                { typeof(IFormFile).Name, DefaultEditorTemplates.FileInputTemplate },
+                { nameof(Byte), DefaultEditorTemplates.NumberInputTemplate },
+                { nameof(SByte), DefaultEditorTemplates.NumberInputTemplate },
+                { nameof(Int16), DefaultEditorTemplates.NumberInputTemplate },
+                { nameof(UInt16), DefaultEditorTemplates.NumberInputTemplate },
+                { nameof(Int32), DefaultEditorTemplates.NumberInputTemplate },
+                { nameof(UInt32), DefaultEditorTemplates.NumberInputTemplate },
+                { nameof(Int64), DefaultEditorTemplates.NumberInputTemplate },
+                { nameof(UInt64), DefaultEditorTemplates.NumberInputTemplate },
+                { nameof(Boolean), DefaultEditorTemplates.BooleanTemplate },
+                { nameof(Decimal), DefaultEditorTemplates.DecimalTemplate },
+                { nameof(String), DefaultEditorTemplates.StringTemplate },
+                { nameof(Object), DefaultEditorTemplates.ObjectTemplate },
+                { nameof(IFormFile), DefaultEditorTemplates.FileInputTemplate },
                 { IEnumerableOfIFormFileName, DefaultEditorTemplates.FileCollectionInputTemplate },
             };
 
-        private readonly IViewEngine _viewEngine;
-        private readonly IViewBufferScope _bufferScope;
-        private readonly ViewContext _viewContext;
-        private readonly ViewDataDictionary _viewData;
-        private readonly string _templateName;
-        private readonly bool _readOnly;
+        private readonly IViewEngine viewEngine;
+        private readonly IViewBufferScope bufferScope;
+        private readonly ViewContext viewContext;
+        private readonly ViewDataDictionary viewData;
+        private readonly string templateName;
+        private readonly bool readOnly;
 
         public TemplateRenderer(
             IViewEngine viewEngine,
@@ -86,108 +84,18 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
             string templateName,
             bool readOnly)
         {
-            if (viewEngine == null)
-            {
-                throw new ArgumentNullException(nameof(viewEngine));
-            }
-
-            if (bufferScope == null)
-            {
-                throw new ArgumentNullException(nameof(bufferScope));
-            }
-
-            if (viewContext == null)
-            {
-                throw new ArgumentNullException(nameof(viewContext));
-            }
-
-            if (viewData == null)
-            {
-                throw new ArgumentNullException(nameof(viewData));
-            }
-
-            _viewEngine = viewEngine;
-            _bufferScope = bufferScope;
-            _viewContext = viewContext;
-            _viewData = viewData;
-            _templateName = templateName;
-            _readOnly = readOnly;
-        }
-
-        public IHtmlContent Render()
-        {
-            var defaultActions = GetDefaultActions();
-            var modeViewPath = _readOnly ? DisplayTemplateViewPath : EditorTemplateViewPath;
-
-            foreach (var viewName in GetViewNames())
-            {
-                var viewEngineResult = _viewEngine.GetView(_viewContext.ExecutingFilePath, viewName, isMainPage: false);
-                if (!viewEngineResult.Success)
-                {
-                    var fullViewName = modeViewPath + "/" + viewName;
-                    viewEngineResult = _viewEngine.FindView(_viewContext, fullViewName, isMainPage: false);
-                }
-
-                if (viewEngineResult.Success)
-                {
-                    var viewBuffer = new ViewBuffer(_bufferScope, viewName, ViewBuffer.PartialViewPageSize);
-                    using (var writer = new ViewBufferTextWriter(viewBuffer, _viewContext.Writer.Encoding))
-                    {
-                        // Forcing synchronous behavior so users don't have to await templates.
-                        var view = viewEngineResult.View;
-                        using (view as IDisposable)
-                        {
-                            var viewContext = new ViewContext(_viewContext, viewEngineResult.View, _viewData, writer);
-                            var renderTask = viewEngineResult.View.RenderAsync(viewContext);
-                            renderTask.GetAwaiter().GetResult();
-                            return viewBuffer;
-                        }
-                    }
-                }
-
-                if (defaultActions.TryGetValue(viewName, out var defaultAction))
-                {
-                    return defaultAction(MakeHtmlHelper(_viewContext, _viewData));
-                }
-            }
-
-            throw new InvalidOperationException("NoTemplate");
-        }
-
-        private Dictionary<string, Func<IHtmlHelper, IHtmlContent>> GetDefaultActions()
-        {
-            return _readOnly ? _defaultDisplayActions : _defaultEditorActions;
-        }
-
-        private IEnumerable<string> GetViewNames()
-        {
-            var metadata = _viewData.ModelMetadata;
-            var templateHints = new[]
-            {
-                _templateName,
-                metadata.TemplateHint,
-                metadata.DataTypeName
-            };
-
-            foreach (var templateHint in templateHints.Where(s => !string.IsNullOrEmpty(s)))
-            {
-                yield return templateHint;
-            }
-
-            // We don't want to search for Nullable<T>, we want to search for T (which should handle both T and
-            // Nullable<T>).
-            var fieldType = metadata.UnderlyingOrModelType;
-            foreach (var typeName in GetTypeNames(metadata, fieldType))
-            {
-                yield return typeName;
-            }
+            this.viewEngine = viewEngine ?? throw new ArgumentNullException(nameof(viewEngine));
+            this.bufferScope = bufferScope ?? throw new ArgumentNullException(nameof(bufferScope));
+            this.viewContext = viewContext ?? throw new ArgumentNullException(nameof(viewContext));
+            this.viewData = viewData ?? throw new ArgumentNullException(nameof(viewData));
+            this.templateName = templateName;
+            this.readOnly = readOnly;
         }
 
         public static IEnumerable<string> GetTypeNames(ModelMetadata modelMetadata, Type fieldType)
         {
             // Not returning type name here for IEnumerable<IFormFile> since we will be returning
             // a more specific name, IEnumerableOfIFormFileName.
-
             if (typeof(IEnumerable<IFormFile>) != fieldType)
             {
                 yield return fieldType.Name;
@@ -252,6 +160,45 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
             yield return "Object";
         }
 
+        public IHtmlContent Render()
+        {
+            var defaultActions = GetDefaultActions();
+            var modeViewPath = readOnly ? DisplayTemplateViewPath : EditorTemplateViewPath;
+
+            foreach (var viewName in GetViewNames())
+            {
+                var viewEngineResult = viewEngine.GetView(viewContext.ExecutingFilePath, viewName, isMainPage: false);
+                if (!viewEngineResult.Success)
+                {
+                    var fullViewName = modeViewPath + "/" + viewName;
+                    viewEngineResult = viewEngine.FindView(viewContext, fullViewName, isMainPage: false);
+                }
+
+                if (viewEngineResult.Success)
+                {
+                    var viewBuffer = new ViewBuffer(bufferScope, viewName, ViewBuffer.PartialViewPageSize);
+                    using var writer = new ViewBufferTextWriter(viewBuffer, viewContext.Writer.Encoding);
+
+                    // Forcing synchronous behavior so users don't have to await templates.
+                    var view = viewEngineResult.View;
+                    using (view as IDisposable)
+                    {
+                        var viewContext = new ViewContext(this.viewContext, viewEngineResult.View, viewData, writer);
+                        var renderTask = viewEngineResult.View.RenderAsync(viewContext);
+                        renderTask.GetAwaiter().GetResult();
+                        return viewBuffer;
+                    }
+                }
+
+                if (defaultActions.TryGetValue(viewName, out var defaultAction))
+                {
+                    return defaultAction(MakeHtmlHelper(viewContext, viewData));
+                }
+            }
+
+            throw new InvalidOperationException("NoTemplate");
+        }
+
         private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)
         {
             var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
@@ -263,6 +210,35 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
             }
 
             return newHelper;
+        }
+
+        private Dictionary<string, Func<IHtmlHelper, IHtmlContent>> GetDefaultActions()
+        {
+            return readOnly ? DefaultDisplayActions : DefaultEditorActions;
+        }
+
+        private IEnumerable<string> GetViewNames()
+        {
+            var metadata = viewData.ModelMetadata;
+            var templateHints = new[]
+            {
+                templateName,
+                metadata.TemplateHint,
+                metadata.DataTypeName,
+            };
+
+            foreach (var templateHint in templateHints.Where(s => !string.IsNullOrEmpty(s)))
+            {
+                yield return templateHint;
+            }
+
+            // We don't want to search for Nullable<T>, we want to search for T (which should handle both T and
+            // Nullable<T>).
+            var fieldType = metadata.UnderlyingOrModelType;
+            foreach (var typeName in GetTypeNames(metadata, fieldType))
+            {
+                yield return typeName;
+            }
         }
     }
 }

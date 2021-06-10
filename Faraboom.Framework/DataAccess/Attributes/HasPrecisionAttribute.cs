@@ -1,17 +1,18 @@
-using System;
-
-namespace Faraboom.Framework.DataAccess.Attributes
+﻿namespace Faraboom.Framework.DataAccess.Attributes
 {
-	[AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-	public sealed class HasPrecisionAttribute : Attribute
-	{
-		public HasPrecisionAttribute(byte precision, byte scale)
-		{
-			Precision = precision;
-			Scale = scale;
-		}
+    using System;
 
-		public byte Precision { get; set; }
-		public byte Scale { get; set; }
-	}
+    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+    public sealed class HasPrecisionAttribute : Attribute
+    {
+        public HasPrecisionAttribute(byte precision, byte scale)
+        {
+            Precision = precision;
+            Scale = scale;
+        }
+
+        public byte Precision { get; }
+
+        public byte Scale { get; }
+    }
 }

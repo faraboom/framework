@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-
-namespace Faraboom.Framework.Mapping
+﻿namespace Faraboom.Framework.Mapping
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+
     public class TypeAdapterConfig : Mapster.TypeAdapterConfig
     {
-        public TypeAdapterConfig() : base()
+        public TypeAdapterConfig()
+            : base()
         {
         }
 

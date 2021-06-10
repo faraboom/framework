@@ -1,17 +1,17 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using System.Text.Encodings.Web;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions
 {
+    using System;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     public static class TagHelperExtensions
     {
         public static async Task<TagHelperOutput> ProcessAndGetOutputAsync(
-            this Microsoft.AspNetCore.Razor.TagHelpers.TagHelper tagHelper, 
-            TagHelperAttributeList attributeList, 
-            TagHelperContext context, 
-            string tagName = "div", 
+            this TagHelper tagHelper,
+            TagHelperAttributeList attributeList,
+            TagHelperContext context,
+            string tagName = "div",
             TagMode tagMode = TagMode.SelfClosing)
         {
             var innerOutput = new TagHelperOutput(
@@ -19,14 +19,13 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions
                 attributeList,
                 (useCachedResult, encoder) => Task.Run<TagHelperContent>(() => new DefaultTagHelperContent()))
             {
-                TagMode = tagMode
+                TagMode = tagMode,
             };
-            
+
             var innerContext = new TagHelperContext(
                 attributeList,
                 context.Items,
-                Guid.NewGuid().ToString()
-            );
+                Guid.NewGuid().ToString());
 
             tagHelper.Init(context);
 
@@ -35,7 +34,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions
             return innerOutput;
         }
 
-        public static async Task<string> RenderAsync(this Microsoft.AspNetCore.Razor.TagHelpers.TagHelper tagHelper, TagHelperAttributeList attributeList, TagHelperContext context, HtmlEncoder htmlEncoder, string tagName = "div", TagMode tagMode = TagMode.SelfClosing)
+        public static async Task<string> RenderAsync(this TagHelper tagHelper, TagHelperAttributeList attributeList, TagHelperContext context, HtmlEncoder htmlEncoder, string tagName = "div", TagMode tagMode = TagMode.SelfClosing)
         {
             var innerOutput = await tagHelper.ProcessAndGetOutputAsync(attributeList, context, tagName, tagMode);
 

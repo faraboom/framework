@@ -1,24 +1,28 @@
-﻿using Faraboom.Framework.Core;
-using Faraboom.Framework.Core.Extensions;
-using Faraboom.Framework.Mvc.ViewFeatures;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-
-namespace Faraboom.Framework.Mvc.TagHelpers
+﻿namespace Faraboom.Framework.Mvc.TagHelpers
 {
+    using System.Linq;
+    using System.Text;
+    using System.Text.Encodings.Web;
+    using Faraboom.Framework.Core;
+    using Faraboom.Framework.Core.Extensions;
+    using Faraboom.Framework.Mvc.ViewFeatures;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.TagHelpers;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [HtmlTargetElement("frb-file", TagStructure = TagStructure.WithoutEndTag)]
     public class FileTagHelper : UI.Bootstrap.TagHelpers.TagHelper
     {
         private readonly IHtmlGenerator generator;
+
+        public FileTagHelper(IHtmlGenerator generator, IOptions<MvcViewOptions> optionsAccessor)
+            : base(optionsAccessor)
+        {
+            this.generator = generator;
+        }
 
         [HtmlAttributeName("frb-old-for")]
         public ModelExpression OldFor { get; set; }
@@ -28,12 +32,6 @@ namespace Faraboom.Framework.Mvc.TagHelpers
 
         [HtmlAttributeName("frb-old-value")]
         public string OldValue { get; set; }
-
-        public FileTagHelper(IHtmlGenerator generator, IOptions<MvcViewOptions> optionsAccessor)
-            : base(optionsAccessor)
-        {
-            this.generator = generator;
-        }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
@@ -50,7 +48,9 @@ namespace Faraboom.Framework.Mvc.TagHelpers
 
             var val = Value?.ToString() ?? For.Model?.ToString();
             if (!val.IsNullOrEmpty())
+            {
                 output.Attributes.Add("value", val);
+            }
 
             using (var writer = new System.IO.StringWriter())
             {
@@ -63,7 +63,7 @@ namespace Faraboom.Framework.Mvc.TagHelpers
             sb.Append($"<label class='custom-file-label' for='{ElementName}'>{(Globals.IsImage(oldVal) ? $"<img class='h-100' src='{oldVal}' alt='{For.Name}' />" : oldVal?.Split('/').LastOrDefault())}</label>");
             sb.Append("</div>");
 
-            sb.Append($"<a class='btn btn-light border float-right text-green {(oldVal.IsNullOrEmpty() ? "disabled" : "")}' {(Globals.IsImage(oldVal) ? "download='image.png'" : "")} href='{oldVal}'><i class='fas fa-download'></i></a>");
+            sb.Append($"<a class='btn btn-light border float-right text-green {(oldVal.IsNullOrEmpty() ? "disabled" : string.Empty)}' {(Globals.IsImage(oldVal) ? "download='image.png'" : string.Empty)} href='{oldVal}'><i class='fas fa-download'></i></a>");
             sb.Append($"<button class='btn btn-light border float-right margin-r-5 text-red' {(oldVal.IsNullOrEmpty() ? "disabled='disabled" : "'")} type='button'><i class='fas fa-times'></i></button>");
 
             using (var writer = new System.IO.StringWriter())
@@ -71,7 +71,9 @@ namespace Faraboom.Framework.Mvc.TagHelpers
                 var elementOldName = NameAndIdProvider.GetFullHtmlFieldName(ViewContext, OldName ?? OldFor.Name);
                 var hiddenAttributes = new TagHelperAttributeList { { "type", "hidden" }, { "name", elementOldName } };
                 if (!oldVal.IsNullOrEmpty())
+                {
                     hiddenAttributes.Add("value", oldVal);
+                }
 
                 var tagBuilder = generator.GenerateHidden(ViewContext, OldFor?.ModelExplorer, elementOldName, oldVal, false, hiddenAttributes);
                 tagBuilder.WriteTo(writer, HtmlEncoder.Default);

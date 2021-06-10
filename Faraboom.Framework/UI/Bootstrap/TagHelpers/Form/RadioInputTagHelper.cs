@@ -1,17 +1,21 @@
-﻿using System.Collections.Generic;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 {
+    using System.Collections.Generic;
+
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("frb-radio")]
     public class RadioInputTagHelper : TagHelper<RadioInputTagHelper, RadioInputTagHelperService>
     {
+        public RadioInputTagHelper(RadioInputTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-label")]
         public string Label { get; set; }
 
@@ -23,11 +27,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 
         [HtmlAttributeName("frb-items")]
         public IEnumerable<SelectListItem> Items { get; set; }
-
-        public RadioInputTagHelper(RadioInputTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
     }
 }

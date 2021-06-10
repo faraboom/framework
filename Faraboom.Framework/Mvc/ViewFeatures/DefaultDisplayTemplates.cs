@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace Faraboom.Framework.Mvc.ViewFeatures
+﻿namespace Faraboom.Framework.Mvc.ViewFeatures
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using Microsoft.AspNetCore.Html;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.AspNetCore.Mvc.ViewEngines;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
+    using Microsoft.Extensions.DependencyInjection;
+
     internal static class DefaultDisplayTemplates
     {
         public static IHtmlContent BooleanTemplate(IHtmlHelper htmlHelper)
@@ -29,47 +27,6 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
                 BooleanTemplateCheckbox(value ?? false);
         }
 
-        private static IHtmlContent BooleanTemplateCheckbox(bool value)
-        {
-            var inputTag = new TagBuilder("input");
-            inputTag.AddCssClass("check-box");
-            inputTag.Attributes["disabled"] = "disabled";
-            inputTag.Attributes["type"] = "checkbox";
-            if (value)
-            {
-                inputTag.Attributes["checked"] = "checked";
-            }
-
-            inputTag.TagRenderMode = TagRenderMode.SelfClosing;
-            return inputTag;
-        }
-
-        private static IHtmlContent BooleanTemplateDropDownList(bool? value)
-        {
-            var selectTag = new TagBuilder("select");
-            selectTag.AddCssClass("list-box");
-            selectTag.AddCssClass("tri-state");
-            selectTag.Attributes["disabled"] = "disabled";
-
-            foreach (var item in TriStateValues(value))
-            {
-                selectTag.InnerHtml.AppendHtml(HtmlGenerator.GenerateOption(item, item.Text));
-            }
-
-            return selectTag;
-        }
-
-        // Will soon need to be shared with the default editor templates implementations.
-        internal static List<SelectListItem> TriStateValues(bool? value)
-        {
-            return new List<SelectListItem>
-            {
-                new SelectListItem("NotSet", string.Empty, !value.HasValue),
-                new SelectListItem("True", "true", (value == true)),
-                new SelectListItem("False", "false", (value == false)),
-            };
-        }
-
         public static IHtmlContent CollectionTemplate(IHtmlHelper htmlHelper)
         {
             var model = htmlHelper.ViewData.Model;
@@ -78,15 +35,13 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
                 return HtmlString.Empty;
             }
 
-            var enumerable = model as IEnumerable;
-            if (enumerable == null)
+            if (model is not IEnumerable enumerable)
             {
                 // Only way we could reach here is if user passed templateName: "Collection" to a Display() overload.
                 throw new InvalidOperationException(model.GetType().FullName);
             }
 
             var elementMetadata = htmlHelper.ViewData.ModelMetadata.ElementMetadata;
-            Debug.Assert(elementMetadata != null);
             var typeInCollectionIsNullableValueType = elementMetadata.IsNullableValueType;
 
             var serviceProvider = htmlHelper.ViewContext.HttpContext.RequestServices;
@@ -103,8 +58,7 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
             {
                 htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = string.Empty;
 
-                var collection = model as ICollection;
-                var result = collection == null ? new HtmlContentBuilder() : new HtmlContentBuilder(collection.Count);
+                var result = model is not ICollection collection ? new HtmlContentBuilder() : new HtmlContentBuilder(collection.Count);
                 var viewEngine = serviceProvider.GetRequiredService<ICompositeViewEngine>();
                 var viewBufferScope = serviceProvider.GetRequiredService<IViewBufferScope>();
 
@@ -255,14 +209,6 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
             return content;
         }
 
-        private static bool ShouldShow(ModelExplorer modelExplorer, TemplateInfo templateInfo)
-        {
-            return
-                modelExplorer.Metadata.ShowForDisplay &&
-                !modelExplorer.Metadata.IsComplexType &&
-                !templateInfo.Visited(modelExplorer);
-        }
-
         public static IHtmlContent StringTemplate(IHtmlHelper htmlHelper)
         {
             var value = htmlHelper.ViewData.TemplateInfo.FormattedModelValue;
@@ -284,6 +230,25 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
             return HyperlinkTemplate(uriString, linkedText);
         }
 
+        // Will soon need to be shared with the default editor templates implementations.
+        internal static List<SelectListItem> TriStateValues(bool? value)
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem("NotSet", string.Empty, !value.HasValue),
+                new SelectListItem("True", "true", value == true),
+                new SelectListItem("False", "false", value == false),
+            };
+        }
+
+        private static bool ShouldShow(ModelExplorer modelExplorer, TemplateInfo templateInfo)
+        {
+            return
+                modelExplorer.Metadata.ShowForDisplay &&
+                !modelExplorer.Metadata.IsComplexType &&
+                !templateInfo.Visited(modelExplorer);
+        }
+
         // Neither uriString nor linkedText need be encoded prior to calling this method.
         private static IHtmlContent HyperlinkTemplate(string uriString, string linkedText)
         {
@@ -291,6 +256,36 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
             hyperlinkTag.MergeAttribute("href", uriString);
             hyperlinkTag.InnerHtml.SetContent(linkedText);
             return hyperlinkTag;
+        }
+
+        private static IHtmlContent BooleanTemplateCheckbox(bool value)
+        {
+            var inputTag = new TagBuilder("input");
+            inputTag.AddCssClass("check-box");
+            inputTag.Attributes["disabled"] = "disabled";
+            inputTag.Attributes["type"] = "checkbox";
+            if (value)
+            {
+                inputTag.Attributes["checked"] = "checked";
+            }
+
+            inputTag.TagRenderMode = TagRenderMode.SelfClosing;
+            return inputTag;
+        }
+
+        private static IHtmlContent BooleanTemplateDropDownList(bool? value)
+        {
+            var selectTag = new TagBuilder("select");
+            selectTag.AddCssClass("list-box");
+            selectTag.AddCssClass("tri-state");
+            selectTag.Attributes["disabled"] = "disabled";
+
+            foreach (var item in TriStateValues(value))
+            {
+                selectTag.InnerHtml.AppendHtml(HtmlGenerator.GenerateOption(item, item.Text));
+            }
+
+            return selectTag;
         }
     }
 }

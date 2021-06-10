@@ -1,14 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ProgressBar
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ProgressBar
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("frb-progress-bar")]
     [HtmlTargetElement("frb-progress-part")]
     public class ProgressBarTagHelper : TagHelper<ProgressBarTagHelper, ProgressBarTagHelperService>
     {
+        public ProgressBarTagHelper(ProgressBarTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-min-value")]
         public double MinValue { get; set; } = 0;
 
@@ -23,10 +28,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ProgressBar
 
         [HtmlAttributeName("frb-animation")]
         public bool? Animation { get; set; }
-
-        public ProgressBarTagHelper(ProgressBarTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-        }
     }
 }

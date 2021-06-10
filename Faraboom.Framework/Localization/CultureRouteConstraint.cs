@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-
-using System.Linq;
-
-namespace Faraboom.Framework.Localization
+﻿namespace Faraboom.Framework.Localization
 {
+    using System.Linq;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Routing;
+
     public class CultureRouteConstraint : IRouteConstraint
     {
         public bool Match(HttpContext httpContext, IRouter route, string routeKey, RouteValueDictionary values, RouteDirection routeDirection)
         {
             if (!values.ContainsKey(Core.Constants.LanguageIdentifier))
+            {
                 return false;
+            }
 
             var lang = values[Core.Constants.LanguageIdentifier].ToString();
 

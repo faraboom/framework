@@ -1,41 +1,39 @@
-﻿using Faraboom.Framework.Core;
-using Faraboom.Framework.DataAccess.Context;
-using Faraboom.Framework.DataAnnotation;
-using Faraboom.Framework.Identity;
-using Faraboom.Framework.Localization;
-using Faraboom.Framework.Mapping;
-using Faraboom.Framework.Mvc.Routing;
-using Faraboom.Framework.Mvc.ViewFeatures;
-
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.WebEncoders;
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Reflection;
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
-
-namespace Faraboom.Framework.Startup
+﻿namespace Faraboom.Framework.Startup
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Reflection;
+    using System.Text.Encodings.Web;
+    using System.Text.Unicode;
+    using Faraboom.Framework.Core;
+    using Faraboom.Framework.DataAccess.Context;
+    using Faraboom.Framework.DataAnnotation;
+    using Faraboom.Framework.Identity;
+    using Faraboom.Framework.Localization;
+    using Faraboom.Framework.Mapping;
+    using Faraboom.Framework.Mvc.Routing;
+    using Faraboom.Framework.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.DataProtection;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.ApplicationModels;
+    using Microsoft.AspNetCore.Mvc.Razor;
+    using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.FileProviders;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Options;
+    using Microsoft.Extensions.WebEncoders;
+
     public abstract class Startup : Startup<Startup, Startup>
     {
         protected Startup(IConfiguration configuration, string defaultNamespace = null, ExceptionHandlerOptions exceptionHandlerOptions = null, bool localization = true, bool authentication = true, bool razorPages = true, bool antiforgery = true, bool https = true, bool views = true)
@@ -73,10 +71,6 @@ namespace Faraboom.Framework.Startup
             this.defaultNamespace = defaultNamespace ?? "Faraboom";
         }
 
-        protected abstract void ConfigureServicesCore(IServiceCollection services, IMvcBuilder mvcBuilder);
-
-        protected abstract void ConfigureCore(IApplicationBuilder app, IWebHostEnvironment env);
-
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
@@ -96,7 +90,9 @@ namespace Faraboom.Framework.Startup
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (localization)
+            {
                 app.UseRequestLocalization(app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value);
+            }
 
             if (env.IsDevelopment())
             {
@@ -122,9 +118,11 @@ namespace Faraboom.Framework.Startup
                     .UseAuthorization();
             }
 
-            //env.WebRootFileProvider = new CompositeFileProvider(env.WebRootFileProvider, new ManifestEmbeddedFileProvider(Assembly.GetCallingAssembly(), "wwwroot"));
+            // env.WebRootFileProvider = new CompositeFileProvider(env.WebRootFileProvider, new ManifestEmbeddedFileProvider(Assembly.GetCallingAssembly(), "wwwroot"));
             if (views || razorPages)
+            {
                 app.UseStaticFiles();
+            }
 
             ConfigureCore(app, env);
 
@@ -139,19 +137,109 @@ namespace Faraboom.Framework.Startup
                     pattern: "{culture=fa}/{controller:slugify=Home}/{action:slugify=Index}/{id?}");
 
                 if (razorPages)
+                {
                     endpoints.MapRazorPages();
+                }
 
-                //var routes = app.ApplicationServices.GetRequiredService<Dashboard.RouteCollection>();
-                //const string pattern = "/powershell";
-                //var pipeline = app
-                //.UsePathBase(pattern)
-                //.UseMiddleware<PowershellMiddleware>(routes)
-                //.Build();
-                //endpoints.Map(pattern+"/{**path}", pipeline);
+                // var routes = app.ApplicationServices.GetRequiredService<Dashboard.RouteCollection>();
+                // const string pattern = "/powershell";
+                // var pipeline = app
+                // .UsePathBase(pattern)
+                // .UseMiddleware<PowershellMiddleware>(routes)
+                // .Build();
+                // endpoints.Map(pattern+"/{**path}", pipeline);
             });
 
-            //var routes = app.ApplicationServices.GetRequiredService<RouteCollection>();
-            //app.Map(new PathString("/powershell"), t => t.UseMiddleware<PowershellMiddleware>(routes));
+            // var routes = app.ApplicationServices.GetRequiredService<RouteCollection>();
+            // app.Map(new PathString("/powershell"), t => t.UseMiddleware<PowershellMiddleware>(routes));
+        }
+
+        protected abstract void ConfigureServicesCore(IServiceCollection services, IMvcBuilder mvcBuilder);
+
+        protected abstract void ConfigureCore(IApplicationBuilder app, IWebHostEnvironment env);
+
+        private static void AddStores(IServiceCollection services, Type userType, Type roleType, Type contextType)
+        {
+            var identityUserType = FindGenericBaseType(userType, typeof(IdentityUser<>));
+            if (identityUserType == null)
+            {
+                throw new InvalidOperationException("NotIdentityUser");
+            }
+
+            var keyType = identityUserType.GenericTypeArguments[0];
+
+            if (roleType != null)
+            {
+                var identityRoleType = FindGenericBaseType(roleType, typeof(IdentityRole<>));
+                if (identityRoleType == null)
+                {
+                    throw new InvalidOperationException("NotIdentityRole");
+                }
+
+                Type userStoreType;
+                Type roleStoreType;
+                var identityContext = FindGenericBaseType(contextType, typeof(IdentityDbContext<,,,,,,,>));
+                if (identityContext == null)
+                {
+                    // If its a custom DbContext, we can only add the default POCOs
+                    userStoreType = typeof(UserStore<,,,>).MakeGenericType(userType, roleType, contextType, keyType);
+                    roleStoreType = typeof(RoleStore<,,>).MakeGenericType(roleType, contextType, keyType);
+                }
+                else
+                {
+                    userStoreType = typeof(UserStore<,,,,,,,,>).MakeGenericType(userType, roleType, contextType,
+                        identityContext.GenericTypeArguments[2],
+                        identityContext.GenericTypeArguments[3],
+                        identityContext.GenericTypeArguments[4],
+                        identityContext.GenericTypeArguments[5],
+                        identityContext.GenericTypeArguments[7],
+                        identityContext.GenericTypeArguments[6]);
+                    roleStoreType = typeof(RoleStore<,,,,>).MakeGenericType(roleType, contextType,
+                        identityContext.GenericTypeArguments[2],
+                        identityContext.GenericTypeArguments[4],
+                        identityContext.GenericTypeArguments[6]);
+                }
+
+                services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(userType), userStoreType);
+                services.TryAddScoped(typeof(IRoleStore<>).MakeGenericType(roleType), roleStoreType);
+            }
+            else
+            { // No Roles
+                Type userStoreType;
+                var identityContext = FindGenericBaseType(contextType, typeof(IdentityUserContext<,,,,>));
+                if (identityContext == null)
+                {
+                    // If its a custom DbContext, we can only add the default POCOs
+                    userStoreType = typeof(UserOnlyStore<,,>).MakeGenericType(userType, contextType, keyType);
+                }
+                else
+                {
+                    userStoreType = typeof(UserOnlyStore<,,,,,>).MakeGenericType(userType, contextType,
+                        identityContext.GenericTypeArguments[1],
+                        identityContext.GenericTypeArguments[2],
+                        identityContext.GenericTypeArguments[3],
+                        identityContext.GenericTypeArguments[4]);
+                }
+
+                services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(userType), userStoreType);
+            }
+        }
+
+        private static TypeInfo FindGenericBaseType(Type currentType, Type genericBaseType)
+        {
+            var type = currentType;
+            while (type != null)
+            {
+                var genericType = type.IsGenericType ? type.GetGenericTypeDefinition() : null;
+                if (genericType != null && genericType == genericBaseType)
+                {
+                    return type.GetTypeInfo();
+                }
+
+                type = type.BaseType;
+            }
+
+            return null;
         }
 
         private IMvcBuilder ConfigureServicesInternal(IServiceCollection services, string dir, string applicationName)
@@ -199,7 +287,7 @@ namespace Faraboom.Framework.Startup
             {
                 services.AddAntiforgery(options =>
                 {
-                    options.Cookie.Name = Constants.Cookie_RequestVerificationToken;
+                    options.Cookie.Name = Constants.RequestVerificationTokenCookie;
                 });
                 var keysFolder = Path.Combine(dir, "frb-keys");
                 services.AddDataProtection()
@@ -244,13 +332,17 @@ namespace Faraboom.Framework.Startup
             {
                 var implementationTypes = serviceType.GetAllTypesImplementingType(allTypes);
                 if (implementationTypes == null || !implementationTypes.Any())
+                {
                     continue;
+                }
 
                 foreach (var implementationType in implementationTypes)
                 {
                     var serviceLifetimeAttribute = implementationType.GetCustomAttribute<ServiceLifetimeAttribute>();
                     if (serviceLifetimeAttribute == null)
+                    {
                         serviceLifetimeAttribute = new ServiceLifetimeAttribute(ServiceLifetime.Transient);
+                    }
 
                     if (serviceLifetimeAttribute.Parameters?.Any() == true)
                     {
@@ -293,82 +385,6 @@ namespace Faraboom.Framework.Startup
             var config = new TypeAdapterConfig();
             config.Scan(assemblies.ToArray());
             services.AddSingleton(config);
-        }
-
-        private static void AddStores(IServiceCollection services, Type userType, Type roleType, Type contextType)
-        {
-            var identityUserType = FindGenericBaseType(userType, typeof(IdentityUser<>));
-            if (identityUserType == null)
-                throw new InvalidOperationException("NotIdentityUser");
-
-            var keyType = identityUserType.GenericTypeArguments[0];
-
-            if (roleType != null)
-            {
-                var identityRoleType = FindGenericBaseType(roleType, typeof(IdentityRole<>));
-                if (identityRoleType == null)
-                    throw new InvalidOperationException("NotIdentityRole");
-
-                Type userStoreType;
-                Type roleStoreType;
-                var identityContext = FindGenericBaseType(contextType, typeof(IdentityDbContext<,,,,,,,>));
-                if (identityContext == null)
-                {
-                    // If its a custom DbContext, we can only add the default POCOs
-                    userStoreType = typeof(UserStore<,,,>).MakeGenericType(userType, roleType, contextType, keyType);
-                    roleStoreType = typeof(RoleStore<,,>).MakeGenericType(roleType, contextType, keyType);
-                }
-                else
-                {
-                    userStoreType = typeof(UserStore<,,,,,,,,>).MakeGenericType(userType, roleType, contextType,
-                        identityContext.GenericTypeArguments[2],
-                        identityContext.GenericTypeArguments[3],
-                        identityContext.GenericTypeArguments[4],
-                        identityContext.GenericTypeArguments[5],
-                        identityContext.GenericTypeArguments[7],
-                        identityContext.GenericTypeArguments[6]);
-                    roleStoreType = typeof(RoleStore<,,,,>).MakeGenericType(roleType, contextType,
-                        identityContext.GenericTypeArguments[2],
-                        identityContext.GenericTypeArguments[4],
-                        identityContext.GenericTypeArguments[6]);
-                }
-                services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(userType), userStoreType);
-                services.TryAddScoped(typeof(IRoleStore<>).MakeGenericType(roleType), roleStoreType);
-            }
-            else
-            {   // No Roles
-                Type userStoreType;
-                var identityContext = FindGenericBaseType(contextType, typeof(IdentityUserContext<,,,,>));
-                if (identityContext == null)
-                {
-                    // If its a custom DbContext, we can only add the default POCOs
-                    userStoreType = typeof(UserOnlyStore<,,>).MakeGenericType(userType, contextType, keyType);
-                }
-                else
-                {
-                    userStoreType = typeof(UserOnlyStore<,,,,,>).MakeGenericType(userType, contextType,
-                        identityContext.GenericTypeArguments[1],
-                        identityContext.GenericTypeArguments[2],
-                        identityContext.GenericTypeArguments[3],
-                        identityContext.GenericTypeArguments[4]);
-                }
-                services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(userType), userStoreType);
-            }
-        }
-
-        private static TypeInfo FindGenericBaseType(Type currentType, Type genericBaseType)
-        {
-            var type = currentType;
-            while (type != null)
-            {
-                var genericType = type.IsGenericType ? type.GetGenericTypeDefinition() : null;
-                if (genericType != null && genericType == genericBaseType)
-                {
-                    return type.GetTypeInfo();
-                }
-                type = type.BaseType;
-            }
-            return null;
         }
     }
 }

@@ -2,7 +2,6 @@
 {
     public class ParameterDto : ParameterDto<int>
     {
-
     }
 
     public class ParameterDto<T>

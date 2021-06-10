@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Alert
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Alert
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class AlertLinkTagHelperService : TagHelperService<AlertLinkTagHelper>
     {

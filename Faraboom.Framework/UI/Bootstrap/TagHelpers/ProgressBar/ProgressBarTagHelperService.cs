@@ -1,9 +1,8 @@
-﻿using System;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ProgressBar
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ProgressBar
 {
+    using System;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class ProgressBarTagHelperService : TagHelperService<ProgressBarTagHelper>
     {

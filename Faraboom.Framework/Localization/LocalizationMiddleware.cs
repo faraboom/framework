@@ -1,14 +1,16 @@
-﻿using Faraboom.Framework.Core;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using System;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Faraboom.Framework.Localization
+﻿namespace Faraboom.Framework.Localization
 {
-    internal class LocalizationMiddleware
+    using System;
+    using System.Globalization;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using Faraboom.Framework.Core;
+
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Routing;
+
+    public class LocalizationMiddleware
     {
         private readonly RequestDelegate next;
 
@@ -24,8 +26,8 @@ namespace Faraboom.Framework.Localization
             {
                 CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = Globals.GetCulture(culture);
             }
-            //if(httpContext.Request.Cookies.ContainsKey(Microsoft.AspNetCore.Localization.CookieRequestCultureProvider.DefaultCookieName))
 
+            // if(httpContext.Request.Cookies.ContainsKey(Microsoft.AspNetCore.Localization.CookieRequestCultureProvider.DefaultCookieName))
             return next(httpContext);
         }
     }

@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-
-using System;
-using System.Net;
-using System.Threading.Tasks;
-
-namespace Faraboom.Framework.Powershell
+﻿namespace Faraboom.Framework.Powershell
 {
-    internal sealed class PowershellMiddleware
+    using System;
+    using System.Net;
+    using System.Threading.Tasks;
+
+    using Microsoft.AspNetCore.Antiforgery;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
+
+    public sealed class PowershellMiddleware
     {
         private readonly RequestDelegate next;
         private readonly RouteCollection routes;
@@ -31,20 +30,19 @@ namespace Faraboom.Framework.Powershell
                 return;
             }
 
-            //foreach (var filter in _options.Authorization)
-            //{
+            // foreach (var filter in _options.Authorization)
+            // {
             //    if (!filter.Authorize(context))
             //    {
             //        var isAuthenticated = httpContext.User?.Identity?.IsAuthenticated;
 
-            //        httpContext.Response.StatusCode = isAuthenticated == true
+            // httpContext.Response.StatusCode = isAuthenticated == true
             //            ? (int)HttpStatusCode.Forbidden
             //            : (int)HttpStatusCode.Unauthorized;
 
-            //        return;
+            // return;
             //    }
-            //}
-
+            // }
             var antiforgery = httpContext.RequestServices.GetService<IAntiforgery>();
             if (antiforgery != null)
             {

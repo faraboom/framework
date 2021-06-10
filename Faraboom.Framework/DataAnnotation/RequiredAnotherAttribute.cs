@@ -1,18 +1,14 @@
-﻿using Faraboom.Framework.Core;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Linq;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Globalization;
+    using System.Linq;
+    using Faraboom.Framework.Core;
+
     public sealed class RequiredAnotherAttribute : ValidationAttribute
     {
-        private string otherProperty { get; set; }
-        private short? minCountOtherProperty { get; set; }
-        private short? maxCountOtherProperty { get; set; }
-
         public RequiredAnotherAttribute(string otherProperty)
             : base(() => "ValidationError")
         {
@@ -27,29 +23,32 @@ namespace Faraboom.Framework.DataAnnotation
             ErrorMessageResourceName = nameof(Resources.GlobalResource.Validation_RequiredAnotherList);
         }
 
-        private void SetFields(string otherProperty, short? minCountOtherProperty, short? maxCountOtherProperty)
-        {
-            if (string.IsNullOrWhiteSpace(otherProperty))
-                throw new ArgumentNullException(nameof(otherProperty));
+        public string OtherProperty { get; private set; }
 
-            this.otherProperty = otherProperty;
-            this.minCountOtherProperty = minCountOtherProperty ?? 0;
-            this.maxCountOtherProperty = maxCountOtherProperty;
+        public short? MinCountOtherProperty { get; private set; }
+
+        public short? MaxCountOtherProperty { get; private set; }
+
+        public new string ErrorMessageResourceName { get; } = nameof(Resources.GlobalResource.Validation_RequiredAnother);
+
+        public new Type ErrorMessageResourceType { get; } = typeof(Resources.GlobalResource);
+
+        public string FormatErrorMessage(string name, string otherName)
+        {
+            return string.Format(CultureInfo.CurrentCulture, ErrorMessageString, otherName, MinCountOtherProperty, MaxCountOtherProperty);
         }
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var firstComparable = value as IComparable;
-
-            var otherPropertyInfo = validationContext.ObjectType.GetProperty(otherProperty);
+            var otherPropertyInfo = validationContext.ObjectType.GetProperty(OtherProperty);
             var otherValue = otherPropertyInfo?.GetValue(validationContext.ObjectInstance, null);
 
             ValidationResult result = null;
-            if (firstComparable != null)
+            if (value is IComparable firstComparable)
             {
                 var ov = otherValue as IEnumerable<object>;
                 if (otherValue == null
-                    || (maxCountOtherProperty.HasValue && (ov.Count() < minCountOtherProperty || maxCountOtherProperty < ov.Count())))
+                    || (MaxCountOtherProperty.HasValue && (ov.Count() < MinCountOtherProperty || MaxCountOtherProperty < ov.Count())))
                 {
                     var displayName = Globals.GetLocalizedDisplayName(validationContext.ObjectType.GetProperty(validationContext.MemberName));
                     var otherDisplayName = Globals.GetLocalizedDisplayName(otherPropertyInfo);
@@ -60,13 +59,16 @@ namespace Faraboom.Framework.DataAnnotation
             return result;
         }
 
-        public string FormatErrorMessage(string name, string otherName)
+        private void SetFields(string otherProperty, short? minCountOtherProperty, short? maxCountOtherProperty)
         {
-            return string.Format(CultureInfo.CurrentCulture, ErrorMessageString, otherName, minCountOtherProperty, maxCountOtherProperty);
+            if (string.IsNullOrWhiteSpace(otherProperty))
+            {
+                throw new ArgumentNullException(nameof(otherProperty));
+            }
+
+            OtherProperty = otherProperty;
+            MinCountOtherProperty = minCountOtherProperty ?? 0;
+            MaxCountOtherProperty = maxCountOtherProperty;
         }
-
-        public new string ErrorMessageResourceName { get; } = nameof(Resources.GlobalResource.Validation_RequiredAnother);
-
-        public new Type ErrorMessageResourceType { get; } = typeof(Resources.GlobalResource);
     }
 }

@@ -1,9 +1,14 @@
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Form;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Form;
+
     public sealed class UIHintAttribute : System.ComponentModel.DataAnnotations.UIHintAttribute
     {
+        public UIHintAttribute()
+            : base(null)
+        {
+        }
+
         public LabelPosition LabelPosition { get; set; } = LabelPosition.Default;
 
         public int Rows { get; set; }
@@ -19,10 +24,5 @@ namespace Faraboom.Framework.DataAnnotation
         public FormControlSize Size { get; set; } = FormControlSize.Default;
 
         public int Grid { get; set; }
-
-        public UIHintAttribute()
-            : base(null)
-        {
-        }
     }
 }

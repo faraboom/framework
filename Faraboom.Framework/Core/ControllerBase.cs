@@ -1,18 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-
-namespace Faraboom.Framework.Core
+﻿namespace Faraboom.Framework.Core
 {
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Localization;
+    using Microsoft.Extensions.Logging;
+
     public abstract class ControllerBase<TClass, TUser> : Controller
         where TClass : class
         where TUser : class
     {
-        protected readonly ILogger Logger;
-        protected readonly UserManager<TUser> UserManager;
-        protected readonly IStringLocalizer<TClass> Localizer;
-
         protected ControllerBase(UserManager<TUser> userManager, ILogger<TClass> logger, IStringLocalizer<TClass> localizer)
         {
             Logger = logger;
@@ -20,11 +16,17 @@ namespace Faraboom.Framework.Core
             Localizer = localizer;
         }
 
+        protected ILogger Logger { get; }
+
+        protected UserManager<TUser> UserManager { get; }
+
+        protected IStringLocalizer<TClass> Localizer { get; }
+
         public RedirectToPageResult RedirectToAreaPage(string pageName, string area, object routeValues = null)
-            => base.RedirectToPage(pageName.TrimEnd(Constants.PagePostfix), Globals.PrepareValues(routeValues, area));
+            => RedirectToPage(pageName.TrimEnd(Constants.PagePostfix), Globals.PrepareValues(routeValues, area));
 
         public RedirectToActionResult RedirectToAreaAction(string actionName, string controllerName, string area, object routeValues = null)
-            => base.RedirectToAction(actionName, controllerName.TrimEnd(Constants.ControllerPostfix), Globals.PrepareValues(routeValues, area));
+            => RedirectToAction(actionName, controllerName.TrimEnd(Constants.ControllerPostfix), Globals.PrepareValues(routeValues, area));
 
         public override RedirectToActionResult RedirectToAction(string actionName, string controllerName, object routeValues, string fragment)
             => base.RedirectToAction(actionName, controllerName.TrimEnd(Constants.ControllerPostfix), Globals.PrepareValues(routeValues), fragment);

@@ -1,20 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-
-using Faraboom.Framework.Core;
-using Faraboom.Framework.Core.Extensions;
-using Faraboom.Framework.DataAnnotation;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
-
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+    using Faraboom.Framework.Core;
+    using Faraboom.Framework.Core.Extensions;
+    using Faraboom.Framework.DataAnnotation;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
+    using Microsoft.AspNetCore.Mvc.TagHelpers;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [Injectable]
     public class InputTagHelperService : TagHelperService<InputTagHelper>
     {
@@ -41,8 +39,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 TagHelper.For.Name,
                 SurroundInnerHtmlAndGet(context, output, innerHtml, isCheckBox),
                 order,
-                out var suppress
-            );
+                out var suppress);
 
             if (suppress)
             {
@@ -54,20 +51,20 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 output.TagName = "div";
                 LeaveOnlyGroupAttributes(context, output);
                 output.Attributes.AddClass(isCheckBox ? "custom-checkbox" : "form-group");
-                output.Attributes.AddClass(isCheckBox ? "custom-control" : "");
-                output.Attributes.AddClass(isCheckBox ? "mb-2" : "");
+                output.Attributes.AddClass(isCheckBox ? "custom-control" : string.Empty);
+                output.Attributes.AddClass(isCheckBox ? "mb-2" : string.Empty);
                 output.Content.SetHtmlContent(output.Content.GetContent() + innerHtml);
             }
         }
 
-        protected virtual async Task<(string, bool)> GetFormInputGroupAsHtmlAsync(TagHelperContext context, TagHelperOutput output)
+        protected virtual async Task<(string Content, bool IsCheckBox)> GetFormInputGroupAsHtmlAsync(TagHelperContext context, TagHelperOutput output)
         {
             var (inputTag, isCheckBox) = await GetInputTagHelperOutputAsync(context, output);
 
             var inputHtml = inputTag.Render(encoder);
             var label = await GetLabelAsHtmlAsync(context, output, inputTag, isCheckBox);
             var info = GetInfoAsHtml(context, output, inputTag, isCheckBox);
-            var validation = isCheckBox ? "" : await GetValidationAsHtmlAsync(context, output, inputTag);
+            var validation = isCheckBox ? string.Empty : await GetValidationAsHtmlAsync(context, output, inputTag);
 
             return (GetContent(context, output, label, inputHtml, validation, info, isCheckBox), isCheckBox);
         }
@@ -75,12 +72,14 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         protected virtual async Task<string> GetValidationAsHtmlAsync(TagHelperContext context, TagHelperOutput output, TagHelperOutput inputTag)
         {
             if (IsOutputHidden(inputTag))
-                return "";
+            {
+                return string.Empty;
+            }
 
             var validationMessageTagHelper = new ValidationMessageTagHelper(generator)
             {
                 For = TagHelper.For,
-                ViewContext = TagHelper.ViewContext
+                ViewContext = TagHelper.ViewContext,
             };
 
             var attributeList = new TagHelperAttributeList { { "class", "text-danger" } };
@@ -104,7 +103,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                    "</div>";
         }
 
-        protected virtual Microsoft.AspNetCore.Razor.TagHelpers.TagHelper GetInputTagHelper(TagHelperContext context, TagHelperOutput output)
+        protected virtual TagHelper GetInputTagHelper(TagHelperContext context, TagHelperOutput output)
         {
             var dataTypeAttribute = cachedModelAttributes?.GetAttribute<DataTypeAttribute>();
             if (dataTypeAttribute?.ElementDataType == ElementDataType.MultilineText)
@@ -112,11 +111,13 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 var textAreaTagHelper = new TextAreaTagHelper(generator)
                 {
                     For = TagHelper.For,
-                    ViewContext = TagHelper.ViewContext
+                    ViewContext = TagHelper.ViewContext,
                 };
 
                 if (!string.IsNullOrWhiteSpace(TagHelper.Name))
+                {
                     textAreaTagHelper.Name = TagHelper.Name;
+                }
 
                 return textAreaTagHelper;
             }
@@ -125,30 +126,35 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             {
                 For = TagHelper.For,
                 InputTypeName = TagHelper.InputTypeName,
-                ViewContext = TagHelper.ViewContext
+                ViewContext = TagHelper.ViewContext,
             };
 
             if (!TagHelper.Format.IsNullOrEmpty())
+            {
                 inputTagHelper.Format = TagHelper.Format;
+            }
 
             if (!TagHelper.Name.IsNullOrEmpty())
+            {
                 inputTagHelper.Name = TagHelper.Name;
+            }
 
             if (!(TagHelper.Value as string).IsNullOrEmpty())
-                inputTagHelper.Value = (TagHelper.Value as string);
+            {
+                inputTagHelper.Value = TagHelper.Value as string;
+            }
 
             return inputTagHelper;
         }
 
-        protected virtual async Task<(TagHelperOutput, bool)> GetInputTagHelperOutputAsync(TagHelperContext context, TagHelperOutput output)
+        protected virtual async Task<(TagHelperOutput InputTagHelperOutput, bool IsCheckbox)> GetInputTagHelperOutputAsync(TagHelperContext context, TagHelperOutput output)
         {
             var tagHelper = GetInputTagHelper(context, output);
 
             var inputTagHelperOutput = await tagHelper.ProcessAndGetOutputAsync(
                 GetInputAttributes(context, output),
                 context,
-                "input"
-            );
+                "input");
 
             ConvertToTextAreaIfTextArea(inputTagHelperOutput);
             AddDisabledAttribute(inputTagHelperOutput);
@@ -160,18 +166,6 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             AddInfoTextId(inputTagHelperOutput);
 
             return (inputTagHelperOutput, isCheckbox);
-        }
-
-        private void AddFormControlClass(TagHelperContext context, TagHelperOutput output, bool isCheckbox, TagHelperOutput inputTagHelperOutput)
-        {
-            var className = "form-control";
-
-            if (isCheckbox)
-            {
-                className = "custom-control-input";
-            }
-
-            inputTagHelperOutput.Attributes.AddClass(className + " " + GetSize(context, output));
         }
 
         protected virtual void AddAutoFocusAttribute(TagHelperOutput inputTagHelperOutput)
@@ -187,7 +181,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             if (!inputTagHelperOutput.Attributes.ContainsName("disabled") &&
                      (TagHelper.IsDisabled || cachedModelAttributes?.GetAttribute<UIHintAttribute>()?.Disabled == true))
             {
-                inputTagHelperOutput.Attributes.Add("disabled", "");
+                inputTagHelperOutput.Attributes.Add("disabled", string.Empty);
             }
         }
 
@@ -196,21 +190,25 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             if (!inputTagHelperOutput.Attributes.ContainsName("readonly") &&
                     (TagHelper.IsReadonly.GetValueOrDefault() || cachedModelAttributes?.GetAttribute<UIHintAttribute>()?.Readonly == true))
             {
-                inputTagHelperOutput.Attributes.Add("readonly", "");
+                inputTagHelperOutput.Attributes.Add("readonly", string.Empty);
             }
         }
 
         protected virtual void AddPlaceholderAttribute(TagHelperOutput inputTagHelperOutput)
         {
             if (inputTagHelperOutput.Attributes.ContainsName("placeholder"))
+            {
                 return;
+            }
 
             var attribute = cachedModelAttributes?.GetAttribute<DisplayAttribute>();
             if (attribute != null)
             {
                 var placeholderLocalized = Globals.GetLocalizedValueInternal(attribute, TagHelper.For.Name, Constants.ResourceKey.Prompt);
                 if (!string.IsNullOrWhiteSpace(placeholderLocalized))
+                {
                     inputTagHelperOutput.Attributes.Add("placeholder", placeholderLocalized);
+                }
             }
         }
 
@@ -218,14 +216,18 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         {
             var idAttr = inputTagHelperOutput.Attributes.FirstOrDefault(a => a.Name == "id");
             if (idAttr == null)
+            {
                 return;
+            }
 
             var attribute = cachedModelAttributes?.GetAttribute<DisplayAttribute>();
             if (attribute != null)
             {
                 var description = Globals.GetLocalizedValueInternal(attribute, TagHelper.For.Name, Constants.ResourceKey.Description);
                 if (!string.IsNullOrWhiteSpace(description))
+                {
                     inputTagHelperOutput.Attributes.Add("aria-describedby", description);
+                }
             }
         }
 
@@ -237,16 +239,22 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         protected virtual async Task<string> GetLabelAsHtmlAsync(TagHelperContext context, TagHelperOutput output, TagHelperOutput inputTag, bool isCheckbox)
         {
             if (IsOutputHidden(inputTag) || TagHelper.SuppressLabel)
-                return "";
+            {
+                return string.Empty;
+            }
 
             var uIHintAttribute = cachedModelAttributes?.GetAttribute<UIHintAttribute>();
             if (uIHintAttribute != null && uIHintAttribute.LabelPosition == LabelPosition.Hidden)
-                return "";
+            {
+                return string.Empty;
+            }
 
             if (string.IsNullOrEmpty(TagHelper.Label))
+            {
                 return await GetLabelAsHtmlUsingTagHelperAsync(context, output, isCheckbox) + GetRequiredSymbol(context, output);
+            }
 
-            var checkboxClass = isCheckbox ? "class=\"custom-control-label\" " : "";
+            var checkboxClass = isCheckbox ? "class=\"custom-control-label\" " : string.Empty;
 
             return "<label " + checkboxClass + GetIdAttributeAsString(inputTag) + ">"
                    + TagHelper.Label +
@@ -256,20 +264,26 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         protected virtual string GetRequiredSymbol(TagHelperContext context, TagHelperOutput output)
         {
             if (!TagHelper.DisplayRequiredSymbol)
-                return "";
+            {
+                return string.Empty;
+            }
 
-            return cachedModelAttributes?.GetAttribute<RequiredAttribute>() != null ? "<span> * </span>" : "";
+            return cachedModelAttributes?.GetAttribute<RequiredAttribute>() != null ? "<span> * </span>" : string.Empty;
         }
 
         protected virtual string GetInfoAsHtml(TagHelperContext context, TagHelperOutput output, TagHelperOutput inputTag, bool isCheckbox)
         {
             if (IsOutputHidden(inputTag))
-                return "";
+            {
+                return string.Empty;
+            }
 
             if (isCheckbox)
-                return "";
+            {
+                return string.Empty;
+            }
 
-            var text = "";
+            var text = string.Empty;
             if (!string.IsNullOrEmpty(TagHelper.InfoText))
             {
                 text = TagHelper.InfoText;
@@ -281,12 +295,16 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 {
                     var description = Globals.GetLocalizedValueInternal(attribute, TagHelper.For.Name, Constants.ResourceKey.Description);
                     if (!string.IsNullOrWhiteSpace(description))
+                    {
                         text = description;
+                    }
                 }
             }
 
             if (string.IsNullOrEmpty(text))
-                return "";
+            {
+                return string.Empty;
+            }
 
             var idAttr = inputTag.Attributes.FirstOrDefault(a => a.Name == "id");
             return $"<small id=\"{idAttr?.Value}InfoText\" class=\"form-text text-muted\">{text}</small>";
@@ -297,13 +315,15 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             var labelTagHelper = new LabelTagHelper(generator)
             {
                 For = TagHelper.For,
-                ViewContext = TagHelper.ViewContext
+                ViewContext = TagHelper.ViewContext,
             };
 
             var attributeList = new TagHelperAttributeList();
 
             if (isCheckbox)
+            {
                 attributeList.AddClass("custom-control-label");
+            }
 
             return await labelTagHelper.RenderAsync(attributeList, context, encoder, "label", TagMode.StartTagAndEndTag);
         }
@@ -312,17 +332,23 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         {
             var dataTypeAttribute = cachedModelAttributes?.GetAttribute<DataTypeAttribute>();
             if (dataTypeAttribute == null || dataTypeAttribute.ElementDataType != ElementDataType.MultilineText)
+            {
                 return;
+            }
 
             var uIHintAttribute = cachedModelAttributes?.GetAttribute<UIHintAttribute>();
             tagHelperOutput.TagName = "textarea";
             tagHelperOutput.TagMode = TagMode.StartTagAndEndTag;
             tagHelperOutput.Content.SetContent(TagHelper.For.ModelExplorer.Model?.ToString());
             if (uIHintAttribute?.Rows > 0)
+            {
                 tagHelperOutput.Attributes.Add("rows", uIHintAttribute.Rows);
+            }
 
             if (uIHintAttribute?.Cols > 0)
+            {
                 tagHelperOutput.Attributes.Add("cols", uIHintAttribute.Cols);
+            }
         }
 
         protected virtual TagHelperAttributeList GetInputAttributes(TagHelperContext context, TagHelperOutput output)
@@ -375,7 +401,9 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         {
             var uIHintAttribute = cachedModelAttributes?.GetAttribute<UIHintAttribute>();
             if (uIHintAttribute != null)
+            {
                 TagHelper.Size = uIHintAttribute.Size;
+            }
 
             switch (TagHelper.Size)
             {
@@ -386,7 +414,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 case FormControlSize.Large:
                     return "custom-select-lg";
                 default:
-                    return "";
+                    return string.Empty;
             }
         }
 
@@ -401,7 +429,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         {
             var idAttr = inputTag.Attributes.FirstOrDefault(a => a.Name == "id");
 
-            return idAttr != null ? "for=\"" + idAttr.Value + "\"" : "";
+            return idAttr != null ? "for=\"" + idAttr.Value + "\"" : string.Empty;
         }
 
         protected virtual void AddGroupToFormGroupContents(TagHelperContext context, string propertyName, string html, int order, out bool suppress)
@@ -415,9 +443,21 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 {
                     HtmlContent = html,
                     Order = order,
-                    PropertyName = propertyName
+                    PropertyName = propertyName,
                 });
             }
+        }
+
+        private void AddFormControlClass(TagHelperContext context, TagHelperOutput output, bool isCheckbox, TagHelperOutput inputTagHelperOutput)
+        {
+            var className = "form-control";
+
+            if (isCheckbox)
+            {
+                className = "custom-control-input";
+            }
+
+            inputTagHelperOutput.Attributes.AddClass(className + " " + GetSize(context, output));
         }
     }
 }

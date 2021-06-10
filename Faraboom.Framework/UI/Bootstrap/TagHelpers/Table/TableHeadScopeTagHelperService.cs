@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Table
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Table
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class TableHeadScopeTagHelperService : TagHelperService<TableHeadScopeTagHelper>
     {
@@ -20,7 +20,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Table
                     output.Attributes.Add("scope", "row");
                     return;
                 case ThScope.Column:
-                    output.Attributes.Add("scope","col");
+                    output.Attributes.Add("scope", "col");
                     return;
             }
         }

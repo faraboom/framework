@@ -4,6 +4,6 @@
     {
         Default,
         Bordered,
-        Borderless
+        Borderless,
     }
 }

@@ -1,19 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Text.Encodings.Web;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Breadcrumb
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Breadcrumb
 {
+    using System.Collections.Generic;
+    using System.Text.Encodings.Web;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class BreadcrumbItemTagHelperService : TagHelperService<BreadcrumbItemTagHelper>
     {
-        private readonly HtmlEncoder _encoder;
+        private readonly HtmlEncoder encoder;
 
         public BreadcrumbItemTagHelperService(HtmlEncoder encoder)
         {
-            _encoder = encoder;
+            this.encoder = encoder;
         }
+
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             output.TagName = "li";
@@ -24,11 +25,11 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Breadcrumb
             var list = context.GetValue<List<BreadcrumbItem>>(BreadcrumbItemsContent);
 
             output.Content.SetHtmlContent(GetInnerHtml(context, output));
-            
+
             list.Add(new BreadcrumbItem
             {
-                Html = output.Render(_encoder),
-                Active = TagHelper.Active
+                Html = output.Render(encoder),
+                Active = TagHelper.Active,
             });
 
             output.SuppressOutput();
@@ -41,8 +42,8 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Breadcrumb
                 output.Attributes.Add("aria-current", "page");
                 return TagHelper.Title;
             }
+
             return "<a href=\"" + TagHelper.Href + "\">" + TagHelper.Title + "</a>";
         }
-
     }
 }

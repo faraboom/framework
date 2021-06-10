@@ -1,12 +1,12 @@
-﻿using System;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System;
+
     [AttributeUsage(AttributeTargets.Property)]
     public sealed class ScaffoldColumnAttribute : System.ComponentModel.DataAnnotations.ScaffoldColumnAttribute
     {
         public ScaffoldColumnAttribute(bool scaffold)
-            :base(scaffold)
+            : base(scaffold)
         {
         }
     }

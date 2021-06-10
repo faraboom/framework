@@ -1,15 +1,14 @@
-﻿using Faraboom.Framework.Core;
-
-using Microsoft.AspNetCore.Mvc.Rendering;
-
-using System.Collections.Generic;
-using System.Reflection;
-
-namespace Faraboom.Framework.Mvc.ViewFeatures
+﻿namespace Faraboom.Framework.Mvc.ViewFeatures
 {
+    using System.Collections.Generic;
+    using System.Reflection;
+    using Faraboom.Framework.Core;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+
     public class HtmlHelper
     {
-        public static IEnumerable<SelectListItem> GetExtendedEnumSelectList<TEnum>() where TEnum : struct
+        public static IEnumerable<SelectListItem> GetExtendedEnumSelectList<TEnum>()
+            where TEnum : struct
         {
             var fields = typeof(TEnum).GetFields(BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public | BindingFlags.GetField);
 
@@ -24,16 +23,15 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
                     Value = field.GetValue(field).ToString(),
                 };
 
-                //if (!string.IsNullOrEmpty(keyValuePair.Key.Group))
-                //{
+                // if (!string.IsNullOrEmpty(keyValuePair.Key.Group))
+                // {
                 //    if (!groupList.ContainsKey(keyValuePair.Key.Group))
                 //    {
                 //        groupList[keyValuePair.Key.Group] = new SelectListGroup() { Name = keyValuePair.Key.Group };
                 //    }
 
-                //    selectListItem.Group = groupList[keyValuePair.Key.Group];
-                //}
-
+                // selectListItem.Group = groupList[keyValuePair.Key.Group];
+                // }
                 selectList.Add(selectListItem);
             }
 

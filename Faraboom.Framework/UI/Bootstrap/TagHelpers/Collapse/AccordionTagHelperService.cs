@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class AccordionTagHelperService : TagHelperService<AccordionTagHelper>
     {
@@ -28,9 +27,16 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
             output.Content.SetHtmlContent(content);
         }
 
-        protected virtual string GetContent(List<string> items)
+        protected virtual IReadOnlyList<string> InitilizeFormGroupContentsContext(TagHelperContext context, TagHelperOutput output)
         {
-            var html = new StringBuilder("");
+            var items = new List<string>();
+            context.Items[AccordionItems] = items;
+            return items;
+        }
+
+        protected virtual string GetContent(IReadOnlyList<string> items)
+        {
+            var html = new StringBuilder(string.Empty);
             foreach (var item in items)
             {
                 var content = item.Replace(AccordionParentIdPlaceholder, TagHelper.Id);
@@ -38,18 +44,10 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
                 html.AppendLine(
                     "<div class=\"card\">" + Environment.NewLine +
                         content
-                    + "</div>" + Environment.NewLine
-                );
+                    + "</div>" + Environment.NewLine);
             }
 
             return html.ToString();
-        }
-
-        protected virtual List<string> InitilizeFormGroupContentsContext(TagHelperContext context, TagHelperOutput output)
-        {
-            var items = new List<string>();
-            context.Items[AccordionItems] = items;
-            return items;
         }
 
         protected virtual void SetRandomIdIfNotProvided()

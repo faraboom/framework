@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-
-using System;
-using System.Globalization;
-using System.IO;
-using System.Threading.Tasks;
-
-namespace Faraboom.Framework.Powershell
+﻿namespace Faraboom.Framework.Powershell
 {
+    using System;
+    using System.Globalization;
+    using System.IO;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
+
     public sealed class PowershellResponse
     {
         private readonly HttpContext context;

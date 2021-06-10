@@ -22,6 +22,6 @@
         Light_Info,
         Light_Light,
         Light_Dark,
-        Light_Link
+        Light_Link,
     }
 }

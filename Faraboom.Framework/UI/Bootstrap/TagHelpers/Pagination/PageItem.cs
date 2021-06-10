@@ -2,10 +2,6 @@
 {
     public class PageItem
     {
-        public int Index { get; }
-
-        public bool IsGap { get; set; }
-
         public PageItem(int index)
         {
             Index = index;
@@ -16,9 +12,13 @@
             IsGap = isGap;
         }
 
+        public int Index { get; }
+
+        public bool IsGap { get; set; }
+
         public override bool Equals(object obj)
         {
-            if (!(obj is PageItem item))
+            if (obj is not PageItem item)
             {
                 return false;
             }

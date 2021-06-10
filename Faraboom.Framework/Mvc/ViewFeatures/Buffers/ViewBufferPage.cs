@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
-
-using System.Runtime.CompilerServices;
-
-namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
+﻿namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
 {
+    using System.Runtime.CompilerServices;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
+
     internal class ViewBufferPage
     {
         public ViewBufferPage(ViewBufferValue[] buffer)

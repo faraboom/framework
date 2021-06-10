@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class TabsTagHelperService : TagHelperService<TabsTagHelper>
     {
@@ -33,9 +33,8 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
             {
                 PlaceInsideRow(output);
             }
-
         }
-        
+
         protected virtual string CombineHeadersAndContents(TagHelperContext context, TagHelperOutput output, string headers, string contents)
         {
             var combined = new StringBuilder();
@@ -48,7 +47,6 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
                 headers = PlaceInsideColumn(headers, headerColumnSize);
                 contents = PlaceInsideColumn(contents, contentColumnSize);
             }
-
 
             combined.AppendLine(headers).AppendLine(contents);
 
@@ -93,7 +91,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
             output.Attributes.AddClass("row");
         }
 
-        protected virtual void SetActiveTab(List<TabItem> items)
+        protected virtual void SetActiveTab(IReadOnlyList<TabItem> items)
         {
             if (!items.Any(it => it.Active) && items.Count > 0)
             {
@@ -113,14 +111,15 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
                 }
                 else
                 {
-                    tabItem.Content = tabItem.Content.Replace(TabItemShowActivePlaceholder, "");
-                    tabItem.Header = tabItem.Header.Replace(TabItemActivePlaceholder, "").Replace(TabItemSelectedPlaceholder, "false");
+                    tabItem.Content = tabItem.Content.Replace(TabItemShowActivePlaceholder, string.Empty);
+                    tabItem.Header = tabItem.Header.Replace(TabItemActivePlaceholder, string.Empty).Replace(TabItemSelectedPlaceholder, "false");
                 }
             }
-
         }
 
+#pragma warning disable CA1002 // Do not expose generic lists
         protected virtual string GetHeaders(TagHelperContext context, TagHelperOutput output, List<TabItem> items)
+#pragma warning restore CA1002 // Do not expose generic lists
         {
             SetActiveTab(items);
 
@@ -129,7 +128,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
             for (var index = 0; index < items.Count; index++)
             {
                 var item = items[index];
-                var header = "";
+                var header = string.Empty;
                 if (item.IsDropdown)
                 {
                     var childHeaders = items.Where(i => i.ParentId == item.Id).Select(c => SetTabItemNameIfNotProvided(c.Header, items.IndexOf(c)));
@@ -151,7 +150,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
             return headers;
         }
 
-        protected virtual string GetConents(TagHelperContext context, TagHelperOutput output, List<TabItem> items)
+        protected virtual string GetConents(TagHelperContext context, TagHelperOutput output, IReadOnlyList<TabItem> items)
         {
             var contentsBuilder = new StringBuilder();
 
@@ -172,7 +171,9 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
             return contentsBuilder.ToString();
         }
 
+#pragma warning disable CA1002 // Do not expose generic lists
         protected virtual List<TabItem> InitilizeFormGroupContentsContext(TagHelperContext context, TagHelperOutput output)
+#pragma warning restore CA1002 // Do not expose generic lists
         {
             var items = new List<TabItem>();
             context.Items[TabItems] = items;
@@ -191,14 +192,14 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
 
         protected virtual string GetVerticalPillClassIfVertical()
         {
-            return TagHelper.TabStyle == TabStyle.PillVertical ? " flex-column " : "";
+            return TagHelper.TabStyle == TabStyle.PillVertical ? " flex-column " : string.Empty;
         }
 
         protected virtual int GetHeaderColumnSize()
         {
             return
-                TagHelper.VerticalHeaderSize == ColumnSize.Undefined ||
-                TagHelper.VerticalHeaderSize == ColumnSize.Auto || TagHelper.VerticalHeaderSize == ColumnSize._
+                TagHelper.VerticalHeaderSize is ColumnSize.Undefined or
+                ColumnSize.Auto or ColumnSize._
                     ? (int)ColumnSize._3
                     : (int)TagHelper.VerticalHeaderSize;
         }
@@ -207,7 +208,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
         {
             if (string.IsNullOrWhiteSpace(TagHelper.Name))
             {
-                TagHelper.Name =  "T" +  Guid.NewGuid().ToString("N");
+                TagHelper.Name = "T" + Guid.NewGuid().ToString("N");
             }
         }
 

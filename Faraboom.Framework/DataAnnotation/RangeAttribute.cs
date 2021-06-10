@@ -1,12 +1,10 @@
-﻿using Faraboom.Framework.Core.Extensions.Collections.Generic;
-
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-
-using System;
-using System.Collections.Generic;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System;
+    using System.Collections.Generic;
+    using Faraboom.Framework.Core.Extensions.Collections.Generic;
+    using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter)]
     public sealed class RangeAttribute : System.ComponentModel.DataAnnotations.RangeAttribute, IClientModelValidator
     {
@@ -29,22 +27,7 @@ namespace Faraboom.Framework.DataAnnotation
         {
             ErrorMessageResourceType = typeof(Resources.GlobalResource);
             ErrorMessageResourceName = nameof(Resources.GlobalResource.Validation_Range);
-        }
-
-        public override bool IsValid(object value)
-        {
-            if (string.IsNullOrWhiteSpace(value?.ToString()))
-                return true;
-
-            return base.IsValid(value);
-        }
-
-        public void AddValidation(ClientModelValidationContext context)
-        {
-            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val", "true"));
-            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-range", FormatErrorMessage(context.ModelMetadata.GetDisplayName())));
-            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-max", Maximum.ToString()));
-            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-min", Minimum.ToString()));
+            Type = type;
         }
 
         public new Type ErrorMessageResourceType
@@ -53,6 +36,7 @@ namespace Faraboom.Framework.DataAnnotation
             {
                 return base.ErrorMessageResourceType;
             }
+
             private set
             {
                 base.ErrorMessageResourceType = value;
@@ -65,6 +49,7 @@ namespace Faraboom.Framework.DataAnnotation
             {
                 return base.ErrorMessageResourceName;
             }
+
             private set
             {
                 base.ErrorMessageResourceName = value;
@@ -77,10 +62,31 @@ namespace Faraboom.Framework.DataAnnotation
             {
                 return base.ErrorMessage;
             }
+
             internal set
             {
                 base.ErrorMessage = value;
             }
+        }
+
+        public Type Type { get; }
+
+        public override bool IsValid(object value)
+        {
+            if (string.IsNullOrWhiteSpace(value?.ToString()))
+            {
+                return true;
+            }
+
+            return base.IsValid(value);
+        }
+
+        public void AddValidation(ClientModelValidationContext context)
+        {
+            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val", "true"));
+            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-range", FormatErrorMessage(context.ModelMetadata.GetDisplayName())));
+            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-max", Maximum.ToString()));
+            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-min", Minimum.ToString()));
         }
     }
 }

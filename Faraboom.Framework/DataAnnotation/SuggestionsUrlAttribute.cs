@@ -1,14 +1,15 @@
-using System;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System;
+
+    [AttributeUsage(AttributeTargets.Property)]
     public sealed class SuggestionsUrlAttribute : Attribute
     {
-        public string Url { get; }
-
         public SuggestionsUrlAttribute(string url)
         {
             Url = url;
         }
+
+        public string Url { get; }
     }
 }

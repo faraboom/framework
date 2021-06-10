@@ -1,11 +1,11 @@
-﻿using System;
-using System.Text;
-
-namespace Faraboom.Framework.Security
+﻿namespace Faraboom.Framework.Security
 {
+    using System;
+    using System.Text;
+
     public static class Base32
     {
-        private static readonly string base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+        private static readonly string Base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
         public static string ToBase32(byte[] input)
         {
@@ -14,19 +14,19 @@ namespace Faraboom.Framework.Security
                 throw new ArgumentNullException(nameof(input));
             }
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             for (int offset = 0; offset < input.Length;)
             {
                 int numCharsToOutput = GetNextGroup(input, ref offset, out byte a, out byte b, out byte c, out byte d, out byte e, out byte f, out byte g, out byte h);
 
-                sb.Append((numCharsToOutput >= 1) ? base32Chars[a] : '=');
-                sb.Append((numCharsToOutput >= 2) ? base32Chars[b] : '=');
-                sb.Append((numCharsToOutput >= 3) ? base32Chars[c] : '=');
-                sb.Append((numCharsToOutput >= 4) ? base32Chars[d] : '=');
-                sb.Append((numCharsToOutput >= 5) ? base32Chars[e] : '=');
-                sb.Append((numCharsToOutput >= 6) ? base32Chars[f] : '=');
-                sb.Append((numCharsToOutput >= 7) ? base32Chars[g] : '=');
-                sb.Append((numCharsToOutput >= 8) ? base32Chars[h] : '=');
+                sb.Append((numCharsToOutput >= 1) ? Base32Chars[a] : '=');
+                sb.Append((numCharsToOutput >= 2) ? Base32Chars[b] : '=');
+                sb.Append((numCharsToOutput >= 3) ? Base32Chars[c] : '=');
+                sb.Append((numCharsToOutput >= 4) ? Base32Chars[d] : '=');
+                sb.Append((numCharsToOutput >= 5) ? Base32Chars[e] : '=');
+                sb.Append((numCharsToOutput >= 6) ? Base32Chars[f] : '=');
+                sb.Append((numCharsToOutput >= 7) ? Base32Chars[g] : '=');
+                sb.Append((numCharsToOutput >= 8) ? Base32Chars[h] : '=');
             }
 
             return sb.ToString();
@@ -38,6 +38,7 @@ namespace Faraboom.Framework.Security
             {
                 throw new ArgumentNullException(nameof(input));
             }
+
             input = input.TrimEnd('=').ToUpperInvariant();
             if (input.Length == 0)
             {
@@ -51,7 +52,7 @@ namespace Faraboom.Framework.Security
             var outputIndex = 0;
             while (outputIndex < output.Length)
             {
-                var byteIndex = base32Chars.IndexOf(input[inputIndex]);
+                var byteIndex = Base32Chars.IndexOf(input[inputIndex]);
                 if (byteIndex < 0)
                 {
                     throw new FormatException();
@@ -75,6 +76,7 @@ namespace Faraboom.Framework.Security
                     outputBits = 0;
                 }
             }
+
             return output;
         }
 

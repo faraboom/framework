@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class RowTagHelperService : TagHelperService<RowTagHelper>
     {
@@ -11,6 +11,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
             {
                 output.Attributes.AddClass("row");
             }
+
             if (output.TagName == "frb-form-row")
             {
                 output.Attributes.AddClass("form-row");

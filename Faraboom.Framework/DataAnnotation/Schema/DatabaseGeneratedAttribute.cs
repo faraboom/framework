@@ -1,19 +1,19 @@
-﻿using System;
-
-namespace Faraboom.Framework.DataAnnotation.Schema
+﻿namespace Faraboom.Framework.DataAnnotation.Schema
 {
+    using System;
+
     public sealed class DatabaseGeneratedAttribute : System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedAttribute
     {
-        public string SequenceName { get; }
-
-        public new DatabaseGeneratedOption DatabaseGeneratedOption { get; }
-
         public DatabaseGeneratedAttribute(DatabaseGeneratedOption databaseGeneratedOption, string sequenceName = null)
             : base(Convert(databaseGeneratedOption))
         {
             SequenceName = sequenceName;
             DatabaseGeneratedOption = databaseGeneratedOption;
         }
+
+        public string SequenceName { get; }
+
+        public new DatabaseGeneratedOption DatabaseGeneratedOption { get; }
 
         private static System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption Convert(DatabaseGeneratedOption databaseGeneratedOption)
         {

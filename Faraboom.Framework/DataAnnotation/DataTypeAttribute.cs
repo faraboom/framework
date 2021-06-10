@@ -1,10 +1,10 @@
-﻿using System;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System;
+
     public sealed class DataTypeAttribute : System.ComponentModel.DataAnnotations.DataTypeAttribute
     {
-        public ElementDataType ElementDataType { get; }
+        private DisplayFormatAttribute displayFormat;
 
         public DataTypeAttribute(ElementDataType elementDataType)
             : base(elementDataType.ToString())
@@ -20,29 +20,26 @@ namespace Faraboom.Framework.DataAnnotation
                     DisplayFormat = new DisplayFormatAttribute
                     {
                         DataFormatString = "{0:d}",
-                        ApplyFormatInEditMode = true
+                        ApplyFormatInEditMode = true,
                     };
                     break;
                 case ElementDataType.Time:
                     DisplayFormat = new DisplayFormatAttribute
                     {
                         DataFormatString = "{0:t}",
-                        ApplyFormatInEditMode = true
+                        ApplyFormatInEditMode = true,
                     };
                     break;
                 case ElementDataType.Currency:
                     DisplayFormat = new DisplayFormatAttribute
                     {
-                        DataFormatString = "{0:C}"
+                        DataFormatString = "{0:C}",
                     };
                     break;
             }
         }
 
-        public override string GetDataTypeName()
-        {
-            return ElementDataType.ToString();
-        }
+        public ElementDataType ElementDataType { get; }
 
         public new Type ErrorMessageResourceType
         {
@@ -50,6 +47,7 @@ namespace Faraboom.Framework.DataAnnotation
             {
                 return base.ErrorMessageResourceType;
             }
+
             private set
             {
                 base.ErrorMessageResourceType = value;
@@ -62,9 +60,23 @@ namespace Faraboom.Framework.DataAnnotation
             {
                 return base.ErrorMessageResourceName;
             }
+
             private set
             {
                 base.ErrorMessageResourceName = value;
+            }
+        }
+
+        public new DisplayFormatAttribute DisplayFormat
+        {
+            get
+            {
+                return displayFormat;
+            }
+
+            private set
+            {
+                base.DisplayFormat = displayFormat = value;
             }
         }
 
@@ -74,23 +86,16 @@ namespace Faraboom.Framework.DataAnnotation
             {
                 return base.ErrorMessage;
             }
+
             private set
             {
                 base.ErrorMessage = value;
             }
         }
 
-        private DisplayFormatAttribute displayFormat;
-        public new DisplayFormatAttribute DisplayFormat
+        public override string GetDataTypeName()
         {
-            get
-            {
-                return displayFormat;
-            }
-            private set
-            {
-                base.DisplayFormat = displayFormat = value;
-            }
+            return ElementDataType.ToString();
         }
     }
 }

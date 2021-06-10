@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
 {
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class CollapseBodyTagHelperService : TagHelperService<CollapseBodyTagHelper>
     {

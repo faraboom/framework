@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class CarouselTagHelperService : TagHelperService<CarouselTagHelper>
     {
@@ -28,17 +27,16 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
             SetIndicators(context, output, itemList);
         }
 
-
-        protected virtual List<CarouselItem> InitilizeCarouselItemsContentsContext(TagHelperContext context, TagHelperOutput output)
+        protected virtual IList<CarouselItem> InitilizeCarouselItemsContentsContext(TagHelperContext context, TagHelperOutput output)
         {
             var items = new List<CarouselItem>();
             context.Items[CarouselItemsContent] = items;
             return items;
         }
 
-        protected virtual void SetItems(TagHelperContext context, TagHelperOutput output, List<CarouselItem> itemList)
+        protected virtual void SetItems(TagHelperContext context, TagHelperOutput output, IList<CarouselItem> itemList)
         {
-            var itemsHtml = new StringBuilder("");
+            var itemsHtml = new StringBuilder(string.Empty);
             itemsHtml.Append("<div class= \"carousel-inner\">");
 
             foreach (var carouselItem in itemList)
@@ -52,14 +50,14 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
             output.Content.SetHtmlContent(itemsHtml.ToString());
         }
 
-        protected virtual void SetControls(TagHelperContext context, TagHelperOutput output, List<CarouselItem> itemList)
+        protected virtual void SetControls(TagHelperContext context, TagHelperOutput output, IList<CarouselItem> itemList)
         {
             if (!TagHelper.Controls ?? false)
             {
                 return;
             }
 
-            var html = new StringBuilder("");
+            var html = new StringBuilder(string.Empty);
 
             html.AppendLine("<a class=\"carousel-control-prev\" href=\"#" + TagHelper.Id + "\" role=\"button\" data-slide=\"prev\">");
             html.AppendLine("<span class=\"carousel-control-prev-icon\" aria-hidden=\"true\"></span>");
@@ -73,7 +71,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
             output.PostContent.SetHtmlContent(html.ToString());
         }
 
-        protected virtual void SetIndicators(TagHelperContext context, TagHelperOutput output, List<CarouselItem> itemList)
+        protected virtual void SetIndicators(TagHelperContext context, TagHelperOutput output, IList<CarouselItem> itemList)
         {
             if (!TagHelper.Indicators ?? false)
             {
@@ -88,7 +86,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
                     "<li " +
                     "data-target=\"#" + TagHelper.Id + "\"" +
                     " data-slide-to=\"" + i + "\"" +
-                    (itemList[i].Active ? " class=\"active\">" : "") +
+                    (itemList[i].Active ? " class=\"active\">" : string.Empty) +
                     "</li>");
             }
 
@@ -96,7 +94,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
             output.PreContent.SetHtmlContent(html.ToString());
         }
 
-        protected virtual void SetOneItemAsActive(TagHelperContext context, TagHelperOutput output, List<CarouselItem> itemList)
+        protected virtual void SetOneItemAsActive(TagHelperContext context, TagHelperOutput output, IList<CarouselItem> itemList)
         {
             if (!itemList.Any(it => it.Active) && itemList.Count > 0)
             {
@@ -136,8 +134,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
 
         protected virtual void SetActiveIfActive(CarouselItem item)
         {
-            item.Html = item.Html.Replace(CarouselItemActivePlaceholder, item.Active ? "active" : "");
+            item.Html = item.Html.Replace(CarouselItemActivePlaceholder, item.Active ? "active" : string.Empty);
         }
-
     }
 }

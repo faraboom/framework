@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ListGroup
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ListGroup
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class ListGroupItemTagHelperService : TagHelperService<ListGroupItemTagHelper>
     {
@@ -30,7 +30,6 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ListGroup
                 output.TagName = "button";
                 output.Attributes.AddClass("list-group-item-action");
             }
-
         }
 
         protected virtual void SetCommonTagNameAndAttributes(TagHelperContext context, TagHelperOutput output)

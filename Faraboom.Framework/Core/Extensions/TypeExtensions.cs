@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-
-namespace Faraboom.Framework.Core.Extensions
+﻿namespace Faraboom.Framework.Core.Extensions
 {
+    using System;
+    using System.Linq;
+
     public static class TypeExtensions
     {
         public static bool IsSimpleType(this Type type)
@@ -10,13 +10,14 @@ namespace Faraboom.Framework.Core.Extensions
             return
                 type.IsValueType ||
                 type.IsPrimitive ||
-                new Type[] {
+                new Type[]
+                {
                 typeof(string),
                 typeof(decimal),
                 typeof(DateTime),
                 typeof(DateTimeOffset),
                 typeof(TimeSpan),
-                typeof(Guid)
+                typeof(Guid),
                 }.Contains(type) ||
                 Convert.GetTypeCode(type) != TypeCode.Object;
         }

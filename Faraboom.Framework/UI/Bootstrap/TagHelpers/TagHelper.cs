@@ -1,18 +1,25 @@
-using System.Threading.Tasks;
-
-using Faraboom.Framework.Mvc.ViewFeatures;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers
 {
+    using System.Threading.Tasks;
+    using Faraboom.Framework.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     public abstract class TagHelper : Microsoft.AspNetCore.Razor.TagHelpers.TagHelper
     {
         private readonly IOptions<MvcViewOptions> optionsAccessor;
+
+        private string elementName;
+
+        private string elementId;
+
+        protected TagHelper(IOptions<MvcViewOptions> optionsAccessor)
+        {
+            this.optionsAccessor = optionsAccessor;
+        }
 
         [HtmlAttributeName("frb-for")]
         public virtual ModelExpression For { get; set; }
@@ -27,16 +34,9 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
-        private string elementName;
         protected string ElementName => elementName ??= NameAndIdProvider.GetFullHtmlFieldName(ViewContext, Name ?? For.Name);
 
-        private string elementId;
         protected string ElementId => elementId ??= NameAndIdProvider.CreateSanitizedId(ViewContext, ElementName, optionsAccessor.Value.HtmlHelperOptions.IdAttributeDotReplacement);
-
-        protected TagHelper(IOptions<MvcViewOptions> optionsAccessor)
-        {
-            this.optionsAccessor = optionsAccessor;
-        }
     }
 
     public abstract class TagHelper<TTagHelper, TService> : TagHelper
@@ -50,11 +50,11 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers
             (Service as TagHelperService<TTagHelper>).TagHelper = (TTagHelper)this;
         }
 
-        protected TService Service { get; }
-
         public override int Order => Service.Order;
 
         public virtual bool DisplayRequiredSymbol { get; set; } = true;
+
+        protected TService Service { get; }
 
         public override void Init(TagHelperContext context)
         {

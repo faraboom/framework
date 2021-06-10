@@ -1,19 +1,20 @@
-﻿using Faraboom.Framework.Core.Extensions.Collections.Generic;
-
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
-
-namespace Faraboom.Framework.Core.Extensions
+﻿namespace Faraboom.Framework.Core.Extensions
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Security.Cryptography;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using Faraboom.Framework.Core.Extensions.Collections.Generic;
+
     public static class StringExtensions
     {
         public static string EnsureEndsWith(this string str, char c, StringComparison comparisonType = StringComparison.Ordinal)
         {
             if (str.EndsWith(c.ToString(), comparisonType))
+            {
                 return str;
+            }
 
             return str + c;
         }
@@ -24,7 +25,9 @@ namespace Faraboom.Framework.Core.Extensions
         public static string EnsureStartsWith(this string str, char c, StringComparison comparisonType = StringComparison.Ordinal)
         {
             if (str.StartsWith(c.ToString(), comparisonType))
+            {
                 return str;
+            }
 
             return c + str;
         }
@@ -53,7 +56,9 @@ namespace Faraboom.Framework.Core.Extensions
         public static string Left(this string str, int len)
         {
             if (str.Length < len)
+            {
                 throw new ArgumentException("len argument can not be bigger than given string's length!");
+            }
 
             return str.Substring(0, len);
         }
@@ -78,10 +83,14 @@ namespace Faraboom.Framework.Core.Extensions
             for (var i = 0; i < str.Length; i++)
             {
                 if (str[i] != c)
+                {
                     continue;
+                }
 
                 if ((++count) == n)
+                {
                     return i;
+                }
             }
 
             return -1;
@@ -293,19 +302,17 @@ namespace Faraboom.Framework.Core.Extensions
 
         public static string ToMd5(this string str)
         {
-            using (var md5 = MD5.Create())
+            using var md5 = MD5.Create();
+            var inputBytes = Encoding.UTF8.GetBytes(str);
+            var hashBytes = md5.ComputeHash(inputBytes);
+
+            var sb = new StringBuilder();
+            foreach (var hashByte in hashBytes)
             {
-                var inputBytes = Encoding.UTF8.GetBytes(str);
-                var hashBytes = md5.ComputeHash(inputBytes);
-
-                var sb = new StringBuilder();
-                foreach (var hashByte in hashBytes)
-                {
-                    sb.Append(hashByte.ToString("X2"));
-                }
-
-                return sb.ToString();
+                sb.Append(hashByte.ToString("X2"));
             }
+
+            return sb.ToString();
         }
 
         /// <summary>

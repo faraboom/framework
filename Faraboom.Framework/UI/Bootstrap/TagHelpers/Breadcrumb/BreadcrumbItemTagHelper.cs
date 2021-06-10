@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Breadcrumb
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Breadcrumb
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("frb-bread-crumb-item")]
     public class BreadcrumbItemTagHelper : TagHelper<BreadcrumbItemTagHelper, BreadcrumbItemTagHelperService>
     {
+        public BreadcrumbItemTagHelper(BreadcrumbItemTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-href")]
         public string Href { get; set; }
 
@@ -16,11 +21,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Breadcrumb
 
         [HtmlAttributeName("frb-active")]
         public bool Active { get; set; }
-
-        public BreadcrumbItemTagHelper(BreadcrumbItemTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
     }
 }

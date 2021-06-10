@@ -1,7 +1,7 @@
-﻿using Faraboom.Framework.Data;
-
-namespace Faraboom.Framework.DataAnnotation.Schema
+﻿namespace Faraboom.Framework.DataAnnotation.Schema
 {
+    using Faraboom.Framework.Data;
+
     public sealed class InversePropertyAttribute : System.ComponentModel.DataAnnotations.Schema.InversePropertyAttribute
     {
         public InversePropertyAttribute(string property)

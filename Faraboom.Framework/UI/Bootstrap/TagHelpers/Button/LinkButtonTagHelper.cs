@@ -1,15 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("a", Attributes = "frb-button", TagStructure = TagStructure.NormalOrSelfClosing)]
     [HtmlTargetElement("input", Attributes = "frb-button", TagStructure = TagStructure.WithoutEndTag)]
     [HtmlTargetElement("frb-link-button", TagStructure = TagStructure.WithoutEndTag)]
     public class LinkButtonTagHelper : TagHelper<LinkButtonTagHelper, LinkButtonTagHelperService>, IButtonTagHelperBase
     {
+        public LinkButtonTagHelper(LinkButtonTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-button")]
         public ButtonType ButtonType { get; set; }
 
@@ -27,11 +32,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
 
         [HtmlAttributeName("frb-icon-type")]
         public FontIconType IconType { get; set; } = FontIconType.FontAwesome;
-
-        public LinkButtonTagHelper(LinkButtonTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
     }
 }

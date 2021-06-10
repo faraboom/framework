@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace Faraboom.Framework.Core
+﻿namespace Faraboom.Framework.Core
 {
+    using System.Collections.Generic;
+
     public class Tenant
     {
         public string Name { get; set; }
@@ -12,6 +12,6 @@ namespace Faraboom.Framework.Core
 
         public string ArchiveSchema { get; set; }
 
-        public List<string> Domains { get; set; }
+        public IReadOnlyList<string> Domains { get; set; }
     }
 }

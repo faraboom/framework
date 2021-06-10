@@ -1,8 +1,8 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
 {
+    using System.Text;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class ModalHeaderTagHelperService : TagHelperService<ModalHeaderTagHelper>
     {
@@ -26,7 +26,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
         protected virtual string CreatePostContent()
         {
             var sb = new StringBuilder();
-            
+
             sb.AppendLine("    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">");
             sb.AppendLine("        <span aria-hidden=\"true\">&times;</span>");
             sb.AppendLine("    </button>");

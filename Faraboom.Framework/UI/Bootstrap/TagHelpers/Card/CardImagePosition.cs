@@ -4,6 +4,6 @@
     {
         None,
         Top,
-        Bottom
+        Bottom,
     }
 }

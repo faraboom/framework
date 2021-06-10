@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("frb-column")]
     public class ColumnTagHelper : TagHelper<ColumnTagHelper, ColumnTagHelperService>
     {
+        public ColumnTagHelper(ColumnTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-size")]
         public ColumnSize Size { get; set; }
 
@@ -43,11 +48,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
 
         [HtmlAttributeName("frb-vertical-align")]
         public VerticalAlign VerticalAlign { get; set; } = VerticalAlign.Default;
-
-        public ColumnTagHelper(ColumnTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
     }
 }

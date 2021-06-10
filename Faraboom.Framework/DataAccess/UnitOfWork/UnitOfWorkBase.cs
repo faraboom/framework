@@ -1,41 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Faraboom.Framework.Core;
-using Faraboom.Framework.DataAccess.Entities;
-using Faraboom.Framework.DataAccess.Exceptions;
-using Faraboom.Framework.DataAccess.Repositories;
-using Faraboom.Framework.DataAnnotation.Schema;
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-
-namespace Faraboom.Framework.DataAccess.UnitOfWork
+﻿namespace Faraboom.Framework.DataAccess.UnitOfWork
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Reflection;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    using Faraboom.Framework.Core;
+    using Faraboom.Framework.DataAccess.Entities;
+    using Faraboom.Framework.DataAccess.Exceptions;
+    using Faraboom.Framework.DataAccess.Repositories;
+    using Faraboom.Framework.DataAnnotation.Schema;
+
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
+
     public abstract class UnitOfWorkBase<TContext> : IUnitOfWorkBase
         where TContext : DbContext
     {
-        protected TContext context;
-        protected readonly IServiceProvider serviceProvider;
-        protected readonly ILogger logger;
-
         protected internal UnitOfWorkBase(TContext context, IServiceProvider serviceProvider, ILogger<DataAccess> logger)
         {
-            this.context = context;
-            this.serviceProvider = serviceProvider;
-            this.logger = logger;
+            Context = context;
+            ServiceProvider = serviceProvider;
+            Logger = logger;
         }
+
+        ~UnitOfWorkBase()
+        {
+            Dispose(false);
+        }
+
+        protected bool IsDisposed { get; set; }
+
+        protected IServiceProvider ServiceProvider { get; }
+
+        protected ILogger Logger { get; }
+
+        protected TContext Context { get; set; }
 
         public int SaveChanges()
         {
             CheckDisposed();
             Prepare();
-            return context.SaveChanges();
+            return Context.SaveChanges();
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -43,19 +52,24 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
             CheckDisposed();
             await PrepareAsync();
 
-            return await context.SaveChangesAsync(cancellationToken);
+            return await Context.SaveChangesAsync(cancellationToken);
         }
 
-        public IRepository<TEntity, int> GetRepository<TEntity>() where TEntity : class, IEntity<TEntity, int> => GetRepository<TEntity, int>();
-        public IRepository<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : class, IEntity<TEntity, TKey>
+        public IRepository<TEntity, int> GetRepository<TEntity>()
+            where TEntity : class, IEntity<TEntity, int>
+            => GetRepository<TEntity, int>();
+
+        public IRepository<TEntity, TKey> GetRepository<TEntity, TKey>()
+            where TEntity : class, IEntity<TEntity, TKey>
         {
             CheckDisposed();
             var repositoryType = typeof(IRepository<TEntity, TKey>);
-            var repository = serviceProvider.GetService(repositoryType) as IRepository<TEntity, TKey>;
-            if (repository == null)
+            if (ServiceProvider.GetService(repositoryType) is not IRepository<TEntity, TKey> repository)
+            {
                 throw new RepositoryNotFoundException(repositoryType.Name, $"Repository {repositoryType.Name} not found in the IOC container. Check if it is registered during startup.");
+            }
 
-            (repository as IRepositoryInjection).SetContext(context);
+            (repository as IRepositoryInjection).SetContext(Context);
             return repository;
         }
 
@@ -63,21 +77,23 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
         {
             CheckDisposed();
             var repositoryType = typeof(TRepository);
-            var repository = (TRepository)serviceProvider.GetService(repositoryType);
+            var repository = (TRepository)ServiceProvider.GetService(repositoryType);
             if (repository == null)
-                throw new RepositoryNotFoundException(repositoryType.Name, String.Format("Repository {0} not found in the IOC container. Check if it is registered during startup.", repositoryType.Name));
+            {
+                throw new RepositoryNotFoundException(repositoryType.Name, string.Format("Repository {0} not found in the IOC container. Check if it is registered during startup.", repositoryType.Name));
+            }
 
-            (repository as IRepositoryInjection).SetContext(context);
+            (repository as IRepositoryInjection).SetContext(Context);
             return repository;
         }
 
-        public async Task<int> ExecuteSqlCommandAsync(string sql, IEnumerable<(string parameterName, object value)> param = null)
+        public async Task<int> ExecuteSqlCommandAsync(string sql, IEnumerable<(string ParameterName, object Value)> param = null)
         {
             try
             {
-                var connection = context.Database.GetDbConnection();
+                var connection = Context.Database.GetDbConnection();
                 using var command = connection.CreateCommand();
-                command.CommandText = sql.Replace(Constants.SchemaIdentifier, context.Model.GetDefaultSchema());
+                command.CommandText = sql.Replace(Constants.SchemaIdentifier, Context.Model.GetDefaultSchema());
                 await connection.OpenAsync();
                 command.CommandType = CommandType.Text;
                 command.CommandTimeout = 300;
@@ -96,18 +112,18 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
             }
             catch (Exception exc)
             {
-                logger.LogError(exc, "Error ExecuteSqlCommandAsync: {sql}", sql);
+                Logger.LogError(exc, "Error ExecuteSqlCommandAsync: {sql}", sql);
                 throw;
             }
         }
 
-        public async Task<DataTable> SqlQueryAsync(string sql, IList<(string parameterName, object value)> param = null)
+        public async Task<DataTable> SqlQueryAsync(string sql, IList<(string ParameterName, object Value)> param = null)
         {
             try
             {
-                var connection = context.Database.GetDbConnection();
+                var connection = Context.Database.GetDbConnection();
                 using var command = connection.CreateCommand();
-                command.CommandText = sql.Replace(Constants.SchemaIdentifier, context.Model.GetDefaultSchema());
+                command.CommandText = sql.Replace(Constants.SchemaIdentifier, Context.Model.GetDefaultSchema());
                 await connection.OpenAsync();
                 command.CommandType = CommandType.Text;
                 command.CommandTimeout = 300;
@@ -131,16 +147,16 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
             }
             catch (Exception exc)
             {
-                logger.LogError(exc, "Error SqlQueryAsync: {sql}", sql);
+                Logger.LogError(exc, "Error SqlQueryAsync: {sql}", sql);
                 throw;
             }
         }
 
         public async Task<int> GetSequenceValueAsync(string sequence)
         {
-            var connection = context.Database.GetDbConnection();
+            var connection = Context.Database.GetDbConnection();
             using var command = connection.CreateCommand();
-            command.CommandText = getSequenceCommand(sequence, context.Model.GetDefaultSchema());
+            command.CommandText = GetSequenceCommand(sequence, Context.Model.GetDefaultSchema());
             await connection.OpenAsync();
             var value = (decimal)await command.ExecuteScalarAsync();
             return Convert.ToInt32(value);
@@ -148,9 +164,9 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
 
         public int GetSequenceValue(string sequence)
         {
-            var connection = context.Database.GetDbConnection();
+            var connection = Context.Database.GetDbConnection();
             using var command = connection.CreateCommand();
-            command.CommandText = getSequenceCommand(sequence, context.Model.GetDefaultSchema());
+            command.CommandText = GetSequenceCommand(sequence, Context.Model.GetDefaultSchema());
             connection.Open();
             var value = (decimal)command.ExecuteScalar();
             return Convert.ToInt32(value);
@@ -158,51 +174,49 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
 
         #region IDisposable Implementation
 
-        protected bool isDisposed;
-
-        protected void CheckDisposed()
-        {
-            if (isDisposed)
-                throw new ObjectDisposedException("The UnitOfWork is already disposed and cannot be used anymore.");
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!isDisposed && disposing && context != null)
-            {
-                context.Dispose();
-                context = null;
-            }
-            isDisposed = true;
-        }
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        ~UnitOfWorkBase()
+        protected void CheckDisposed()
         {
-            Dispose(false);
+            if (IsDisposed)
+            {
+                throw new ObjectDisposedException("The UnitOfWork is already disposed and cannot be used anymore.");
+            }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed && disposing && Context != null)
+            {
+                Context.Dispose();
+                Context = null;
+            }
+
+            IsDisposed = true;
         }
 
         #endregion
 
         #region Private Methods
 
-        private string getSequenceCommand(string sequence, string schema)
+        private static string GetSequenceCommand(string sequence, string schema)
         {
-            return $"SELECT {(!string.IsNullOrWhiteSpace(schema) ? $"{schema}." : "")}{sequence}.NEXTVAL FROM DUAL";
+            return $"SELECT {(!string.IsNullOrWhiteSpace(schema) ? $"{schema}." : string.Empty)}{sequence}.NEXTVAL FROM DUAL";
         }
 
         private void Prepare()
         {
-            var changedEntities = context.ChangeTracker.Entries().Where(x => x.State == EntityState.Added || x.State == EntityState.Modified);
+            var changedEntities = Context.ChangeTracker.Entries().Where(x => x.State is EntityState.Added or EntityState.Modified);
             foreach (var item in changedEntities)
             {
                 if (item.Entity == null)
+                {
                     continue;
+                }
 
                 var properties = item.Entity.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
                     .Where(p => p.CanRead && p.CanWrite);
@@ -216,15 +230,16 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
                         {
                             var newVal = val.NormalizePersian();
                             if (newVal != val)
+                            {
                                 property.SetValue(item.Entity, newVal, null);
+                            }
                         }
                     }
                     else
                     {
                         if (item.State == EntityState.Added)
                         {
-                            var attribute = property.GetCustomAttributes(typeof(DatabaseGeneratedAttribute), false).FirstOrDefault() as DatabaseGeneratedAttribute;
-                            if (attribute != null && attribute.DatabaseGeneratedOption == DatabaseGeneratedOption.Identity && !string.IsNullOrWhiteSpace(attribute.SequenceName))
+                            if (property.GetCustomAttributes(typeof(DatabaseGeneratedAttribute), false).FirstOrDefault() is DatabaseGeneratedAttribute attribute && attribute.DatabaseGeneratedOption == DatabaseGeneratedOption.Identity && !string.IsNullOrWhiteSpace(attribute.SequenceName))
                             {
                                 var val = GetSequenceValue(attribute.SequenceName);
                                 property.SetValue(item.Entity, val, null);
@@ -237,11 +252,13 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
 
         private async Task PrepareAsync()
         {
-            var changedEntities = context.ChangeTracker.Entries().Where(x => x.State == EntityState.Added || x.State == EntityState.Modified);
+            var changedEntities = Context.ChangeTracker.Entries().Where(x => x.State is EntityState.Added or EntityState.Modified);
             foreach (var item in changedEntities)
             {
                 if (item.Entity == null)
+                {
                     continue;
+                }
 
                 var properties = item.Entity.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
                     .Where(p => p.CanRead && p.CanWrite);
@@ -260,15 +277,16 @@ namespace Faraboom.Framework.DataAccess.UnitOfWork
                         {
                             var newVal = val.NormalizePersian();
                             if (newVal != val)
+                            {
                                 property.SetValue(item.Entity, newVal, null);
+                            }
                         }
                     }
                     else
                     {
                         if (item.State == EntityState.Added)
                         {
-                            var attribute = property.GetCustomAttributes(typeof(DatabaseGeneratedAttribute), false).FirstOrDefault() as DatabaseGeneratedAttribute;
-                            if (attribute != null && attribute.DatabaseGeneratedOption == DatabaseGeneratedOption.Identity && !string.IsNullOrWhiteSpace(attribute.SequenceName))
+                            if (property.GetCustomAttributes(typeof(DatabaseGeneratedAttribute), false).FirstOrDefault() is DatabaseGeneratedAttribute attribute && attribute.DatabaseGeneratedOption == DatabaseGeneratedOption.Identity && !string.IsNullOrWhiteSpace(attribute.SequenceName))
                             {
                                 var val = await GetSequenceValueAsync(attribute.SequenceName);
                                 property.SetValue(item.Entity, val, null);

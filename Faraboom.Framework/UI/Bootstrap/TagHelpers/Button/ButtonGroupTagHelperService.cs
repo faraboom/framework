@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class ButtonGroupTagHelperService : TagHelperService<ButtonGroupTagHelper>
     {

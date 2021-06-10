@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Border
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Border
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class RoundedTagHelperService : TagHelperService<RoundedTagHelper>
     {
@@ -11,7 +11,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Border
 
             if (TagHelper.Rounded != RoundedType.Default)
             {
-                roundedClass += "-" + TagHelper.Rounded.ToString().ToLowerInvariant().Replace("_","");
+                roundedClass += "-" + TagHelper.Rounded.ToString().ToLowerInvariant().Replace("_", string.Empty);
             }
 
             output.Attributes.AddClass(roundedClass);

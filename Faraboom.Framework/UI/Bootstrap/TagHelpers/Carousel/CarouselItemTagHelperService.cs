@@ -1,21 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using System.Text.Encodings.Web;
-
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
 {
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Text.Encodings.Web;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class CarouselItemTagHelperService : TagHelperService<CarouselItemTagHelper>
     {
-        private readonly HtmlEncoder _encoder;
+        private readonly HtmlEncoder encoder;
 
         public CarouselItemTagHelperService(HtmlEncoder encoder)
         {
-            _encoder = encoder;
+            this.encoder = encoder;
         }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -31,15 +29,6 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
             AddToContext(context, output);
 
             output.SuppressOutput();
-        }
-
-        private void AddToContext(TagHelperContext context, TagHelperOutput output)
-        {
-            var getOutputAsHtml = output.Render(_encoder);
-
-            var itemList = context.GetValue<List<CarouselItem>>(CarouselItemsContent);
-
-            itemList.Add(new CarouselItem(getOutputAsHtml, TagHelper.Active ?? false));
         }
 
         protected virtual void SetInnerImgTag(TagHelperContext context, TagHelperOutput output)
@@ -63,7 +52,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
                 return;
             }
 
-            var html = new StringBuilder("");
+            var html = new StringBuilder(string.Empty);
 
             html.AppendLine("<div class=\"carousel-caption d-none d-md-block\">");
             html.AppendLine("<h5>" + TagHelper.CaptionTitle + "</h5>");
@@ -73,5 +62,13 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Carousel
             output.PostContent.SetHtmlContent(html.ToString());
         }
 
+        private void AddToContext(TagHelperContext context, TagHelperOutput output)
+        {
+            var getOutputAsHtml = output.Render(encoder);
+
+            var itemList = context.GetValue<List<CarouselItem>>(CarouselItemsContent);
+
+            itemList.Add(new CarouselItem(getOutputAsHtml, TagHelper.Active ?? false));
+        }
     }
 }

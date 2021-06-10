@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Table
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Table
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class TableStyleTagHelperService : TagHelperService<TableStyleTagHelper>
     {
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            SetStyle(context,output);
+            SetStyle(context, output);
         }
 
         protected virtual void SetStyle(TagHelperContext context, TagHelperOutput output)

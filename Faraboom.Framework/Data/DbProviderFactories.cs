@@ -1,16 +1,19 @@
-﻿using Faraboom.Framework.Core;
-
-namespace Faraboom.Framework.Data
+﻿namespace Faraboom.Framework.Data
 {
+    using Faraboom.Framework.Core;
+
     public class DbProviderFactories
     {
         private static DbProviderFactory factory;
+
         public static DbProviderFactory GetFactory
         {
             get
             {
                 if (factory != null)
+                {
                     return factory;
+                }
 
                 switch (Globals.ProviderType)
                 {

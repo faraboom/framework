@@ -1,10 +1,9 @@
-﻿using System;
-using System.Linq;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tooltip
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tooltip
 {
+    using System;
+    using System.Linq;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class TooltipTagHelperService : TagHelperService<TooltipTagHelper>
     {
@@ -75,14 +74,17 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tooltip
             {
                 return TooltipDirectory.Top;
             }
+
             if (!string.IsNullOrWhiteSpace(TagHelper.TooltipBottom))
             {
                 return TooltipDirectory.Bottom;
             }
+
             if (!string.IsNullOrWhiteSpace(TagHelper.TooltipRight))
             {
                 return TooltipDirectory.Right;
             }
+
             if (!string.IsNullOrWhiteSpace(TagHelper.TooltipLeft))
             {
                 return TooltipDirectory.Left;

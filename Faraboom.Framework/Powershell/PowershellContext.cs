@@ -1,26 +1,13 @@
-﻿using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-
-using System;
-using System.Text.RegularExpressions;
-
-namespace Faraboom.Framework.Powershell
+﻿namespace Faraboom.Framework.Powershell
 {
+    using System;
+    using System.Text.RegularExpressions;
+    using Microsoft.AspNetCore.Antiforgery;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
+
     public sealed class PowershellContext
     {
-        public Match UriMatch { get; set; }
-
-        public PowershellRequest Request { get; }
-
-        public PowershellResponse Response { get; }
-
-        public string AntiforgeryHeader { get; set; }
-
-        public string AntiforgeryToken { get; set; }
-
-        public HttpContext HttpContext { get; }
-
         public PowershellContext(HttpContext httpContext)
         {
             HttpContext = httpContext ?? throw new ArgumentNullException(nameof(httpContext));
@@ -36,5 +23,17 @@ namespace Faraboom.Framework.Powershell
                 AntiforgeryToken = tokenSet.RequestToken;
             }
         }
+
+        public Match UriMatch { get; set; }
+
+        public PowershellRequest Request { get; }
+
+        public PowershellResponse Response { get; }
+
+        public string AntiforgeryHeader { get; set; }
+
+        public string AntiforgeryToken { get; set; }
+
+        public HttpContext HttpContext { get; }
     }
 }

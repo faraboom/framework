@@ -1,16 +1,14 @@
-﻿using Faraboom.Framework.Core.Extensions;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-using System.Text.Encodings.Web;
-
-namespace Faraboom.Framework.Mvc.TagHelpers
+﻿namespace Faraboom.Framework.Mvc.TagHelpers
 {
+    using System.Text.Encodings.Web;
+    using Faraboom.Framework.Core.Extensions;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.TagHelpers;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [HtmlTargetElement("frb-color", TagStructure = TagStructure.WithoutEndTag)]
     public class ColorTagHelper : UI.Bootstrap.TagHelpers.TagHelper
     {
@@ -36,7 +34,9 @@ namespace Faraboom.Framework.Mvc.TagHelpers
 
             var val = Value?.ToString() ?? For.Model?.ToString();
             if (!val.IsNullOrEmpty())
+            {
                 attributeList.Add("value", val);
+            }
 
             string innerHtml = null;
             using (var writer = new System.IO.StringWriter())

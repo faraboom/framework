@@ -1,10 +1,9 @@
-﻿using Faraboom.Framework.DataAnnotation;
-using Faraboom.Framework.Resources;
-
-using System;
-
-namespace Faraboom.Framework.Core
+﻿namespace Faraboom.Framework.Core
 {
+    using System;
+    using Faraboom.Framework.DataAnnotation;
+    using Faraboom.Framework.Resources;
+
     public static class Constants
     {
         public const string Gotcha = "Gotcha";
@@ -46,23 +45,12 @@ namespace Faraboom.Framework.Core
         public const string SchemaIdentifier = "[SCHEMA]";
         public const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
         public const string Cookie = "__f";
-        public const string Cookie_AspNetApplication = "__fapp";
-        public const string Cookie_RequestVerificationToken = "__frvt";
+        public const string AspNetApplicationCookie = "__fapp";
+        public const string RequestVerificationTokenCookie = "__frvt";
         public const string HttpClientIgnoreSslAndAutoRedirect = "HttpClientIgnoreSslAndAutoRedirect";
         public const int DisplayOrder = 10000;
         public const string ControllerPostfix = "Controller";
         public const string PagePostfix = "Model";
-
-        public static Tenant DefaultTenant => new Tenant { Name = DefaultTenantIdentifier, Code = "BOOMIR", Schema = "FARABOOM", ArchiveSchema = "FARABOOM_ARCHIVE" };
-
-        internal enum ResourceKey
-        {
-            Name,
-            ShortName,
-            Description,
-            Prompt,
-            GroupName,
-        }
 
         public enum DegreeType : byte
         {
@@ -85,7 +73,7 @@ namespace Faraboom.Framework.Core
             PostDoc = 5,
 
             [Display(ResourceType = typeof(GlobalResource), EnumType = typeof(DegreeType))]
-            Other = 6
+            Other = 6,
         }
 
         public enum GenderType : byte
@@ -103,14 +91,14 @@ namespace Faraboom.Framework.Core
             Succeeded = 1,
             Failed = 2,
             Duplicate = 3,
-            NotValid = 4
+            NotValid = 4,
         }
 
         public enum SmtpAuthenticationType : byte
         {
             Anonymous = 0,
             Basic = 1,
-            Ntlm = 2
+            Ntlm = 2,
         }
 
         public enum DisplayTemplates : byte
@@ -228,16 +216,16 @@ namespace Faraboom.Framework.Core
             Client = 4,
         }
 
-        public enum ExportFileType : byte
+        public enum ExportType : byte
         {
-            [Display(ResourceType = typeof(GlobalResource), EnumType = typeof(ExportFileType))]
+            [Display(ResourceType = typeof(GlobalResource), EnumType = typeof(ExportType))]
             Excel = 0,
 
-            [Display(ResourceType = typeof(GlobalResource), EnumType = typeof(ExportFileType))]
+            [Display(ResourceType = typeof(GlobalResource), EnumType = typeof(ExportType))]
             Pdf = 1,
 
-            [Display(ResourceType = typeof(GlobalResource), EnumType = typeof(ExportFileType))]
-            Csv = 2
+            [Display(ResourceType = typeof(GlobalResource), EnumType = typeof(ExportType))]
+            Csv = 2,
         }
 
         public enum OperandType : byte
@@ -267,7 +255,7 @@ namespace Faraboom.Framework.Core
             EndsWith = 7,
 
             [Display(ResourceType = typeof(GlobalResource), EnumType = typeof(OperandType))]
-            NotEquals = 8
+            NotEquals = 8,
         }
 
         public enum ReportType : byte
@@ -333,7 +321,7 @@ namespace Faraboom.Framework.Core
             Deleted = 3,
 
             [Display(ResourceType = typeof(GlobalResource), EnumType = typeof(EntityState))]
-            Modified = 4
+            Modified = 4,
         }
 
         [Flags]
@@ -367,10 +355,8 @@ namespace Faraboom.Framework.Core
 
             Weekend = 1,
 
-            Holiday = 2
+            Holiday = 2,
         }
-
-
 
         public enum TreeViewOperation : byte
         {
@@ -384,7 +370,6 @@ namespace Faraboom.Framework.Core
 
             CopyNode = 4,
         }
-
 
         [Flags]
         public enum HttpMethod : short
@@ -414,7 +399,7 @@ namespace Faraboom.Framework.Core
             Trace = 128,
 
             [Display(ResourceType = typeof(GlobalResource), EnumType = typeof(HttpMethod))]
-            Patch = 256
+            Patch = 256,
         }
 
         public enum Routes
@@ -562,7 +547,18 @@ namespace Faraboom.Framework.Core
             RequiresVerificationEmail,
             Failure,
             NotEnable,
-            Limitation
+            Limitation,
         }
+
+        internal enum ResourceKey
+        {
+            Name,
+            ShortName,
+            Description,
+            Prompt,
+            GroupName,
+        }
+
+        public static Tenant DefaultTenant => new() { Name = DefaultTenantIdentifier, Code = "BOOMIR", Schema = "FARABOOM", ArchiveSchema = "FARABOOM_ARCHIVE" };
     }
 }

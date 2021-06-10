@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-
-using System;
-
-namespace Faraboom.Framework.Mvc.ViewFeatures
+﻿namespace Faraboom.Framework.Mvc.ViewFeatures
 {
+    using System;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+
     internal static class NameAndIdProvider
     {
         private static readonly object PreviousNameAndIdKey = typeof(PreviousNameAndId);
@@ -11,19 +10,24 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
         public static string CreateSanitizedId(ViewContext viewContext, string fullName, string invalidCharReplacement)
         {
             if (viewContext == null)
+            {
                 throw new ArgumentNullException(nameof(viewContext));
+            }
 
             if (invalidCharReplacement == null)
+            {
                 throw new ArgumentNullException(nameof(invalidCharReplacement));
+            }
 
             if (string.IsNullOrEmpty(fullName))
+            {
                 return string.Empty;
+            }
 
             // Check cache to avoid whatever TagBuilder.CreateSanitizedId() may do.
             var items = viewContext.HttpContext.Items;
-            object previousNameAndIdObject;
             PreviousNameAndId previousNameAndId = null;
-            if (items.TryGetValue(PreviousNameAndIdKey, out previousNameAndIdObject) &&
+            if (items.TryGetValue(PreviousNameAndIdKey, out object previousNameAndIdObject) &&
                 (previousNameAndId = (PreviousNameAndId)previousNameAndIdObject) != null &&
                 string.Equals(previousNameAndId.FullName, fullName, StringComparison.Ordinal))
             {
@@ -53,16 +57,24 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
         public static void GenerateId(ViewContext viewContext, TagBuilder tagBuilder, string fullName, string invalidCharReplacement)
         {
             if (viewContext == null)
+            {
                 throw new ArgumentNullException(nameof(viewContext));
+            }
 
             if (tagBuilder == null)
+            {
                 throw new ArgumentNullException(nameof(tagBuilder));
+            }
 
             if (invalidCharReplacement == null)
+            {
                 throw new ArgumentNullException(nameof(invalidCharReplacement));
+            }
 
             if (string.IsNullOrEmpty(fullName))
+            {
                 return;
+            }
 
             if (!tagBuilder.Attributes.ContainsKey("id"))
             {
@@ -81,10 +93,14 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
         {
             var htmlFieldPrefix = viewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
             if (string.IsNullOrEmpty(expression))
+            {
                 return htmlFieldPrefix;
+            }
 
             if (string.IsNullOrEmpty(htmlFieldPrefix))
+            {
                 return expression;
+            }
 
             // Need to concatenate. See if we've already done that.
             var items = viewContext.HttpContext.Items;

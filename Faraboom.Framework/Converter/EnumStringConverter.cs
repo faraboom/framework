@@ -1,20 +1,25 @@
-﻿using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace Faraboom.Framework.Converter
+﻿namespace Faraboom.Framework.Converter
 {
+    using System;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+
     public class EnumStringConverter<T> : JsonConverter<T>
     {
         private readonly JsonConverter<T> converter;
         private readonly Type underlyingType;
 
-        public EnumStringConverter() : this(null) { }
+        public EnumStringConverter()
+            : this(null)
+        {
+        }
 
         public EnumStringConverter(JsonSerializerOptions options)
         {
             if (options != null)
+            {
                 converter = options.GetConverter(typeof(T)) as JsonConverter<T>;
+            }
 
             underlyingType = Nullable.GetUnderlyingType(typeof(T));
         }
@@ -27,12 +32,16 @@ namespace Faraboom.Framework.Converter
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (converter != null)
+            {
                 return converter.Read(ref reader, underlyingType, options);
+            }
 
             string value = reader.GetString();
 
             if (string.IsNullOrWhiteSpace(value))
+            {
                 return default;
+            }
 
             // for performance, parse with ignoreCase:false first.
             if (!Enum.TryParse(underlyingType, value, ignoreCase: false, out object result)

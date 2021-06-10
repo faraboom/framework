@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace Faraboom.Framework.Powershell
+﻿namespace Faraboom.Framework.Powershell
 {
+    using System.Threading.Tasks;
+
     public interface IPowershellDispatcher
     {
         Task Dispatch(PowershellContext context);

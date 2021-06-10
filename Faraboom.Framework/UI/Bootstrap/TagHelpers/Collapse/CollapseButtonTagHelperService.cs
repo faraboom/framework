@@ -1,17 +1,15 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class CollapseButtonTagHelperService : TagHelperService<CollapseButtonTagHelper>
     {
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-
-
             AddCommonAttributes(context, output);
 
-            if (output.TagName == "frb-button" || output.TagName == "button")
+            if (output.TagName is "frb-button" or "button")
             {
                 AddButtonAttributes(context, output);
             }
@@ -49,6 +47,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
 
             output.Attributes.Add("href", "#" + TagHelper.BodyId);
         }
-
     }
 }

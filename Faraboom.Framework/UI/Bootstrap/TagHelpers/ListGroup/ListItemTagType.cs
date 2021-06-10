@@ -4,6 +4,6 @@
     {
         Default,
         Link,
-        Button
+        Button,
     }
 }

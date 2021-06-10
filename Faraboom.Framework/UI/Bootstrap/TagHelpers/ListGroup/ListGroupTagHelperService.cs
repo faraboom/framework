@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ListGroup
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ListGroup
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class ListGroupTagHelperService : TagHelperService<ListGroupTagHelper>
     {

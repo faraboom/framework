@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class ColumnBreakerTagHelperService : TagHelperService<ColumnBreakerTagHelper>
     {

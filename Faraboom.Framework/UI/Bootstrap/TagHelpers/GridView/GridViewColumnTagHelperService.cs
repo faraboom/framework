@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-
-using Faraboom.Framework.DataAnnotation;
-
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 {
+    using System;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+
+    using Faraboom.Framework.DataAnnotation;
+
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [Injectable]
     public class GridViewColumnTagHelperService : TagHelperService<GridViewColumnTagHelper>
     {

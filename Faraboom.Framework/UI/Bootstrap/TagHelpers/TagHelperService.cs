@@ -1,10 +1,9 @@
-﻿using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers
 {
+    using System.Threading.Tasks;
+
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     public abstract class TagHelperService<TTagHelper> : ITagHelperService<TTagHelper>
         where TTagHelper : Microsoft.AspNetCore.Razor.TagHelpers.TagHelper
     {

@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("frb-input")]
     public class InputTagHelper : TagHelper<InputTagHelper, InputTagHelperService>
     {
+        public InputTagHelper(InputTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-label")]
         public string Label { get; set; }
 
@@ -34,11 +39,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 
         [HtmlAttributeName("frb-suppress-label")]
         public bool SuppressLabel { get; set; }
-
-        public InputTagHelper(InputTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
     }
 }

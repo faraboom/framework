@@ -1,25 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Faraboom.Framework.Data
+﻿namespace Faraboom.Framework.Data
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     public abstract class ValueObjectBase
     {
-        protected static bool EqualOperator(ValueObjectBase left, ValueObjectBase right)
+        public static bool operator ==(ValueObjectBase left, ValueObjectBase right)
         {
-            if (ReferenceEquals(left, null) ^ ReferenceEquals(right, null))
-            {
-                return false;
-            }
-            return ReferenceEquals(left, null) || left.Equals(right);
+            return EqualOperator(left, right);
         }
 
-        protected static bool NotEqualOperator(ValueObjectBase left, ValueObjectBase right)
+        public static bool operator !=(ValueObjectBase left, ValueObjectBase right)
         {
-            return !EqualOperator(left, right);
+            return NotEqualOperator(left, right);
         }
-
-        protected abstract IEnumerable<object> GetAtomicValues();
 
         public override bool Equals(object obj)
         {
@@ -30,7 +24,9 @@ namespace Faraboom.Framework.Data
 
             ValueObjectBase other = obj as ValueObjectBase;
             if (other == null)
+            {
                 return false;
+            }
 
             IEnumerator<object> thisValues = GetAtomicValues().GetEnumerator();
             IEnumerator<object> otherValues = other.GetAtomicValues().GetEnumerator();
@@ -48,6 +44,7 @@ namespace Faraboom.Framework.Data
                     return false;
                 }
             }
+
             return !thisValues.MoveNext() && !otherValues.MoveNext();
         }
 
@@ -58,14 +55,21 @@ namespace Faraboom.Framework.Data
              .Aggregate((t1, t2) => t1 ^ t2);
         }
 
-        public static bool operator ==(ValueObjectBase left, ValueObjectBase right)
+        protected static bool EqualOperator(ValueObjectBase left, ValueObjectBase right)
         {
-            return EqualOperator(left, right);
+            if (ReferenceEquals(left, null) ^ ReferenceEquals(right, null))
+            {
+                return false;
+            }
+
+            return ReferenceEquals(left, null) || left.Equals(right);
         }
 
-        public static bool operator !=(ValueObjectBase left, ValueObjectBase right)
+        protected static bool NotEqualOperator(ValueObjectBase left, ValueObjectBase right)
         {
-            return NotEqualOperator(left, right);
+            return !EqualOperator(left, right);
         }
+
+        protected abstract IEnumerable<object> GetAtomicValues();
     }
 }

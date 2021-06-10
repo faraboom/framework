@@ -1,7 +1,7 @@
-﻿using System.Linq.Expressions;
-
-namespace Faraboom.Framework.DataAccess.Query
+﻿namespace Faraboom.Framework.DataAccess.Query
 {
+    using System.Linq.Expressions;
+
     public class ReplaceExpressionVisitor : ExpressionVisitor
     {
         private readonly Expression oldValue;
@@ -16,7 +16,10 @@ namespace Faraboom.Framework.DataAccess.Query
         public override Expression Visit(Expression node)
         {
             if (node == oldValue)
+            {
                 return newValue;
+            }
+
             return base.Visit(node);
         }
     }

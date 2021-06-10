@@ -1,8 +1,10 @@
-using System;
-
-namespace Faraboom.Framework.DataAccess.Exceptions
+﻿namespace Faraboom.Framework.DataAccess.Exceptions
 {
+    using System;
+
+#pragma warning disable CA1032 // Implement standard exception constructors
     public class EntityNotFoundException : Exception
+#pragma warning restore CA1032 // Implement standard exception constructors
     {
         public EntityNotFoundException(string entityName, int entityKey)
         {

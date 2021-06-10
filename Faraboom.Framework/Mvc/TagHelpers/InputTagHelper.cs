@@ -1,26 +1,26 @@
-﻿//using System;
-//using System.Collections.Generic;
+﻿// using System;
+// using System.Collections.Generic;
 
-//using Faraboom.Framework.Mvc.ViewFeatures;
+// using Faraboom.Framework.Mvc.ViewFeatures;
 
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc.ModelBinding;
-//using Microsoft.AspNetCore.Mvc.Rendering;
-//using Microsoft.AspNetCore.Mvc.ViewFeatures;
-//using Microsoft.AspNetCore.Razor.TagHelpers;
+// using Microsoft.AspNetCore.Http;
+// using Microsoft.AspNetCore.Mvc.ModelBinding;
+// using Microsoft.AspNetCore.Mvc.Rendering;
+// using Microsoft.AspNetCore.Mvc.ViewFeatures;
+// using Microsoft.AspNetCore.Razor.TagHelpers;
 
-//namespace Microsoft.AspNetCore.Mvc.TagHelpers
-//{
+// namespace Microsoft.AspNetCore.Mvc.TagHelpers
+// {
 //    /// <summary>
 //    /// <see cref="ITagHelper"/> implementation targeting &lt;input&gt; elements with an <c>asp-for</c> attribute.
 //    /// </summary>
 //    [HtmlTargetElement("input", Attributes = ForAttributeName, TagStructure = TagStructure.WithoutEndTag)]
-//    public class InputTagHelper : TagHelper
+//    public class InputTagHelper : TagHelpers.TagHelper
 //    {
 //        private const string ForAttributeName = "asp-for";
 //        private const string FormatAttributeName = "asp-format";
 
-//        // Mapping from datatype names and data annotation hints to values for the <input/> element's "type" attribute.
+// // Mapping from datatype names and data annotation hints to values for the <input/> element's "type" attribute.
 //        private static readonly Dictionary<string, string> _defaultInputTypes =
 //            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 //            {
@@ -54,7 +54,7 @@
 //                { TemplateRenderer.IEnumerableOfIFormFileName, "file" },
 //            };
 
-//        // Mapping from <input/> element's type to RFC 3339 date and time formats.
+// // Mapping from <input/> element's type to RFC 3339 date and time formats.
 //        private static readonly Dictionary<string, string> _rfc3339Formats =
 //            new Dictionary<string, string>(StringComparer.Ordinal)
 //            {
@@ -64,7 +64,7 @@
 //                { "time", @"{0:HH\:mm\:ss.fff}" },
 //            };
 
-//        /// <summary>
+// /// <summary>
 //        /// Creates a new <see cref="InputTagHelper"/>.
 //        /// </summary>
 //        /// <param name="generator">The <see cref="IHtmlGenerator"/>.</param>
@@ -73,28 +73,28 @@
 //            Generator = generator;
 //        }
 
-//        /// <inheritdoc />
+// /// <inheritdoc />
 //        public override int Order => -1000;
 
-//        /// <summary>
+// /// <summary>
 //        /// Gets the <see cref="IHtmlGenerator"/> used to generate the <see cref="InputTagHelper"/>'s output.
 //        /// </summary>
 //        protected IHtmlGenerator Generator { get; }
 
-//        /// <summary>
+// /// <summary>
 //        /// Gets the <see cref="Rendering.ViewContext"/> of the executing view.
 //        /// </summary>
 //        [HtmlAttributeNotBound]
 //        [ViewContext]
 //        public ViewContext ViewContext { get; set; }
 
-//        /// <summary>
+// /// <summary>
 //        /// An expression to be evaluated against the current model.
 //        /// </summary>
 //        [HtmlAttributeName(ForAttributeName)]
 //        public ModelExpression For { get; set; }
 
-//        /// <summary>
+// /// <summary>
 //        /// The format string (see https://msdn.microsoft.com/en-us/library/txafckwd.aspx) used to format the
 //        /// <see cref="For"/> result. Sets the generated "value" attribute to that formatted string.
 //        /// </summary>
@@ -106,7 +106,7 @@
 //        [HtmlAttributeName(FormatAttributeName)]
 //        public string Format { get; set; }
 
-//        /// <summary>
+// /// <summary>
 //        /// The type of the &lt;input&gt; element.
 //        /// </summary>
 //        /// <remarks>
@@ -118,7 +118,7 @@
 //        [HtmlAttributeName("type")]
 //        public string InputTypeName { get; set; }
 
-//        /// <summary>
+// /// <summary>
 //        /// The name of the &lt;input&gt; element.
 //        /// </summary>
 //        /// <remarks>
@@ -127,7 +127,7 @@
 //        /// </remarks>
 //        public string Name { get; set; }
 
-//        /// <summary>
+// /// <summary>
 //        /// The value of the &lt;input&gt; element.
 //        /// </summary>
 //        /// <remarks>
@@ -136,7 +136,7 @@
 //        /// </remarks>
 //        public string Value { get; set; }
 
-//        /// <inheritdoc />
+// /// <inheritdoc />
 //        /// <remarks>Does nothing if <see cref="For"/> is <c>null</c>.</remarks>
 //        /// <exception cref="InvalidOperationException">
 //        /// Thrown if <see cref="Format"/> is non-<c>null</c> but <see cref="For"/> is <c>null</c>.
@@ -148,29 +148,29 @@
 //                throw new ArgumentNullException(nameof(context));
 //            }
 
-//            if (output == null)
+// if (output == null)
 //            {
 //                throw new ArgumentNullException(nameof(output));
 //            }
 
-//            // Pass through attributes that are also well-known HTML attributes. Must be done prior to any copying
+// // Pass through attributes that are also well-known HTML attributes. Must be done prior to any copying
 //            // from a TagBuilder.
 //            if (InputTypeName != null)
 //            {
 //                output.CopyHtmlAttribute("type", context);
 //            }
 
-//            if (Name != null)
+// if (Name != null)
 //            {
 //                output.CopyHtmlAttribute(nameof(Name), context);
 //            }
 
-//            if (Value != null)
+// if (Value != null)
 //            {
 //                output.CopyHtmlAttribute(nameof(Value), context);
 //            }
 
-//            // Note null or empty For.Name is allowed because TemplateInfo.HtmlFieldPrefix may be sufficient.
+// // Note null or empty For.Name is allowed because TemplateInfo.HtmlFieldPrefix may be sufficient.
 //            // IHtmlGenerator will enforce name requirements.
 //            var metadata = For.Metadata;
 //            var modelExplorer = For.ModelExplorer;
@@ -183,7 +183,7 @@
 //                    For.Name));
 //            }
 
-//            string inputType;
+// string inputType;
 //            string inputTypeHint;
 //            if (string.IsNullOrEmpty(InputTypeName))
 //            {
@@ -196,13 +196,13 @@
 //                inputTypeHint = null;
 //            }
 
-//            // inputType may be more specific than default the generator chooses below.
+// // inputType may be more specific than default the generator chooses below.
 //            if (!output.Attributes.ContainsName("type"))
 //            {
 //                output.Attributes.SetAttribute("type", inputType);
 //            }
 
-//            // Ensure Generator does not throw due to empty "fullName" if user provided a name attribute.
+// // Ensure Generator does not throw due to empty "fullName" if user provided a name attribute.
 //            IDictionary<string, object> htmlAttributes = null;
 //            if (string.IsNullOrEmpty(For.Name) &&
 //                string.IsNullOrEmpty(ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix) &&
@@ -214,18 +214,18 @@
 //                };
 //            }
 
-//            TagBuilder tagBuilder;
+// TagBuilder tagBuilder;
 //            switch (inputType)
 //            {
 //                case "hidden":
 //                    tagBuilder = GenerateHidden(modelExplorer, htmlAttributes);
 //                    break;
 
-//                case "checkbox":
+// case "checkbox":
 //                    tagBuilder = GenerateCheckBox(modelExplorer, output, htmlAttributes);
 //                    break;
 
-//                case "password":
+// case "password":
 //                    tagBuilder = Generator.GeneratePassword(
 //                        ViewContext,
 //                        modelExplorer,
@@ -234,16 +234,16 @@
 //                        htmlAttributes: htmlAttributes);
 //                    break;
 
-//                case "radio":
+// case "radio":
 //                    tagBuilder = GenerateRadio(modelExplorer, htmlAttributes);
 //                    break;
 
-//                default:
+// default:
 //                    tagBuilder = GenerateTextBox(modelExplorer, inputTypeHint, inputType, htmlAttributes);
 //                    break;
 //            }
 
-//            if (tagBuilder != null)
+// if (tagBuilder != null)
 //            {
 //                // This TagBuilder contains the one <input/> element of interest.
 //                output.MergeAttributes(tagBuilder);
@@ -256,7 +256,7 @@
 //            }
 //        }
 
-//        /// <summary>
+// /// <summary>
 //        /// Gets an &lt;input&gt; element's "type" attribute value based on the given <paramref name="modelExplorer"/>
 //        /// or <see cref="InputType"/>.
 //        /// </summary>
@@ -275,11 +275,11 @@
 //                }
 //            }
 
-//            inputTypeHint = InputType.Text.ToString().ToLowerInvariant();
+// inputTypeHint = InputType.Text.ToString().ToLowerInvariant();
 //            return inputTypeHint;
 //        }
 
-//        private TagBuilder GenerateCheckBox(
+// private TagBuilder GenerateCheckBox(
 //            ModelExplorer modelExplorer,
 //            TagHelperOutput output,
 //            IDictionary<string, object> htmlAttributes)
@@ -309,7 +309,7 @@
 //                       "checkbox"));
 //            }
 
-//            if (ViewContext.CheckBoxHiddenInputRenderMode != CheckBoxHiddenInputRenderMode.None)
+// if (ViewContext.CheckBoxHiddenInputRenderMode != CheckBoxHiddenInputRenderMode.None)
 //            {
 //                // hiddenForCheckboxTag always rendered after the returned element
 //                var hiddenForCheckboxTag = Generator.GenerateHiddenForCheckbox(ViewContext, modelExplorer, For.Name);
@@ -327,7 +327,7 @@
 //                        hiddenForCheckboxTag.MergeAttribute("name", Name);
 //                    }
 
-//                    if (ViewContext.CheckBoxHiddenInputRenderMode == CheckBoxHiddenInputRenderMode.EndOfForm && ViewContext.FormContext.CanRenderAtEndOfForm)
+// if (ViewContext.CheckBoxHiddenInputRenderMode == CheckBoxHiddenInputRenderMode.EndOfForm && ViewContext.FormContext.CanRenderAtEndOfForm)
 //                    {
 //                        ViewContext.FormContext.EndOfFormContent.Add(hiddenForCheckboxTag);
 //                    }
@@ -338,7 +338,7 @@
 //                }
 //            }
 
-//            return Generator.GenerateCheckBox(
+// return Generator.GenerateCheckBox(
 //                ViewContext,
 //                modelExplorer,
 //                For.Name,
@@ -346,7 +346,7 @@
 //                htmlAttributes: htmlAttributes);
 //        }
 
-//        private TagBuilder GenerateRadio(ModelExplorer modelExplorer, IDictionary<string, object> htmlAttributes)
+// private TagBuilder GenerateRadio(ModelExplorer modelExplorer, IDictionary<string, object> htmlAttributes)
 //        {
 //            // Note empty string is allowed.
 //            if (Value == null)
@@ -358,7 +358,7 @@
 //                    "radio"));
 //            }
 
-//            return Generator.GenerateRadioButton(
+// return Generator.GenerateRadioButton(
 //                ViewContext,
 //                modelExplorer,
 //                For.Name,
@@ -367,7 +367,7 @@
 //                htmlAttributes: htmlAttributes);
 //        }
 
-//        private TagBuilder GenerateTextBox(
+// private TagBuilder GenerateTextBox(
 //            ModelExplorer modelExplorer,
 //            string inputTypeHint,
 //            string inputType,
@@ -388,12 +388,12 @@
 //                }
 //            }
 
-//            if (htmlAttributes == null)
+// if (htmlAttributes == null)
 //            {
 //                htmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 //            }
 
-//            htmlAttributes["type"] = inputType;
+// htmlAttributes["type"] = inputType;
 //            if (string.Equals(inputType, "file") &&
 //                string.Equals(
 //                    inputTypeHint,
@@ -403,7 +403,7 @@
 //                htmlAttributes["multiple"] = "multiple";
 //            }
 
-//            return Generator.GenerateTextBox(
+// return Generator.GenerateTextBox(
 //                ViewContext,
 //                modelExplorer,
 //                For.Name,
@@ -412,7 +412,7 @@
 //                htmlAttributes);
 //        }
 
-//        // Imitate Generator.GenerateHidden() using Generator.GenerateTextBox(). This adds support for asp-format that
+// // Imitate Generator.GenerateHidden() using Generator.GenerateTextBox(). This adds support for asp-format that
 //        // is not available in Generator.GenerateHidden().
 //        private TagBuilder GenerateHidden(ModelExplorer modelExplorer, IDictionary<string, object> htmlAttributes)
 //        {
@@ -422,20 +422,20 @@
 //                value = Convert.ToBase64String(byteArrayValue);
 //            }
 
-//            if (htmlAttributes == null)
+// if (htmlAttributes == null)
 //            {
 //                htmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 //            }
 
-//            // In DefaultHtmlGenerator(), GenerateTextBox() calls GenerateInput() _almost_ identically to how
+// // In DefaultHtmlGenerator(), GenerateTextBox() calls GenerateInput() _almost_ identically to how
 //            // GenerateHidden() does and the main switch inside GenerateInput() handles InputType.Text and
 //            // InputType.Hidden identically. No behavior differences at all when a type HTML attribute already exists.
 //            htmlAttributes["type"] = "hidden";
 
-//            return Generator.GenerateTextBox(ViewContext, modelExplorer, For.Name, value, Format, htmlAttributes);
+// return Generator.GenerateTextBox(ViewContext, modelExplorer, For.Name, value, Format, htmlAttributes);
 //        }
 
-//        // Get a fall-back format based on the metadata.
+// // Get a fall-back format based on the metadata.
 //        private string GetFormat(ModelExplorer modelExplorer, string inputTypeHint, string inputType)
 //        {
 //            string format;
@@ -483,10 +483,10 @@
 //                format = modelExplorer.Metadata.EditFormatString;
 //            }
 
-//            return format;
+// return format;
 //        }
 
-//        // A variant of TemplateRenderer.GetViewNames(). Main change relates to bool? handling.
+// // A variant of TemplateRenderer.GetViewNames(). Main change relates to bool? handling.
 //        private static IEnumerable<string> GetInputTypeHints(ModelExplorer modelExplorer)
 //        {
 //            if (!string.IsNullOrEmpty(modelExplorer.Metadata.TemplateHint))
@@ -494,12 +494,12 @@
 //                yield return modelExplorer.Metadata.TemplateHint;
 //            }
 
-//            if (!string.IsNullOrEmpty(modelExplorer.Metadata.DataTypeName))
+// if (!string.IsNullOrEmpty(modelExplorer.Metadata.DataTypeName))
 //            {
 //                yield return modelExplorer.Metadata.DataTypeName;
 //            }
 
-//            // In most cases, we don't want to search for Nullable<T>. We want to search for T, which should handle
+// // In most cases, we don't want to search for Nullable<T>. We want to search for T, which should handle
 //            // both T and Nullable<T>. However we special-case bool? to avoid turning an <input/> into a <select/>.
 //            var fieldType = modelExplorer.ModelType;
 //            if (typeof(bool?) != fieldType)
@@ -507,10 +507,10 @@
 //                fieldType = modelExplorer.Metadata.UnderlyingOrModelType;
 //            }
 
-//            foreach (var typeName in TemplateRenderer.GetTypeNames(modelExplorer.Metadata, fieldType))
+// foreach (var typeName in TemplateRenderer.GetTypeNames(modelExplorer.Metadata, fieldType))
 //            {
 //                yield return typeName;
 //            }
 //        }
 //    }
-//}
+// }

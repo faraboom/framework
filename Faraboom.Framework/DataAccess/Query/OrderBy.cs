@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-
-namespace Faraboom.Framework.DataAccess.Query
+﻿namespace Faraboom.Framework.DataAccess.Query
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Reflection;
+
     public class OrderBy<TEntity>
-	{
-		public OrderBy(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> expression)
-		{
-			Expression = expression;
-		}
+    {
+        public OrderBy(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> expression)
+        {
+            Expression = expression;
+        }
 
         public OrderBy(string columName, bool reverse)
         {
@@ -20,13 +20,12 @@ namespace Faraboom.Framework.DataAccess.Query
 
         public Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> Expression { get; private set; }
 
-
-        private Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> GetOrderBy(string columnName, bool reverse)
+        private static Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> GetOrderBy(string columnName, bool reverse)
         {
             Type typeQueryable = typeof(IQueryable<TEntity>);
             ParameterExpression argQueryable = System.Linq.Expressions.Expression.Parameter(typeQueryable, "p");
             var outerExpression = System.Linq.Expressions.Expression.Lambda(argQueryable, argQueryable);
-            
+
             IQueryable<TEntity> query = new List<TEntity>().AsQueryable();
             var entityType = typeof(TEntity);
             ParameterExpression arg = System.Linq.Expressions.Expression.Parameter(entityType, "x");
@@ -39,14 +38,16 @@ namespace Faraboom.Framework.DataAccess.Query
                 expression = System.Linq.Expressions.Expression.Property(expression, propertyInfo);
                 entityType = propertyInfo.PropertyType;
             }
+
             LambdaExpression lambda = System.Linq.Expressions.Expression.Lambda(expression, arg);
             string methodName = reverse ? "OrderByDescending" : "OrderBy";
 
-            MethodCallExpression resultExp = System.Linq.Expressions.Expression.Call(typeof(Queryable), 
-                                                                                     methodName, 
-                                                                                     new Type[] { typeof(TEntity), entityType }, 
-                                                                                     outerExpression.Body, 
-                                                                                     System.Linq.Expressions.Expression.Quote(lambda));
+            MethodCallExpression resultExp = System.Linq.Expressions.Expression.Call(
+                typeof(Queryable),
+                methodName,
+                new Type[] { typeof(TEntity), entityType },
+                outerExpression.Body,
+                System.Linq.Expressions.Expression.Quote(lambda));
 
             var finalLambda = System.Linq.Expressions.Expression.Lambda(resultExp, argQueryable);
 

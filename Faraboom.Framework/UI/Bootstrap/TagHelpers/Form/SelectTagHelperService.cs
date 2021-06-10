@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-
-using Faraboom.Framework.Core;
-using Faraboom.Framework.DataAnnotation;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
-
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.CodeAnalysis;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+    using Faraboom.Framework.Core;
+    using Faraboom.Framework.DataAnnotation;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.AspNetCore.Mvc.TagHelpers;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.CodeAnalysis;
+
     [Injectable]
     public class SelectTagHelperService : TagHelperService<SelectTagHelper>
     {
@@ -75,7 +73,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             {
                 For = TagHelper.For,
                 Items = GetSelectItems(context, output),
-                ViewContext = TagHelper.ViewContext
+                ViewContext = TagHelper.ViewContext,
             };
 
             var selectTagHelperOutput = await selectTagHelper.ProcessAndGetOutputAsync(GetInputAttributes(context, output), context, "select", TagMode.StartTagAndEndTag);
@@ -91,48 +89,44 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         protected virtual void AddDisabledAttribute(TagHelperOutput inputTagHelperOutput)
         {
             if (!inputTagHelperOutput.Attributes.ContainsName("disabled") && cachedModelAttributes?.GetAttribute<UIHintAttribute>()?.Disabled == true)
-                inputTagHelperOutput.Attributes.Add("disabled", "");
+            {
+                inputTagHelperOutput.Attributes.Add("disabled", string.Empty);
+            }
         }
 
-        protected virtual List<SelectListItem> GetSelectItems(TagHelperContext context, TagHelperOutput output)
+        protected virtual IReadOnlyList<SelectListItem> GetSelectItems(TagHelperContext context, TagHelperOutput output)
         {
             if (TagHelper.Items != null)
+            {
                 return TagHelper.Items.ToList();
+            }
 
             if (IsEnum())
+            {
                 return GetSelectItemsFromEnum(context, output, TagHelper.For.ModelExplorer);
+            }
 
             var selectItemsAttribute = cachedModelAttributes?.GetAttribute<SelectItemsAttribute>();
             if (selectItemsAttribute != null)
-                return GetSelectItemsFromAttribute(selectItemsAttribute, TagHelper.For.ModelExplorer);
-
-            throw new Exception("No items provided for select attribute.");
-        }
-
-        private bool IsEnum()
-        {
-            var value = TagHelper.For.Model;
-            if (value != null)
             {
-                var type = value.GetType();
-                if (type.IsEnum)
-                    return true;
-
-                if (type == typeof(IEnumerable<>) && type.GetGenericArguments()[0].IsEnum)
-                    return true;
+                return GetSelectItemsFromAttribute(selectItemsAttribute, TagHelper.For.ModelExplorer);
             }
 
-            return TagHelper.For.ModelExplorer.Metadata.IsEnum || TagHelper.For.ModelExplorer.Metadata.ElementType?.IsEnum == true;
+            throw new Exception("No items provided for select attribute.");
         }
 
         protected virtual async Task<string> GetLabelAsHtmlAsync(TagHelperContext context, TagHelperOutput output, TagHelperOutput selectTag)
         {
             var uIHintAttribute = cachedModelAttributes?.GetAttribute<UIHintAttribute>();
             if (uIHintAttribute != null && uIHintAttribute.LabelPosition == LabelPosition.Hidden)
-                return "";
+            {
+                return string.Empty;
+            }
 
             if (!string.IsNullOrEmpty(TagHelper.Label))
+            {
                 return "<label " + GetIdAttributeAsString(selectTag) + ">" + TagHelper.Label + "</label>" + GetRequiredSymbol(context, output);
+            }
 
             return await GetLabelAsHtmlUsingTagHelperAsync(context, output) + GetRequiredSymbol(context, output);
         }
@@ -141,30 +135,34 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         {
             if (!TagHelper.DisplayRequiredSymbol)
             {
-                return "";
+                return string.Empty;
             }
 
-            return cachedModelAttributes?.GetAttribute<RequiredAttribute>() != null ? "<span> * </span>" : "";
+            return cachedModelAttributes?.GetAttribute<RequiredAttribute>() != null ? "<span> * </span>" : string.Empty;
         }
 
         protected virtual void AddInfoTextId(TagHelperOutput inputTagHelperOutput)
         {
             var idAttr = inputTagHelperOutput.Attributes.FirstOrDefault(a => a.Name == "id");
             if (idAttr == null)
+            {
                 return;
+            }
 
             var attribute = cachedModelAttributes?.GetAttribute<DisplayAttribute>();
             if (attribute != null)
             {
                 var description = Globals.GetLocalizedValueInternal(attribute, TagHelper.For.Name, Constants.ResourceKey.Description);
                 if (!string.IsNullOrWhiteSpace(description))
+                {
                     inputTagHelperOutput.Attributes.Add("aria-describedby", description);
+                }
             }
         }
 
         protected virtual string GetInfoAsHtml(TagHelperContext context, TagHelperOutput output, TagHelperOutput inputTag)
         {
-            var text = "";
+            var text = string.Empty;
             if (!string.IsNullOrEmpty(TagHelper.InfoText))
             {
                 text = TagHelper.InfoText;
@@ -176,18 +174,24 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 {
                     var description = Globals.GetLocalizedValueInternal(attribute, TagHelper.For.Name, Constants.ResourceKey.Description);
                     if (!string.IsNullOrWhiteSpace(description))
+                    {
                         text = description;
+                    }
                 }
             }
 
             if (string.IsNullOrEmpty(text))
-                return "";
+            {
+                return string.Empty;
+            }
 
             var idAttr = inputTag.Attributes.FirstOrDefault(a => a.Name == "id");
             return $"<small id=\"{idAttr?.Value}InfoText\" class=\"form-text text-muted\">{text}</small>";
         }
 
+#pragma warning disable CA1002 // Do not expose generic lists
         protected virtual List<SelectListItem> GetSelectItemsFromEnum(TagHelperContext context, TagHelperOutput output, ModelExplorer explorer)
+#pragma warning restore CA1002 // Do not expose generic lists
         {
             var selectItems = new List<SelectListItem>();
             var isNullableType = Nullable.GetUnderlyingType(explorer.ModelType) != null;
@@ -198,6 +202,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 enumType = Nullable.GetUnderlyingType(explorer.ModelType);
                 selectItems.Add(new SelectListItem());
             }
+
             if (explorer.Metadata.ElementType?.IsEnum == true)
             {
                 enumType = explorer.Metadata.ElementType;
@@ -209,14 +214,14 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 selectItems.Add(new SelectListItem
                 {
                     Value = enumValue.ToString(),
-                    Text = EnumHelper.LocalizeEnum(enumValue)
+                    Text = EnumHelper.LocalizeEnum(enumValue),
                 });
             }
 
             return selectItems;
         }
 
-        protected virtual List<SelectListItem> GetSelectItemsFromAttribute(SelectItemsAttribute selectItemsAttribute, ModelExplorer explorer)
+        protected virtual IReadOnlyList<SelectListItem> GetSelectItemsFromAttribute(SelectItemsAttribute selectItemsAttribute, ModelExplorer explorer)
         {
             var selectItems = selectItemsAttribute.GetItems(explorer)?.ToList();
 
@@ -233,7 +238,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             var labelTagHelper = new LabelTagHelper(generator)
             {
                 For = TagHelper.For,
-                ViewContext = TagHelper.ViewContext
+                ViewContext = TagHelper.ViewContext,
             };
 
             return await labelTagHelper.RenderAsync(new TagHelperAttributeList(), context, encoder, "label", TagMode.StartTagAndEndTag);
@@ -244,7 +249,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             var validationMessageTagHelper = new ValidationMessageTagHelper(generator)
             {
                 For = TagHelper.For,
-                ViewContext = TagHelper.ViewContext
+                ViewContext = TagHelper.ViewContext,
             };
 
             var attributeList = new TagHelperAttributeList { { "class", "text-danger" } };
@@ -256,7 +261,9 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         {
             var attribute = cachedModelAttributes?.GetAttribute<UIHintAttribute>();
             if (attribute != null)
+            {
                 TagHelper.Size = attribute.Size;
+            }
 
             switch (TagHelper.Size)
             {
@@ -267,7 +274,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 case FormControlSize.Large:
                     return "custom-select-lg";
                 default:
-                    return "";
+                    return string.Empty;
             }
         }
 
@@ -307,7 +314,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         {
             var idAttr = inputTag.Attributes.FirstOrDefault(a => a.Name == "id");
 
-            return idAttr != null ? "for=\"" + idAttr.Value + "\"" : "";
+            return idAttr != null ? "for=\"" + idAttr.Value + "\"" : string.Empty;
         }
 
         protected virtual void AddGroupToFormGroupContents(TagHelperContext context, string propertyName, string html, int order, out bool suppress)
@@ -321,9 +328,29 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 {
                     HtmlContent = html,
                     Order = order,
-                    PropertyName = propertyName
+                    PropertyName = propertyName,
                 });
             }
+        }
+
+        private bool IsEnum()
+        {
+            var value = TagHelper.For.Model;
+            if (value != null)
+            {
+                var type = value.GetType();
+                if (type.IsEnum)
+                {
+                    return true;
+                }
+
+                if (type == typeof(IEnumerable<>) && type.GetGenericArguments()[0].IsEnum)
+                {
+                    return true;
+                }
+            }
+
+            return TagHelper.For.ModelExplorer.Metadata.IsEnum || TagHelper.For.ModelExplorer.Metadata.ElementType?.IsEnum == true;
         }
     }
 }

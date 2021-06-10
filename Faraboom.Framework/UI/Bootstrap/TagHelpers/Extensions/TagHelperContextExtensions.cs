@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     public static class TagHelperContextExtensions
     {
         public static T GetValue<T>(this TagHelperContext context, string key)
         {
             if (!context.Items.ContainsKey(key))
             {
-                return default(T);
+                return default;
             }
 
             return (T)context.Items[key];

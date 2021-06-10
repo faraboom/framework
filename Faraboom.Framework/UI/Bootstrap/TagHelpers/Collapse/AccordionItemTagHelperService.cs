@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class AccordionItemTagHelperService : TagHelperService<AccordionItemTagHelper>
     {
@@ -39,7 +37,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
 
         protected virtual string GetAccordionContentItem(TagHelperContext context, TagHelperOutput output, string content)
         {
-            var show = (TagHelper.Active ?? false) ? " show" : "";
+            var show = (TagHelper.Active ?? false) ? " show" : string.Empty;
             return "<div id=\"" + GetContentId() + "\" class=\"collapse" + show + "\" aria-labelledby=\"" + GetHeadingId() + "\" data-parent=\"#" + AccordionParentIdPlaceholder + "\">" + Environment.NewLine +
                    "      <div class=\"card-body\">" + Environment.NewLine +
                             content + Environment.NewLine +
@@ -49,12 +47,12 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Collapse
 
         protected virtual string GetHeadingId()
         {
-            return "heading" + TagHelper.Id; ;
+            return "heading" + TagHelper.Id;
         }
 
         protected virtual string GetContentId()
         {
-            return "content" + TagHelper.Id; ;
+            return "content" + TagHelper.Id;
         }
 
         protected virtual void SetRandomIdIfNotProvided()

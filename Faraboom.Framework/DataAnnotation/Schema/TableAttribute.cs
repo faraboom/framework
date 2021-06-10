@@ -1,12 +1,18 @@
-﻿using Faraboom.Framework.Data;
-
-namespace Faraboom.Framework.DataAnnotation.Schema
+﻿namespace Faraboom.Framework.DataAnnotation.Schema
 {
+    using Faraboom.Framework.Data;
+
     public sealed class TableAttribute : System.ComponentModel.DataAnnotations.Schema.TableAttribute
     {
         public TableAttribute(string name, string prefix = null, bool pluralize = true)
             : base(DbProviderFactories.GetFactory.GetObjectName(name, prefix, pluralize))
         {
+            Prefix = prefix;
+            Pluralize = pluralize;
         }
+
+        public string Prefix { get; }
+
+        public bool Pluralize { get; }
     }
 }

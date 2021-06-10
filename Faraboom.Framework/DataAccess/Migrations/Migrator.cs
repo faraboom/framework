@@ -1,20 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Logging;
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Faraboom.Framework.DataAccess.Migrations
+﻿namespace Faraboom.Framework.DataAccess.Migrations
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Diagnostics;
+    using Microsoft.EntityFrameworkCore.Infrastructure;
+    using Microsoft.EntityFrameworkCore.Migrations;
+    using Microsoft.EntityFrameworkCore.Storage;
+    using Microsoft.Extensions.Logging;
+
     public class Migrator : IMigrator
     {
         private readonly IHistoryRepository historyRepository;
@@ -50,24 +49,6 @@ namespace Faraboom.Framework.DataAccess.Migrations
             this.historyRepository.GetType().BaseType?.BaseType?.GetField("_productVersionColumnName", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)?.SetValue(this.historyRepository, factory.GetObjectName(nameof(HistoryRow.ProductVersion), pluralize: false));
         }
 
-        public string GenerateScript(string fromMigration = null, string toMigration = null, MigrationsSqlGenerationOptions options = MigrationsSqlGenerationOptions.Default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Migrate(string targetMigration = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        private static string Prepare(string sql)
-        {
-            var factory = Data.DbProviderFactories.GetFactory;
-            return sql
-                .Replace(nameof(HistoryRow.MigrationId), factory.GetObjectName(nameof(HistoryRow.MigrationId), pluralize: false))
-                    .Replace(nameof(HistoryRow.ProductVersion), factory.GetObjectName(nameof(HistoryRow.ProductVersion), pluralize: false));
-        }
-
         public async Task MigrateAsync(string targetMigration = null, CancellationToken cancellationToken = default)
         {
             migrationsLogger.MigrateUsingConnection(this, connection);
@@ -97,8 +78,11 @@ namespace Faraboom.Framework.DataAccess.Migrations
                                 break;
                             }
                         }
+
                         if (breaked)
+                        {
                             break;
+                        }
 
                         var historySql = Prepare(historyRepository.GetInsertScript(new HistoryRow(migration.Version, migration.Version)));
                         var historyCmd = new MigrationCommand(rawSqlCommandBuilder.Build(historySql), currentContext.Context, commandLogger);
@@ -108,14 +92,36 @@ namespace Faraboom.Framework.DataAccess.Migrations
             }
         }
 
+        public string GenerateScript(string fromMigration = null, string toMigration = null, MigrationsSqlGenerationOptions options = MigrationsSqlGenerationOptions.Default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Migrate(string targetMigration = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static string Prepare(string sql)
+        {
+            var factory = Data.DbProviderFactories.GetFactory;
+            return sql
+                .Replace(nameof(HistoryRow.MigrationId), factory.GetObjectName(nameof(HistoryRow.MigrationId), pluralize: false))
+                    .Replace(nameof(HistoryRow.ProductVersion), factory.GetObjectName(nameof(HistoryRow.ProductVersion), pluralize: false));
+        }
+
         private async Task<IReadOnlyList<(string Version, string Query)>> GetMigrationsToApplyAsync(CancellationToken cancellationToken = default)
         {
             var migrationDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Migrations");
             if (!Directory.Exists(migrationDirectory))
+            {
                 return null;
+            }
 
             if (Directory.GetFiles(migrationDirectory)?.All(t => Path.GetExtension(t).ToUpper() != ".SQL") == true)
+            {
                 return null;
+            }
 
             if (!await historyRepository.ExistsAsync(cancellationToken))
             {
@@ -132,10 +138,10 @@ namespace Faraboom.Framework.DataAccess.Migrations
             }
 
             var appliedMigrationEntries = await historyRepository.GetAppliedMigrationsAsync(cancellationToken);
-            var lastVersion = appliedMigrationEntries.Select(t => int.Parse(t.MigrationId.Replace(".", ""))).OrderByDescending(t => t).FirstOrDefault();
+            var lastVersion = appliedMigrationEntries.Select(t => int.Parse(t.MigrationId.Replace(".", string.Empty))).OrderByDescending(t => t).FirstOrDefault();
 
             var lst = Directory.GetFiles(migrationDirectory)
-                .Where(t => Path.GetExtension(t).ToUpper() == ".SQL" && int.Parse(Path.GetFileNameWithoutExtension(t).Replace(".", "")) > lastVersion)
+                .Where(t => Path.GetExtension(t).ToUpper() == ".SQL" && int.Parse(Path.GetFileNameWithoutExtension(t).Replace(".", string.Empty)) > lastVersion)
                 .OrderBy(t => t)
                 .Select(t => t);
 

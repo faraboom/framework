@@ -3,6 +3,6 @@
     public enum FontIconType
     {
         FontAwesome,
-        Other
+        Other,
     }
 }

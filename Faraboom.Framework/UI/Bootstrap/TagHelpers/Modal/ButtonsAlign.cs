@@ -7,6 +7,6 @@
         Center,
         Around,
         Between,
-        End
+        End,
     }
 }

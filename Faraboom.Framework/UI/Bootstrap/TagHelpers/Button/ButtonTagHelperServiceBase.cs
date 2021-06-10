@@ -1,10 +1,10 @@
-﻿using Faraboom.Framework.Core.Extensions;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
 {
+    using Faraboom.Framework.Core.Extensions;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     public abstract class ButtonTagHelperServiceBase<TTagHelper> : TagHelperService<TTagHelper>
-        where TTagHelper : Microsoft.AspNetCore.Razor.TagHelpers.TagHelper, IButtonTagHelperBase
+        where TTagHelper : TagHelper, IButtonTagHelperBase
     {
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
@@ -26,7 +26,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
 
             if (TagHelper.ButtonType != ButtonType.Default)
             {
-                output.Attributes.AddClass("btn-" + TagHelper.ButtonType.ToString().ToLowerInvariant().Replace("_","-"));
+                output.Attributes.AddClass("btn-" + TagHelper.ButtonType.ToString().ToLowerInvariant().Replace("_", "-"));
             }
 
             if (TagHelper.Size != ButtonSize.Default)

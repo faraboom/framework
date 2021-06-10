@@ -1,12 +1,10 @@
-using Faraboom.Framework.Core.Extensions.Collections.Generic;
-
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-
-using System;
-using System.Collections.Generic;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System;
+    using System.Collections.Generic;
+    using Faraboom.Framework.Core.Extensions.Collections.Generic;
+    using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
     public sealed class RegularExpressionAttribute : System.ComponentModel.DataAnnotations.RegularExpressionAttribute, IClientModelValidator
     {
         public RegularExpressionAttribute(string pattern)
@@ -16,24 +14,13 @@ namespace Faraboom.Framework.DataAnnotation
             ErrorMessageResourceName = nameof(Resources.GlobalResource.Validation_StringLength);
         }
 
-        public override bool IsValid(object value)
-        {
-            return string.IsNullOrWhiteSpace(value?.ToString()) || base.IsValid(value);
-        }
-
-        public void AddValidation(ClientModelValidationContext context)
-        {
-            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val", "true"));
-            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-regex", FormatErrorMessage(context.ModelMetadata.GetDisplayName())));
-            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-regex-pattern", Pattern));
-        }
-
         public new Type ErrorMessageResourceType
         {
             get
             {
                 return base.ErrorMessageResourceType;
             }
+
             private set
             {
                 base.ErrorMessageResourceType = value;
@@ -46,6 +33,7 @@ namespace Faraboom.Framework.DataAnnotation
             {
                 return base.ErrorMessageResourceName;
             }
+
             private set
             {
                 base.ErrorMessageResourceName = value;
@@ -58,10 +46,23 @@ namespace Faraboom.Framework.DataAnnotation
             {
                 return base.ErrorMessage;
             }
+
             internal set
             {
                 base.ErrorMessage = value;
             }
+        }
+
+        public override bool IsValid(object value)
+        {
+            return string.IsNullOrWhiteSpace(value?.ToString()) || base.IsValid(value);
+        }
+
+        public void AddValidation(ClientModelValidationContext context)
+        {
+            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val", "true"));
+            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-regex", FormatErrorMessage(context.ModelMetadata.GetDisplayName())));
+            context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-regex-pattern", Pattern));
         }
     }
 }

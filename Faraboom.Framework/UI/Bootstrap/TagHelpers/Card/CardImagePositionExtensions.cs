@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Card
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Card
 {
+    using System;
+
     public static class CardImagePositionExtensions
     {
         public static string ToClassName(this CardImagePosition position)

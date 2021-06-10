@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using Serilog;
-
-namespace Faraboom.Framework.Logging
+﻿namespace Faraboom.Framework.Logging
 {
+    using Microsoft.Extensions.Logging;
+    using Serilog;
+
     public static class LoggingBuilderExtensions
     {
         public static ILoggingBuilder AddFilelog(this ILoggingBuilder builder)

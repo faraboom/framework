@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Text;
-using System.Text.Encodings.Web;
-
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace Faraboom.Framework.Mvc.ViewFeatures
+﻿namespace Faraboom.Framework.Mvc.ViewFeatures
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.IO;
+    using System.Text;
+    using System.Text.Encodings.Web;
+    using Microsoft.AspNetCore.Html;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.AspNetCore.Mvc.ViewEngines;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
+    using Microsoft.Extensions.DependencyInjection;
+
     internal static class DefaultEditorTemplates
     {
         private const string HtmlAttributeKey = "htmlAttributes";
@@ -35,23 +33,6 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
                 BooleanTemplateCheckbox(htmlHelper, value ?? false);
         }
 
-        private static IHtmlContent BooleanTemplateCheckbox(IHtmlHelper htmlHelper, bool value)
-        {
-            return htmlHelper.CheckBox(
-                expression: null,
-                isChecked: value,
-                htmlAttributes: CreateHtmlAttributes(htmlHelper, "check-box"));
-        }
-
-        private static IHtmlContent BooleanTemplateDropDownList(IHtmlHelper htmlHelper, bool? value)
-        {
-            return htmlHelper.DropDownList(
-                expression: null,
-                selectList: DefaultDisplayTemplates.TriStateValues(value),
-                optionLabel: null,
-                htmlAttributes: CreateHtmlAttributes(htmlHelper, "list-box tri-state"));
-        }
-
         public static IHtmlContent CollectionTemplate(IHtmlHelper htmlHelper)
         {
             var viewData = htmlHelper.ViewData;
@@ -61,15 +42,13 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
                 return HtmlString.Empty;
             }
 
-            var enumerable = model as IEnumerable;
-            if (enumerable == null)
+            if (model is not IEnumerable enumerable)
             {
                 // Only way we could reach here is if user passed templateName: "Collection" to an Editor() overload.
                 throw new InvalidOperationException("TypeMustImplementIEnumerable");
             }
 
             var elementMetadata = htmlHelper.ViewData.ModelMetadata.ElementMetadata;
-            Debug.Assert(elementMetadata != null);
             var typeInCollectionIsNullableValueType = elementMetadata.IsNullableValueType;
 
             var serviceProvider = htmlHelper.ViewContext.HttpContext.RequestServices;
@@ -86,8 +65,7 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
             {
                 viewData.TemplateInfo.HtmlFieldPrefix = string.Empty;
 
-                var collection = model as ICollection;
-                var result = collection == null ? new HtmlContentBuilder() : new HtmlContentBuilder(collection.Count);
+                var result = model is not ICollection collection ? new HtmlContentBuilder() : new HtmlContentBuilder(collection.Count);
                 var viewEngine = serviceProvider.GetRequiredService<ICompositeViewEngine>();
                 var viewBufferScope = serviceProvider.GetRequiredService<IViewBufferScope>();
 
@@ -164,56 +142,6 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
             return new HtmlContentBuilder(capacity: 2)
                 .AppendHtml(display)
                 .AppendHtml(hidden);
-        }
-
-        private static IDictionary<string, object> CreateHtmlAttributes(
-            IHtmlHelper htmlHelper,
-            string className,
-            string inputType = null)
-        {
-            var htmlAttributesObject = htmlHelper.ViewData[HtmlAttributeKey];
-            if (htmlAttributesObject != null)
-            {
-                return MergeHtmlAttributes(htmlAttributesObject, className, inputType);
-            }
-
-            var htmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "class", className }
-            };
-
-            if (inputType != null)
-            {
-                htmlAttributes.Add("type", inputType);
-            }
-
-            return htmlAttributes;
-        }
-
-        private static IDictionary<string, object> MergeHtmlAttributes(
-            object htmlAttributesObject,
-            string className,
-            string inputType)
-        {
-            var htmlAttributes = Microsoft.AspNetCore.Mvc.ViewFeatures.HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributesObject);
-
-            if (htmlAttributes.TryGetValue("class", out var htmlClassObject))
-            {
-                var htmlClassName = htmlClassObject + " " + className;
-                htmlAttributes["class"] = htmlClassName;
-            }
-            else
-            {
-                htmlAttributes.Add("class", className);
-            }
-
-            // The input type from the provided htmlAttributes overrides the inputType parameter.
-            if (inputType != null && !htmlAttributes.ContainsKey("type"))
-            {
-                htmlAttributes.Add("type", inputType);
-            }
-
-            return htmlAttributes;
         }
 
         public static IHtmlContent MultilineTemplate(IHtmlHelper htmlHelper)
@@ -324,14 +252,6 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
                 htmlAttributes: CreateHtmlAttributes(htmlHelper, "text-box single-line password"));
         }
 
-        private static bool ShouldShow(ModelExplorer modelExplorer, TemplateInfo templateInfo)
-        {
-            return
-                modelExplorer.Metadata.ShowForEdit &&
-                !modelExplorer.Metadata.IsComplexType &&
-                !templateInfo.Visited(modelExplorer);
-        }
-
         public static IHtmlContent StringTemplate(IHtmlHelper htmlHelper)
         {
             return GenerateTextBox(htmlHelper);
@@ -418,6 +338,81 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
             return GenerateTextBox(htmlHelper, htmlHelper.ViewData.TemplateInfo.FormattedModelValue, htmlAttributes);
         }
 
+        private static IHtmlContent BooleanTemplateCheckbox(IHtmlHelper htmlHelper, bool value)
+        {
+            return htmlHelper.CheckBox(
+                expression: null,
+                isChecked: value,
+                htmlAttributes: CreateHtmlAttributes(htmlHelper, "check-box"));
+        }
+
+        private static IHtmlContent BooleanTemplateDropDownList(IHtmlHelper htmlHelper, bool? value)
+        {
+            return htmlHelper.DropDownList(
+                expression: null,
+                selectList: DefaultDisplayTemplates.TriStateValues(value),
+                optionLabel: null,
+                htmlAttributes: CreateHtmlAttributes(htmlHelper, "list-box tri-state"));
+        }
+
+        private static IDictionary<string, object> CreateHtmlAttributes(
+            IHtmlHelper htmlHelper,
+            string className,
+            string inputType = null)
+        {
+            var htmlAttributesObject = htmlHelper.ViewData[HtmlAttributeKey];
+            if (htmlAttributesObject != null)
+            {
+                return MergeHtmlAttributes(htmlAttributesObject, className, inputType);
+            }
+
+            var htmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "class", className },
+            };
+
+            if (inputType != null)
+            {
+                htmlAttributes.Add("type", inputType);
+            }
+
+            return htmlAttributes;
+        }
+
+        private static IDictionary<string, object> MergeHtmlAttributes(
+            object htmlAttributesObject,
+            string className,
+            string inputType)
+        {
+            var htmlAttributes = Microsoft.AspNetCore.Mvc.ViewFeatures.HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributesObject);
+
+            if (htmlAttributes.TryGetValue("class", out var htmlClassObject))
+            {
+                var htmlClassName = htmlClassObject + " " + className;
+                htmlAttributes["class"] = htmlClassName;
+            }
+            else
+            {
+                htmlAttributes.Add("class", className);
+            }
+
+            // The input type from the provided htmlAttributes overrides the inputType parameter.
+            if (inputType != null && !htmlAttributes.ContainsKey("type"))
+            {
+                htmlAttributes.Add("type", inputType);
+            }
+
+            return htmlAttributes;
+        }
+
+        private static bool ShouldShow(ModelExplorer modelExplorer, TemplateInfo templateInfo)
+        {
+            return
+                modelExplorer.Metadata.ShowForEdit &&
+                !modelExplorer.Metadata.IsComplexType &&
+                !templateInfo.Visited(modelExplorer);
+        }
+
         private static void ApplyRfc3339DateFormattingIfNeeded(IHtmlHelper htmlHelper, string format)
         {
             if (htmlHelper.Html5DateRenderingMode != Html5DateRenderingMode.Rfc3339)
@@ -432,7 +427,7 @@ namespace Faraboom.Framework.Mvc.ViewFeatures
                 return;
             }
 
-            if (value is DateTime || value is DateTimeOffset)
+            if (value is DateTime or DateTimeOffset)
             {
                 htmlHelper.ViewData.TemplateInfo.FormattedModelValue =
                     string.Format(CultureInfo.InvariantCulture, format, value);

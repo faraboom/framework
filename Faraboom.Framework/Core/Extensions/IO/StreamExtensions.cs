@@ -1,8 +1,8 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-
-namespace Faraboom.Framework.Core.Extensions.IO
+﻿namespace Faraboom.Framework.Core.Extensions.IO
 {
+    using System.IO;
+    using System.Threading.Tasks;
+
     public static class StreamExtensions
     {
         public static byte[] GetAllBytes(this Stream stream)

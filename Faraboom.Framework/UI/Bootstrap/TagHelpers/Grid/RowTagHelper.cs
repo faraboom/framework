@@ -1,14 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("frb-row")]
     [HtmlTargetElement("frb-form-row")]
     public class RowTagHelper : TagHelper<RowTagHelper, RowTagHelperService>
     {
+        public RowTagHelper(RowTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-vertical-align")]
         public VerticalAlign VerticalAlign { get; set; } = VerticalAlign.Default;
 
@@ -17,11 +22,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
 
         [HtmlAttributeName("frb-gutters")]
         public bool? Gutters { get; set; } = true;
-
-        public RowTagHelper(RowTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
     }
 }

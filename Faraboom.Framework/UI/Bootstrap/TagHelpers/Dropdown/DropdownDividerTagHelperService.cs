@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Dropdown
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class DropdownDividerTagHelperService : TagHelperService<DropdownDividerTagHelper>
     {

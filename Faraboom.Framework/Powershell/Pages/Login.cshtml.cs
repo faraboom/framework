@@ -1,16 +1,12 @@
-﻿using Faraboom.Framework.Core;
-
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-
-using System.Threading.Tasks;
-
-namespace Faraboom.Framework.Powershell.Pages
+﻿namespace Faraboom.Framework.Powershell.Pages
 {
+    using System.Threading.Tasks;
+
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Localization;
+    using Microsoft.Extensions.Logging;
+
     [AllowAnonymous]
     public class LoginModel : Microsoft.AspNetCore.Mvc.RazorPages.PageModel
     {
@@ -25,27 +21,27 @@ namespace Faraboom.Framework.Powershell.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            //if (User.Identity.IsAuthenticated)
-            //{
+            // if (User.Identity.IsAuthenticated)
+            // {
             //    if (!string.IsNullOrEmpty(returnUrl))
             //        return LocalRedirect(returnUrl);
 
-            //    return RedirectToAreaPage("Index", nameof(Areas.Admin));
-            //}
-            //returnUrl = returnUrl ?? Url.Content("~/");
+            // return RedirectToAreaPage("Index", nameof(Areas.Admin));
+            // }
+            // returnUrl = returnUrl ?? Url.Content("~/");
 
             //// Clear the existing external cookie to ensure a clean login process
-            //await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            // await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-            //ReturnUrl = returnUrl;
+            // ReturnUrl = returnUrl;
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            //returnUrl = returnUrl ?? Url.Content("~/");
-            //if (ModelState.IsValid)
-            //{
+            // returnUrl = returnUrl ?? Url.Content("~/");
+            // if (ModelState.IsValid)
+            // {
             //    var IsUserExist = await userService.IsUsernameExistAsync(Input.UserName);
             //    if (!IsUserExist)
             //    {
@@ -61,9 +57,9 @@ namespace Faraboom.Framework.Powershell.Pages
             //    {
             //        return RedirectToPage("./PasswordSignIn", new { userName = Input.UserName, ReturnUrl = returnUrl });
             //    }
-            //}
+            // }
 
-            //ModelState.AddModelError("ErrorMessage", Login.UserLoginError);
+            // ModelState.AddModelError("ErrorMessage", Login.UserLoginError);
             return Page();
         }
     }

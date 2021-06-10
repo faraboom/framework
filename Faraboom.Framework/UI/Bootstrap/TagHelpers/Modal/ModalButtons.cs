@@ -1,13 +1,13 @@
-﻿using System;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Modal
 {
+    using System;
+
     [Flags]
     public enum ModalButtons
     {
         None = 0,
         Save = 1,
         Cancel = 2,
-        Close = 4
+        Close = 4,
     }
 }

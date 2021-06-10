@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers
 {
+    using System;
+
     public static class HtmlHeadingTypeExtensions
     {
         public static string ToHtmlTag(this HtmlHeadingType heading)

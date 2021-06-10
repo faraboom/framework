@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("frb-button", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class ButtonTagHelper : TagHelper<ButtonTagHelper, ButtonTagHelperService>, IButtonTagHelperBase
     {
+        public ButtonTagHelper(ButtonTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-button-type")]
         public ButtonType ButtonType { get; set; } = ButtonType.Default;
 
@@ -28,12 +33,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
 
         [HtmlAttributeName("frb-icon-type")]
         public FontIconType IconType { get; set; } = FontIconType.FontAwesome;
-
-        public ButtonTagHelper(ButtonTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
     }
 }
-

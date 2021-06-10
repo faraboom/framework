@@ -3,6 +3,6 @@
     public enum ButtonGroupDirection
     {
         Horizontal,
-        Vertical
+        Vertical,
     }
 }

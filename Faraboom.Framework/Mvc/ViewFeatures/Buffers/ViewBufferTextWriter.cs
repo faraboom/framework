@@ -1,17 +1,16 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Html;
-
-namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
+﻿namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
 {
+    using System;
+    using System.IO;
+    using System.Text;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Html;
+
     internal class ViewBufferTextWriter : TextWriter
     {
-        private readonly TextWriter _inner;
-        private readonly HtmlEncoder _htmlEncoder;
+        private readonly TextWriter inner;
+        private readonly HtmlEncoder htmlEncoder;
 
         /// <summary>
         /// Creates a new instance of <see cref="ViewBufferTextWriter"/>.
@@ -20,18 +19,8 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
         /// <param name="encoding">The <see cref="System.Text.Encoding"/>.</param>
         public ViewBufferTextWriter(ViewBuffer buffer, Encoding encoding)
         {
-            if (buffer == null)
-            {
-                throw new ArgumentNullException(nameof(buffer));
-            }
-
-            if (encoding == null)
-            {
-                throw new ArgumentNullException(nameof(encoding));
-            }
-
-            Buffer = buffer;
-            Encoding = encoding;
+            Buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            Encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
         }
 
         /// <summary>
@@ -45,30 +34,10 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
         /// </param>
         public ViewBufferTextWriter(ViewBuffer buffer, Encoding encoding, HtmlEncoder htmlEncoder, TextWriter inner)
         {
-            if (buffer == null)
-            {
-                throw new ArgumentNullException(nameof(buffer));
-            }
-
-            if (encoding == null)
-            {
-                throw new ArgumentNullException(nameof(encoding));
-            }
-
-            if (htmlEncoder == null)
-            {
-                throw new ArgumentNullException(nameof(htmlEncoder));
-            }
-
-            if (inner == null)
-            {
-                throw new ArgumentNullException(nameof(inner));
-            }
-
-            Buffer = buffer;
-            Encoding = encoding;
-            _htmlEncoder = htmlEncoder;
-            _inner = inner;
+            Buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            Encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
+            this.htmlEncoder = htmlEncoder ?? throw new ArgumentNullException(nameof(htmlEncoder));
+            this.inner = inner ?? throw new ArgumentNullException(nameof(inner));
         }
 
         /// <inheritdoc />
@@ -216,6 +185,7 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
+
             if (count < 0 || (buffer.Length - index < count))
             {
                 throw new ArgumentOutOfRangeException(nameof(count));
@@ -259,7 +229,6 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
             Buffer.AppendHtml(new string(value, start, offset));
             Buffer.AppendHtml(NewLine);
             return Task.CompletedTask;
-
         }
 
         /// <inheritdoc />
@@ -282,17 +251,17 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
         /// </summary>
         public override void Flush()
         {
-            if (_inner == null || _inner is ViewBufferTextWriter)
+            if (inner is null or ViewBufferTextWriter)
             {
                 return;
             }
 
             Flushed = true;
 
-            Buffer.WriteTo(_inner, _htmlEncoder);
+            Buffer.WriteTo(inner, htmlEncoder);
             Buffer.Clear();
 
-            _inner.Flush();
+            inner.Flush();
         }
 
         /// <summary>
@@ -301,17 +270,17 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
         /// <returns>A <see cref="Task"/> that represents the asynchronous copy and flush operations.</returns>
         public override async Task FlushAsync()
         {
-            if (_inner == null || _inner is ViewBufferTextWriter)
+            if (inner is null or ViewBufferTextWriter)
             {
                 return;
             }
 
             Flushed = true;
 
-            await Buffer.WriteToAsync(_inner, _htmlEncoder);
+            await Buffer.WriteToAsync(inner, htmlEncoder);
             Buffer.Clear();
 
-            await _inner.FlushAsync();
+            await inner.FlushAsync();
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using Faraboom.Framework.Data;
-
-namespace Faraboom.Framework.DataAnnotation.Schema
+﻿namespace Faraboom.Framework.DataAnnotation.Schema
 {
+    using Faraboom.Framework.Data;
+
     public sealed class ForeignKeyAttribute : System.ComponentModel.DataAnnotations.Schema.ForeignKeyAttribute
     {
         public ForeignKeyAttribute(string name)

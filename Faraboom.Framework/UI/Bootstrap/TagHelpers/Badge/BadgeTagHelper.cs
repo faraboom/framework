@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Badge
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Badge
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("a", Attributes = "frb-badge")]
     [HtmlTargetElement("span", Attributes = "frb-badge")]
@@ -11,16 +11,15 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Badge
     [HtmlTargetElement("span", Attributes = "frb-badge-pill")]
     public class BadgeTagHelper : TagHelper<BadgeTagHelper, BadgeTagHelperService>
     {
+        public BadgeTagHelper(BadgeTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-badge")]
         public BadgeType BadgeType { get; set; } = BadgeType._;
 
         [HtmlAttributeName("frb-badge-pill")]
         public BadgeType BadgePillType { get; set; } = BadgeType._;
-
-        public BadgeTagHelper(BadgeTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
     }
 }

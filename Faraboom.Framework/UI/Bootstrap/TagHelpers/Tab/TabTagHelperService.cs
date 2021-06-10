@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Faraboom.Framework.Core.Extensions.Collections.Generic;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Faraboom.Framework.Core.Extensions.Collections.Generic;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class TabTagHelperService : TagHelperService<TabTagHelper>
     {
@@ -35,15 +35,15 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
             var title = TagHelper.Title;
             var attributes = GetTabHeaderAttributes(context, output);
 
-            var classAttributesAsString = attributes.Where(a=>a.Name == "class").ToList().Select(a=>a.Value).JoinAsString(" ");
+            var classAttributesAsString = attributes.Where(a => a.Name == "class").ToList().Select(a => a.Value).JoinAsString(" ");
             var otherAttributesAsString = attributes.Where(a => a.Name != "class").ToList().ToHtmlAttributesAsString();
 
             if (!string.IsNullOrWhiteSpace(TagHelper.ParentDropdownName))
             {
-                return "<a class=\"dropdown-item "+ classAttributesAsString + "\" id=\"" + id + "\" href=\"#" + link + "\" data-toggle=\"tab\"  role=\"tab\" aria-controls=\"" + control + "\" aria-selected=\"false\" "+ otherAttributesAsString + ">" + title + "</a>";
+                return "<a class=\"dropdown-item " + classAttributesAsString + "\" id=\"" + id + "\" href=\"#" + link + "\" data-toggle=\"tab\"  role=\"tab\" aria-controls=\"" + control + "\" aria-selected=\"false\" " + otherAttributesAsString + ">" + title + "</a>";
             }
 
-            return "<li class=\"nav-item\"><a class=\"nav-link " + classAttributesAsString + " " + TabItemActivePlaceholder + "\" id=\"" + id + "\" data-toggle=\"" + TabItemsDataTogglePlaceHolder + "\" href=\"#" + link + "\" role=\"tab\" aria-controls=\"" + control + "\" aria-selected=\"" + TabItemSelectedPlaceholder + "\" "+ otherAttributesAsString + ">" +
+            return "<li class=\"nav-item\"><a class=\"nav-link " + classAttributesAsString + " " + TabItemActivePlaceholder + "\" id=\"" + id + "\" data-toggle=\"" + TabItemsDataTogglePlaceHolder + "\" href=\"#" + link + "\" role=\"tab\" aria-controls=\"" + control + "\" aria-selected=\"" + TabItemSelectedPlaceholder + "\" " + otherAttributesAsString + ">" +
                    title +
                    "</a></li>";
         }
@@ -70,19 +70,22 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
             }
         }
 
-        protected virtual List<TagHelperAttribute> GetTabContentAttributes(TagHelperContext context, TagHelperOutput output) {
+        protected virtual IList<TagHelperAttribute> GetTabContentAttributes(TagHelperContext context, TagHelperOutput output)
+        {
             var contentprefix = "content-";
             return GetTabAttributesByPrefix(output.Attributes, contentprefix);
         }
 
-        protected virtual List<TagHelperAttribute> GetTabHeaderAttributes(TagHelperContext context, TagHelperOutput output) {
+        protected virtual IList<TagHelperAttribute> GetTabHeaderAttributes(TagHelperContext context, TagHelperOutput output)
+        {
             var headerprefix = "header-";
             return GetTabAttributesByPrefix(output.Attributes, headerprefix);
         }
 
-        private List<TagHelperAttribute> GetTabAttributesByPrefix(TagHelperAttributeList attributes, string prefix) {
-            return attributes.Where(a=>a.Name.StartsWith(prefix))
-                .Select(a=> new TagHelperAttribute(a.Name.Substring(prefix.Length), a.Value)).ToList();
+        private static IList<TagHelperAttribute> GetTabAttributesByPrefix(TagHelperAttributeList attributes, string prefix)
+        {
+            return attributes.Where(a => a.Name.StartsWith(prefix))
+                .Select(a => new TagHelperAttribute(a.Name.Substring(prefix.Length), a.Value)).ToList();
         }
     }
 }

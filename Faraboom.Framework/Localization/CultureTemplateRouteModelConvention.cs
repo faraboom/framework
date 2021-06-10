@@ -1,9 +1,8 @@
-﻿using Faraboom.Framework.Core;
-
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
-
-namespace Faraboom.Framework.Localization
+﻿namespace Faraboom.Framework.Localization
 {
+    using Faraboom.Framework.Core;
+    using Microsoft.AspNetCore.Mvc.ApplicationModels;
+
     public class CultureTemplateRouteModelConvention : IPageRouteModelConvention
     {
         public void Apply(PageRouteModel model)
@@ -18,7 +17,7 @@ namespace Faraboom.Framework.Localization
                     {
                         Order = -1,
                         Template = AttributeRouteModel.CombineTemplates("{culture?}", selector.AttributeRouteModel.Template.Slugify()),
-                    }
+                    },
                 });
             }
         }

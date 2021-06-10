@@ -1,27 +1,64 @@
-﻿using Faraboom.Framework.Core;
-using Faraboom.Framework.Core.Extensions.Collections.Generic;
-using Faraboom.Framework.Resources;
-
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Globalization;
+    using Faraboom.Framework.Core;
+    using Faraboom.Framework.Core.Extensions.Collections.Generic;
+    using Faraboom.Framework.Resources;
+    using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
     public sealed class CompareAttribute : System.ComponentModel.DataAnnotations.CompareAttribute, IClientModelValidator
     {
+        public CompareAttribute(string otherProperty)
+            : base(otherProperty)
+        {
+            ErrorMessageResourceType = typeof(GlobalResource);
+            ErrorMessageResourceName = nameof(Resources.GlobalResource.Validation_Compare);
+        }
+
         public new string OtherPropertyDisplayName { get; internal set; }
 
         public Constants.OperandType OperandType { get; set; } = Constants.OperandType.Equals;
 
-        public CompareAttribute(string otherProperty)
-            : base(otherProperty)
+        public new Type ErrorMessageResourceType
         {
-            ErrorMessageResourceType = typeof(Resources.GlobalResource);
-            ErrorMessageResourceName = nameof(Resources.GlobalResource.Validation_Compare);
+            get
+            {
+                return base.ErrorMessageResourceType;
+            }
+
+            private set
+            {
+                base.ErrorMessageResourceType = value;
+            }
+        }
+
+        public new string ErrorMessageResourceName
+        {
+            get
+            {
+                return base.ErrorMessageResourceName;
+            }
+
+            private set
+            {
+                base.ErrorMessageResourceName = value;
+            }
+        }
+
+        public new string ErrorMessage
+        {
+            get
+            {
+                return base.ErrorMessage;
+            }
+
+            internal set
+            {
+                base.ErrorMessage = value;
+            }
         }
 
         public override string FormatErrorMessage(string name)
@@ -29,48 +66,11 @@ namespace Faraboom.Framework.DataAnnotation
             return string.Format(CultureInfo.CurrentCulture, ErrorMessageString, name, OtherPropertyDisplayName ?? OtherProperty, EnumHelper.LocalizeEnum(OperandType));
         }
 
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-        {
-            var firstComparable = value as IComparable;
-
-            var otherPropertyInfo = validationContext.ObjectType.GetProperty(OtherProperty);
-            if (otherPropertyInfo == null)
-                return new ValidationResult(string.Format(CultureInfo.CurrentCulture, GlobalResource.Validation_Compare_UnknownProperty, OtherProperty));
-            var otherComparable = otherPropertyInfo?.GetValue(validationContext.ObjectInstance, null) as IComparable;
-
-            ValidationResult result = null;
-
-            if (firstComparable != null && otherComparable != null)
-            {
-                var compareValue = firstComparable.CompareTo(otherComparable);
-
-                if (OtherPropertyDisplayName == null)
-                    OtherPropertyDisplayName = Globals.GetLocalizedDisplayName(otherPropertyInfo);
-                switch (OperandType)
-                {
-                    case Constants.OperandType.GreaterThan:
-                        if (compareValue <= 0)
-                            result = new ValidationResult(FormatErrorMessage(validationContext.DisplayName));
-                        break;
-                    case Constants.OperandType.LessThan:
-                        if (compareValue >= 0)
-                            result = new ValidationResult(FormatErrorMessage(validationContext.DisplayName));
-                        break;
-                    case Constants.OperandType.Equals:
-                        if (compareValue != 0)
-                            result = new ValidationResult(FormatErrorMessage(validationContext.DisplayName));
-                        break;
-                }
-            }
-
-            return result;
-        }
-
         public void AddValidation(ClientModelValidationContext context)
         {
             context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val", "true"));
             context.Attributes.AddIfNotContains(new KeyValuePair<string, string>("data-val-equalto-other", OtherProperty));
-            var key = "";
+            var key = string.Empty;
             switch (OperandType)
             {
                 case Constants.OperandType.Equals:
@@ -92,43 +92,56 @@ namespace Faraboom.Framework.DataAnnotation
                     key = "notEqualTo";
                     break;
             }
+
             context.Attributes.AddIfNotContains(new KeyValuePair<string, string>($"data-val-{key}", FormatErrorMessage(context.ModelMetadata.GetDisplayName())));
         }
 
-        public new Type ErrorMessageResourceType
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            get
+            var otherPropertyInfo = validationContext.ObjectType.GetProperty(OtherProperty);
+            if (otherPropertyInfo == null)
             {
-                return base.ErrorMessageResourceType;
+                return new ValidationResult(string.Format(CultureInfo.CurrentCulture, GlobalResource.Validation_Compare_UnknownProperty, OtherProperty));
             }
-            private set
-            {
-                base.ErrorMessageResourceType = value;
-            }
-        }
 
-        public new string ErrorMessageResourceName
-        {
-            get
-            {
-                return base.ErrorMessageResourceName;
-            }
-            private set
-            {
-                base.ErrorMessageResourceName = value;
-            }
-        }
+            ValidationResult result = null;
 
-        public new string ErrorMessage
-        {
-            get
+            if (value is IComparable firstComparable && otherPropertyInfo?.GetValue(validationContext.ObjectInstance, null) is IComparable otherComparable)
             {
-                return base.ErrorMessage;
+                var compareValue = firstComparable.CompareTo(otherComparable);
+
+                if (OtherPropertyDisplayName == null)
+                {
+                    OtherPropertyDisplayName = Globals.GetLocalizedDisplayName(otherPropertyInfo);
+                }
+
+                switch (OperandType)
+                {
+                    case Constants.OperandType.GreaterThan:
+                        if (compareValue <= 0)
+                        {
+                            result = new ValidationResult(FormatErrorMessage(validationContext.DisplayName));
+                        }
+
+                        break;
+                    case Constants.OperandType.LessThan:
+                        if (compareValue >= 0)
+                        {
+                            result = new ValidationResult(FormatErrorMessage(validationContext.DisplayName));
+                        }
+
+                        break;
+                    case Constants.OperandType.Equals:
+                        if (compareValue != 0)
+                        {
+                            result = new ValidationResult(FormatErrorMessage(validationContext.DisplayName));
+                        }
+
+                        break;
+                }
             }
-            internal set
-            {
-                base.ErrorMessage = value;
-            }
+
+            return result;
         }
     }
 }

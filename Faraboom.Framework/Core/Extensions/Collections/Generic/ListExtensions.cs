@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-
-namespace Faraboom.Framework.Core.Extensions.Collections.Generic
+﻿namespace Faraboom.Framework.Core.Extensions.Collections.Generic
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+
     public static class ListExtensions
     {
         public static int FindIndex<T>(this IList<T> source, Predicate<T> selector)
@@ -176,7 +176,7 @@ namespace Faraboom.Framework.Core.Extensions.Collections.Generic
         /// <param name="source">A list of objects to sort</param>
         /// <param name="getDependencies">Function to resolve the dependencies</param>
         /// <returns></returns>
-        public static List<T> SortByDependencies<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
+        public static IReadOnlyList<T> SortByDependencies<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
         {
             var sorted = new List<T>();
             var visited = new Dictionary<T, bool>();
@@ -190,7 +190,7 @@ namespace Faraboom.Framework.Core.Extensions.Collections.Generic
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <typeparam name="T">The type of the members of values.</typeparam>
         /// <param name="item">Item to resolve</param>
@@ -199,8 +199,7 @@ namespace Faraboom.Framework.Core.Extensions.Collections.Generic
         /// <param name="visited">Dictionary with the visited items</param>
         private static void SortByDependenciesVisit<T>(T item, Func<T, IEnumerable<T>> getDependencies, List<T> sorted, Dictionary<T, bool> visited)
         {
-            bool inProcess;
-            var alreadyVisited = visited.TryGetValue(item, out inProcess);
+            var alreadyVisited = visited.TryGetValue(item, out bool inProcess);
 
             if (alreadyVisited)
             {

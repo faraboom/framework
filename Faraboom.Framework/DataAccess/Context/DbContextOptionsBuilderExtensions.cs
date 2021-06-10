@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Infrastructure;
-
-namespace Faraboom.Framework.DataAccess.Context
+﻿namespace Faraboom.Framework.DataAccess.Context
 {
+    using Microsoft.EntityFrameworkCore.Infrastructure;
+
     public static class DbContextOptionsBuilderExtensions
     {
         public static void MapMigrationsHistoryTable<TBuilder, TExtension>(this RelationalDbContextOptionsBuilder<TBuilder, TExtension> builder, string defaultSchema, string migrationsHistoryTableName = "_MigrationsHistory")

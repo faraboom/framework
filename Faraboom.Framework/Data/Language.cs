@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Faraboom.Framework.Data
+﻿namespace Faraboom.Framework.Data
 {
+    using System;
+
     public struct Language
     {
         public short Id { get; set; }

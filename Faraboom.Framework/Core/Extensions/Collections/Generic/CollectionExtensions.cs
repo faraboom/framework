@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-
-namespace Faraboom.Framework.Core.Extensions.Collections.Generic
+﻿namespace Faraboom.Framework.Core.Extensions.Collections.Generic
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+
     public static class CollectionExtensions
     {
         /// <summary>
@@ -69,7 +69,9 @@ namespace Faraboom.Framework.Core.Extensions.Collections.Generic
         public static bool AddIfNotContains<T>([NotNull] this ICollection<T> source, [NotNull] Func<T, bool> predicate, [NotNull] Func<T> itemFactory)
         {
             if (source.Any(predicate))
+            {
                 return false;
+            }
 
             source.Add(itemFactory());
             return true;

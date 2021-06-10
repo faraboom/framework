@@ -5,6 +5,6 @@
         Default,
         Vertical,
         Pill,
-        PillVertical
+        PillVertical,
     }
 }

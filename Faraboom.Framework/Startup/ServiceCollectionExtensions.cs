@@ -1,12 +1,10 @@
-﻿using Faraboom.Framework.Cookie;
-
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.DependencyInjection;
-
-using System;
-
-namespace Faraboom.Framework.Startup
+﻿namespace Faraboom.Framework.Startup
 {
+    using System;
+    using Faraboom.Framework.Cookie;
+    using Microsoft.AspNetCore.Mvc.Routing;
+    using Microsoft.Extensions.DependencyInjection;
+
     public static class ServiceCollectionExtensions
     {
         public static void ConfigureApplicationCookie(this IServiceCollection services, string loginAction, string loginController, string loginArea = null)

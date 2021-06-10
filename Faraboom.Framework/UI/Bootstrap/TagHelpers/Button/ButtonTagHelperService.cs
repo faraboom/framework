@@ -1,9 +1,8 @@
-﻿using Faraboom.Framework.Resources;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
 {
+    using Faraboom.Framework.Resources;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class ButtonTagHelperService : ButtonTagHelperServiceBase<ButtonTagHelper>
     {
@@ -30,7 +29,9 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
         {
             var busyText = TagHelper.BusyText ?? UIResource.ProcessingWithThreeDot;
             if (string.IsNullOrWhiteSpace(busyText))
+            {
                 return;
+            }
 
             output.Attributes.SetAttribute(DataBusyTextAttributeName, busyText);
         }

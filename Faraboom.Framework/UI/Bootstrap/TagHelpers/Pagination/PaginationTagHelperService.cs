@@ -1,29 +1,27 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-
-using Faraboom.Framework.Core.Extensions;
-using Faraboom.Framework.Resources;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
-
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Pagination
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Pagination
 {
+    using System;
+    using System.Linq;
+    using System.Text;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+    using Faraboom.Framework.Core.Extensions;
+    using Faraboom.Framework.Resources;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
+    using Microsoft.AspNetCore.Mvc.TagHelpers;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class PaginationTagHelperService : TagHelperService<PaginationTagHelper>
     {
-        private readonly IHtmlGenerator _generator;
-        private readonly HtmlEncoder _encoder;
+        private readonly IHtmlGenerator generator;
+        private readonly HtmlEncoder encoder;
 
         public PaginationTagHelperService(IHtmlGenerator generator, HtmlEncoder encoder)
         {
-            _generator = generator;
-            _encoder = encoder;
+            this.generator = generator;
+            this.encoder = encoder;
         }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -39,7 +37,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Pagination
 
         protected virtual async Task SetContentAsHtmlAsync(TagHelperContext context, TagHelperOutput output)
         {
-            var html = new StringBuilder("");
+            var html = new StringBuilder(string.Empty);
 
             html.AppendLine(GetOpeningTags(context, output));
             html.AppendLine(await GetPreviousButtonAsync(context, output));
@@ -60,7 +58,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Pagination
 
         protected virtual async Task<string> GetPagesAsync(TagHelperContext context, TagHelperOutput output)
         {
-            var pagesHtml = new StringBuilder("");
+            var pagesHtml = new StringBuilder(string.Empty);
 
             foreach (var page in TagHelper.For.Pages)
             {
@@ -72,9 +70,9 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Pagination
 
         protected virtual async Task<string> GetPageAsync(TagHelperContext context, TagHelperOutput output, PageItem page)
         {
-            var pageHtml = new StringBuilder("");
+            var pageHtml = new StringBuilder(string.Empty);
 
-            pageHtml.AppendLine("<li class=\"page-item " + (TagHelper.For.CurrentPage == page.Index ? "active" : "") + "\">");
+            pageHtml.AppendLine("<li class=\"page-item " + (TagHelper.For.CurrentPage == page.Index ? "active" : string.Empty) + "\">");
 
             if (page.IsGap)
             {
@@ -104,7 +102,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Pagination
                 ? TagHelper.For.CurrentPage.ToString()
                 : (TagHelper.For.CurrentPage - 1).ToString();
             return
-                "<li class=\"page-item " + (TagHelper.For.CurrentPage == 1 ? "disabled" : "") + "\">\r\n" +
+                "<li class=\"page-item " + (TagHelper.For.CurrentPage == 1 ? "disabled" : string.Empty) + "\">\r\n" +
                 (await RenderAnchorTagHelperLinkHtmlAsync(context, output, currentPage, localizationKey)) + "                </li>";
         }
 
@@ -113,7 +111,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Pagination
             var localizationKey = "PagerNext";
             var currentPage = (TagHelper.For.CurrentPage + 1).ToString();
             return
-                "<li class=\"page-item " + (TagHelper.For.CurrentPage >= TagHelper.For.TotalPageCount ? "disabled" : "") + "\">\r\n" +
+                "<li class=\"page-item " + (TagHelper.For.CurrentPage >= TagHelper.For.TotalPageCount ? "disabled" : string.Empty) + "\">\r\n" +
                 (await RenderAnchorTagHelperLinkHtmlAsync(context, output, currentPage, localizationKey)) +
                 "                </li>";
         }
@@ -128,36 +126,16 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Pagination
 
             tagHelperOutput.Content.SetHtmlContent(UIResource.ResourceManager.GetString(localizationKey) ?? localizationKey);
 
-            var renderedHtml = tagHelperOutput.Render(_encoder);
+            var renderedHtml = tagHelperOutput.Render(encoder);
 
             return renderedHtml;
-        }
-
-        private AnchorTagHelper GetAnchorTagHelper(string currentPage, out TagHelperAttributeList attributeList)
-        {
-            var anchorTagHelper = new AnchorTagHelper(_generator)
-            {
-                Page = TagHelper.For.PageUrl,
-                ViewContext = TagHelper.ViewContext
-            };
-
-            anchorTagHelper.RouteValues.Add("currentPage", currentPage);
-            anchorTagHelper.RouteValues.Add("sort", TagHelper.For.Sort);
-
-            attributeList = new TagHelperAttributeList
-            {
-                new TagHelperAttribute("tabindex", "-1"),
-                new TagHelperAttribute("class", "page-link")
-            };
-
-            return anchorTagHelper;
         }
 
         protected virtual string GetOpeningTags(TagHelperContext context, TagHelperOutput output)
         {
             var pagerInfo = (TagHelper.ShowInfo ?? false) ?
                 "    <div class=\"col-sm-12 col-md-5\"> " + string.Format(UIResource.PagerInfo, TagHelper.For.ShowingFrom, TagHelper.For.ShowingTo, TagHelper.For.TotalItemsCount) + "</div>\r\n"
-                : "";
+                : string.Empty;
 
             return
                 pagerInfo +
@@ -181,12 +159,32 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Pagination
             if (hrefAttribute != null)
             {
                 var pageUrl = TagHelper.For.PageUrl;
-                var routeValue = $"currentPage={currentPage}{(TagHelper.For.Sort.IsNullOrWhiteSpace() ? "" : "&sort=" + TagHelper.For.Sort)}";
+                var routeValue = $"currentPage={currentPage}{(TagHelper.For.Sort.IsNullOrWhiteSpace() ? string.Empty : "&sort=" + TagHelper.For.Sort)}";
                 pageUrl += pageUrl.Contains("?") ? "&" + routeValue : "?" + routeValue;
 
                 attributeList.Remove(hrefAttribute);
                 attributeList.Add(new TagHelperAttribute("href", pageUrl, hrefAttribute.ValueStyle));
             }
+        }
+
+        private AnchorTagHelper GetAnchorTagHelper(string currentPage, out TagHelperAttributeList attributeList)
+        {
+            var anchorTagHelper = new AnchorTagHelper(generator)
+            {
+                Page = TagHelper.For.PageUrl,
+                ViewContext = TagHelper.ViewContext,
+            };
+
+            anchorTagHelper.RouteValues.Add("currentPage", currentPage);
+            anchorTagHelper.RouteValues.Add("sort", TagHelper.For.Sort);
+
+            attributeList = new TagHelperAttributeList
+            {
+                new TagHelperAttribute("tabindex", "-1"),
+                new TagHelperAttribute("class", "page-link"),
+            };
+
+            return anchorTagHelper;
         }
     }
 }

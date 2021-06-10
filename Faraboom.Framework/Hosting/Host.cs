@@ -1,24 +1,21 @@
-﻿using Faraboom.Framework.Core;
-using Faraboom.Framework.Data;
-using Faraboom.Framework.DataAccess.Context;
-using Faraboom.Framework.Logging;
-
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
-using Serilog;
-
-using System;
-using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
-
-namespace Faraboom.Framework.Hosting
+﻿namespace Faraboom.Framework.Hosting
 {
+    using System;
+    using System.IO;
+    using System.Reflection;
+    using System.Threading.Tasks;
+    using Faraboom.Framework.Core;
+    using Faraboom.Framework.Data;
+    using Faraboom.Framework.DataAccess.Context;
+    using Faraboom.Framework.Logging;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using Serilog;
+
     public static class Host
     {
         public static async Task RunAsync<TStartup>(string[] args)
@@ -64,11 +61,9 @@ namespace Faraboom.Framework.Hosting
 
             if (checkMigration)
             {
-                using (var scope = host.Services.CreateScope())
-                {
-                    var context = scope.ServiceProvider.GetService(typeof(IEntityContext)) as DbContext;
-                    await context.Database.MigrateAsync();
-                }
+                using var scope = host.Services.CreateScope();
+                var context = scope.ServiceProvider.GetService(typeof(IEntityContext)) as DbContext;
+                await context.Database.MigrateAsync();
             }
 
             await host.RunAsync();

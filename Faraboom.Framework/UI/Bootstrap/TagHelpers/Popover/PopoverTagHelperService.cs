@@ -1,9 +1,8 @@
-﻿using System.Linq;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Popover
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Popover
 {
+    using System.Linq;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class PopoverTagHelperService : TagHelperService<PopoverTagHelper>
     {
@@ -22,9 +21,10 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Popover
                 SetDisabled(context, output);
             }
         }
+
         protected virtual void SetDisabled(TagHelperContext context, TagHelperOutput output)
         {
-            var triggerAsHtml = TagHelper.Dismissible ?? false ? "data-trigger=\"focus\" " : "";
+            var triggerAsHtml = TagHelper.Dismissible ?? false ? "data-trigger=\"focus\" " : string.Empty;
             if (TagHelper.Hoverable ?? false)
             {
                 if (triggerAsHtml.Contains("focus"))
@@ -36,16 +36,18 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Popover
                     triggerAsHtml = "data-trigger=\"hover\" ";
                 }
             }
+
             var dataPlacementAsHtml = "data-placement=\"" + GetDirectory().ToString().ToLowerInvariant() + "\" ";
 
             // data-placement="default" with data-trigger="focus" causes Cannot read property 'indexOf' of undefined at computeAutoPlacement(bootstrap.bundle.js?_v=637146714627330435:2185) error
             if (IsDismissibleOrHoverable() && GetDirectory() == PopoverDirectory.Default)
             {
-                //dataPlacementAsHtml = string.Empty; //bootstrap default placement is right, frb's is top.
+                // dataPlacementAsHtml = string.Empty; //bootstrap default placement is right, frb's is top.
                 dataPlacementAsHtml = dataPlacementAsHtml.Replace("default", "top");
             }
+
             var titleAttribute = output.Attributes.FirstOrDefault(at => at.Name == "title");
-            var titleAsHtml = titleAttribute == null ? "" : "title=\"" + titleAttribute.Value + "\" ";
+            var titleAsHtml = titleAttribute == null ? string.Empty : "title=\"" + titleAttribute.Value + "\" ";
             var preElementHtml = "<span tabindex=\"0\" class=\"d-inline-block\" " + titleAsHtml + triggerAsHtml + dataPlacementAsHtml + "data-toggle=\"popover\" data-content=\"" + GetDataContent() + "\">";
             var postElementHtml = "</span>";
 
@@ -54,6 +56,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Popover
 
             output.Attributes.Add("style", "pointer-events: none;");
         }
+
         protected virtual void SetDataTriggerIfDismissible(TagHelperContext context, TagHelperOutput output)
         {
             if (TagHelper.Dismissible ?? false)
@@ -66,7 +69,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Popover
         {
             if (TagHelper.Hoverable ?? false)
             {
-                //If already has focus data trigger
+                // If already has focus data trigger
                 if (output.Attributes.TryGetAttribute("data-trigger", out _))
                 {
                     output.Attributes.SetAttribute(new TagHelperAttribute("data-trigger", "focus hover"));
@@ -90,6 +93,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Popover
             {
                 directory = PopoverDirectory.Bottom;
             }
+
             output.Attributes.Add("data-placement", directory.ToString().ToLowerInvariant());
         }
 
@@ -121,14 +125,17 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Popover
             {
                 return PopoverDirectory.Top;
             }
+
             if (!string.IsNullOrWhiteSpace(TagHelper.PopoverBottom))
             {
                 return PopoverDirectory.Bottom;
             }
+
             if (!string.IsNullOrWhiteSpace(TagHelper.PopoverRight))
             {
                 return PopoverDirectory.Right;
             }
+
             if (!string.IsNullOrWhiteSpace(TagHelper.PopoverLeft))
             {
                 return PopoverDirectory.Left;
@@ -136,16 +143,19 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Popover
 
             return PopoverDirectory.Default;
         }
+
         protected virtual bool IsDismissibleOrHoverable()
         {
             if (TagHelper.Dismissible ?? false)
             {
                 return true;
             }
+
             if (TagHelper.Hoverable ?? false)
             {
                 return true;
             }
+
             return false;
         }
     }

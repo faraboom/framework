@@ -1,21 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+
     [AttributeUsage(AttributeTargets.Property)]
     public class SelectItemsAttribute : Attribute
     {
-        public string ItemsListPropertyName { get; set; }
-
         public SelectItemsAttribute(string itemsListPropertyName)
         {
             ItemsListPropertyName = itemsListPropertyName;
         }
+
+        public string ItemsListPropertyName { get; internal set; }
 
         public IEnumerable<SelectListItem> GetItems(ModelExplorer explorer)
         {

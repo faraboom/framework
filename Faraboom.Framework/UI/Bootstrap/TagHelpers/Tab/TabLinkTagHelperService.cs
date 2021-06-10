@@ -1,22 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tab
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class TabLinkTagHelperService : TagHelperService<TabLinkTagHelper>
     {
         public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             SetPlaceholderForNameIfNotProvided();
-            
+
             var tabHeader = GetTabHeaderItem(context, output);
 
             var tabHeaderItems = context.GetValue<List<TabItem>>(TabItems);
 
-            tabHeaderItems.Add(new TabItem(tabHeader, "", false, TagHelper.Name, TagHelper.ParentDropdownName, false));
+            tabHeaderItems.Add(new TabItem(tabHeader, string.Empty, false, TagHelper.Name, TagHelper.ParentDropdownName, false));
 
             output.SuppressOutput();
 

@@ -1,15 +1,14 @@
-﻿using Faraboom.Framework.Core;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-
-using System;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-
-namespace Faraboom.Framework.Mvc
+﻿namespace Faraboom.Framework.Mvc
 {
+    using System;
+    using System.Globalization;
+    using System.Linq;
+    using System.Text;
+
+    using Faraboom.Framework.Core;
+
+    using Microsoft.AspNetCore.Mvc;
+
     public static class UrlHelperExtensions
     {
         public static string Action(this IUrlHelper urlHelper, string action, string controller, string area, object values)
@@ -17,7 +16,6 @@ namespace Faraboom.Framework.Mvc
 
         public static string Page(this IUrlHelper urlHelper, string pageName, string area, object values)
             => urlHelper.Page(pageName.TrimEnd(Constants.PagePostfix), Globals.PrepareValues(values, area));
-
 
         public static string LocalizedAction(this IUrlHelper helper, string action = null, string controller = null, object values = null, string protocol = null, string host = null, string fragment = null)
             => Prepare(helper.Action(action, controller.TrimEnd(Constants.ControllerPostfix), values, protocol, host, fragment));
@@ -41,13 +39,19 @@ namespace Faraboom.Framework.Mvc
         {
             var sb = new StringBuilder("/");
             if (url == "/")
+            {
                 return sb.Append(CultureInfo.CurrentCulture.TwoLetterISOLanguageName).Append('/').ToString();
+            }
 
             var lst = url.Split('/', StringSplitOptions.RemoveEmptyEntries);
             if (Localization.CultureExtensions.GetAtomicValues().Any(t => t.Equals(lst[0], StringComparison.InvariantCultureIgnoreCase)))
+            {
                 lst[0] = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+            }
             else
+            {
                 sb.Append(CultureInfo.CurrentCulture.TwoLetterISOLanguageName).Append('/');
+            }
 
             return sb.Append(string.Join("/", lst)).ToString();
         }

@@ -1,13 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [HtmlTargetElement("frb-grid-view", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class GridViewTagHelper : TagHelper<GridViewTagHelper, GridViewTagHelperService>
     {
+        #region Constructors
+
+        public GridViewTagHelper(GridViewTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
+        #endregion
+
         [HtmlAttributeName("frb-entity-type")]
         public string EntityType { get; set; }
 
@@ -39,16 +47,6 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
         public string Formatters { get; set; }
 
         [HtmlAttributeName("frb-columns")]
-        public string columns { get; set; }
-
-        #region Constructors
-
-        public GridViewTagHelper(GridViewTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
-
-        #endregion
+        public string Columns { get; set; }
     }
 }

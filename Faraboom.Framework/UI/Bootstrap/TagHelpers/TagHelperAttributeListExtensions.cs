@@ -1,12 +1,10 @@
-﻿using Faraboom.Framework.Core.Extensions.Collections.Generic;
-
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-using System;
-using System.Linq;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers
 {
+    using System;
+    using System.Linq;
+    using Faraboom.Framework.Core.Extensions.Collections.Generic;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     public static class TagHelperAttributeListExtensions
     {
         public static void AddClass(this TagHelperAttributeList attributes, string className)
@@ -32,7 +30,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers
         public static string GetClass(this TagHelperAttributeList attributes)
         {
             var classAttribute = attributes["class"];
-            return classAttribute == null ? "" : classAttribute.Value.ToString();
+            return classAttribute == null ? string.Empty : classAttribute.Value.ToString();
         }
 
         public static void RemoveClass(this TagHelperAttributeList attributes, string className)
@@ -57,7 +55,9 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers
         public static void AddIfNotExist(this TagHelperAttributeList attributes, string name, object value)
         {
             if (!attributes.ContainsName(name))
+            {
                 attributes.Add(name, value);
+            }
         }
 
         public static void Merge(this TagHelperAttributeList attributes, TagHelperAttributeList helperAttributes)

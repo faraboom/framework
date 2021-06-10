@@ -1,35 +1,33 @@
-﻿using Faraboom.Framework.Core;
-using Faraboom.Framework.Core.Extensions;
-using Faraboom.Framework.Data;
-using Faraboom.Framework.Resources;
-using Faraboom.Framework.UI.Bootstrap.TagHelpers;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-
-namespace Faraboom.Framework.Mvc.TagHelpers
+﻿namespace Faraboom.Framework.Mvc.TagHelpers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Text.Encodings.Web;
+    using Faraboom.Framework.Core;
+    using Faraboom.Framework.Core.Extensions;
+    using Faraboom.Framework.Data;
+    using Faraboom.Framework.Resources;
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.TagHelpers;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [HtmlTargetElement("frb-localizable-editor", TagStructure = TagStructure.WithoutEndTag)]
     public class LocalizableHtmlEditorTagHelper : UI.Bootstrap.TagHelpers.TagHelper
     {
         private readonly IHtmlGenerator generator;
-
-        [HtmlAttributeName("frb-languages")]
-        public IEnumerable<Language> Languages { get; set; }
 
         public LocalizableHtmlEditorTagHelper(IHtmlGenerator generator, IOptions<MvcViewOptions> optionsAccessor)
             : base(optionsAccessor)
         {
             this.generator = generator;
         }
+
+        [HtmlAttributeName("frb-languages")]
+        public IEnumerable<Language> Languages { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
@@ -46,7 +44,9 @@ namespace Faraboom.Framework.Mvc.TagHelpers
 
             var elementValue = Value as LocalizableString ?? For.Model as LocalizableString;
             if (elementValue != null && !elementValue.Value.IsNullOrEmpty())
+            {
                 output.Attributes.AddIfNotExist("value", elementValue.Value);
+            }
 
             using (var writer = new System.IO.StringWriter())
             {
@@ -66,16 +66,16 @@ namespace Faraboom.Framework.Mvc.TagHelpers
             {
                 var data = elementValue?.LocalizedValues.FirstOrDefault(t => t.Id == dto.Id);
                 var id = "culture" + dto.Id;
-                var checkedAttr = data != null ? "checked='checked'" : "";
-                sb.Append("<li class='dropdown-item'>&nbsp;<input id='" + id + "' type='checkbox' " + (data != null ? "checked='checked'" : "") + " /><i>&nbsp;</i><label for='" + id + "'>" + dto.Name + "</label></li>");
+                var checkedAttr = data != null ? "checked='checked'" : string.Empty;
+                sb.Append("<li class='dropdown-item'>&nbsp;<input id='" + id + "' type='checkbox' " + (data != null ? "checked='checked'" : string.Empty) + " /><i>&nbsp;</i><label for='" + id + "'>" + dto.Name + "</label></li>");
 
-                var css = $"localize wrapper-{dto.Id} {(data != null ? "" : "collapse")}";
+                var css = $"localize wrapper-{dto.Id} {(data != null ? string.Empty : "collapse")}";
                 innerSb.Append("<div class='editor-wrapper mt-3 " + css + "'>");
 
                 using (var writer = new System.IO.StringWriter())
                 {
                     var innerName = $"{ElementName}.{nameof(LocalizableString.LocalizedValues)}[{i}].Value";
-                    var innerAttributes = new TagHelperAttributeList { { "data-culture", dto.Id},{ "name", innerName },{ "value", data?.Value } };
+                    var innerAttributes = new TagHelperAttributeList { { "data-culture", dto.Id }, { "name", innerName }, { "value", data?.Value } };
                     innerAttributes.Merge(output.Attributes);
                     var tagBuilder = generator.GenerateTextArea(ViewContext, For.ModelExplorer, innerName, 6, 0, innerAttributes);
                     tagBuilder.WriteTo(writer, HtmlEncoder.Default);

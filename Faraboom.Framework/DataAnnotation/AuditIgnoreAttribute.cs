@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System;
+
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property, Inherited = false)]
     public sealed class AuditIgnoreAttribute : Attribute
     {

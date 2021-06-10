@@ -1,16 +1,15 @@
-﻿using Faraboom.Framework.DataAnnotation;
-
-using Microsoft.Extensions.Caching.Memory;
-
-using System;
-using System.Threading.Tasks;
-
-namespace Faraboom.Framework.Caching
+﻿namespace Faraboom.Framework.Caching
 {
+    using System;
+    using System.Threading.Tasks;
+    using Faraboom.Framework.DataAnnotation;
+    using Microsoft.Extensions.Caching.Memory;
+
     [ServiceLifetime(Microsoft.Extensions.DependencyInjection.ServiceLifetime.Singleton)]
     public class CacheProvider : ICacheProvider
     {
         private readonly IMemoryCache memoryCache;
+
         public CacheProvider(IMemoryCache memoryCache)
         {
             this.memoryCache = memoryCache;
@@ -21,11 +20,12 @@ namespace Faraboom.Framework.Caching
         {
             return await GetAsync(key.ToString(), factory, tenant);
         }
+
         public async Task<TItem> GetAsync<TItem>(string key, Func<ICacheEntry, Task<TItem>> factory = null, string tenant = null)
         {
             return factory == null ?
                 memoryCache.Get<TItem>($"{tenant}_{key}")
-                : await memoryCache.GetOrCreateAsync<TItem>(generateKey(key, tenant), factory);
+                : await memoryCache.GetOrCreateAsync(GenerateKey(key, tenant), factory);
         }
 
         public TItem Get<TItem, TKey>(TKey key, Func<ICacheEntry, TItem> factory = null, string tenant = null)
@@ -33,11 +33,12 @@ namespace Faraboom.Framework.Caching
         {
             return Get(key.ToString(), factory, tenant);
         }
+
         public TItem Get<TItem>(string key, Func<ICacheEntry, TItem> factory, string tenant = null)
         {
             return factory == null ?
-                memoryCache.Get<TItem>(generateKey(key, tenant))
-                : memoryCache.GetOrCreate<TItem>(generateKey(key, tenant), factory);
+                memoryCache.Get<TItem>(GenerateKey(key, tenant))
+                : memoryCache.GetOrCreate(GenerateKey(key, tenant), factory);
         }
 
         public async Task RemoveAsync<TKey>(TKey key, string tenant = null)
@@ -45,6 +46,7 @@ namespace Faraboom.Framework.Caching
         {
             await RemoveAsync(key.ToString(), tenant);
         }
+
         public async Task RemoveAsync(string key, string tenant = null)
         {
             await Task.Run(() => Remove(key, tenant));
@@ -55,45 +57,52 @@ namespace Faraboom.Framework.Caching
         {
             Remove(key.ToString(), tenant);
         }
+
         public void Remove(string key, string tenant = null)
         {
-            memoryCache.Remove(generateKey(key, tenant));
+            memoryCache.Remove(GenerateKey(key, tenant));
         }
 
-        public async Task<TItem> SetAsync<TItem, TKey>(TKey key, TItem value, string tenant = null, TimeSpan? SlidingExpiration = null, MemoryCacheEntryOptions options = null)
+        public async Task<TItem> SetAsync<TItem, TKey>(TKey key, TItem value, string tenant = null, TimeSpan? slidingExpiration = null, MemoryCacheEntryOptions options = null)
             where TKey : struct
         {
-            return await SetAsync(key.ToString(), value, tenant, SlidingExpiration, options);
-        }
-        public async Task<TItem> SetAsync<TItem>(string key, TItem value, string tenant = null, TimeSpan? SlidingExpiration = null, MemoryCacheEntryOptions options = null)
-        {
-            return await Task.FromResult(Set(key, value, tenant, SlidingExpiration, options));
+            return await SetAsync(key.ToString(), value, tenant, slidingExpiration, options);
         }
 
-        public TItem Set<TItem, TKey>(TKey key, TItem value, string tenant = null, TimeSpan? SlidingExpiration = null, MemoryCacheEntryOptions options = null)
+        public async Task<TItem> SetAsync<TItem>(string key, TItem value, string tenant = null, TimeSpan? slidingExpiration = null, MemoryCacheEntryOptions options = null)
+        {
+            return await Task.FromResult(Set(key, value, tenant, slidingExpiration, options));
+        }
+
+        public TItem Set<TItem, TKey>(TKey key, TItem value, string tenant = null, TimeSpan? slidingExpiration = null, MemoryCacheEntryOptions options = null)
             where TKey : struct
         {
-            return Set(key.ToString(), value, tenant, SlidingExpiration, options);
+            return Set(key.ToString(), value, tenant, slidingExpiration, options);
         }
-        public TItem Set<TItem>(string key, TItem value, string tenant = null, TimeSpan? SlidingExpiration = null, MemoryCacheEntryOptions options = null)
+
+        public TItem Set<TItem>(string key, TItem value, string tenant = null, TimeSpan? slidingExpiration = null, MemoryCacheEntryOptions options = null)
         {
             if (options != null)
             {
-                if (SlidingExpiration.HasValue)
-                    options.SlidingExpiration = SlidingExpiration;
+                if (slidingExpiration.HasValue)
+                {
+                    options.SlidingExpiration = slidingExpiration;
+                }
 
-                return memoryCache.Set(generateKey(key, tenant), value, options);
+                return memoryCache.Set(GenerateKey(key, tenant), value, options);
             }
 
-            if (SlidingExpiration.HasValue)
-                return memoryCache.Set(generateKey(key, tenant), value, new MemoryCacheEntryOptions { SlidingExpiration = SlidingExpiration });
+            if (slidingExpiration.HasValue)
+            {
+                return memoryCache.Set(GenerateKey(key, tenant), value, new MemoryCacheEntryOptions { SlidingExpiration = slidingExpiration });
+            }
 
-            return memoryCache.Set(generateKey(key, tenant), value);
+            return memoryCache.Set(GenerateKey(key, tenant), value);
         }
 
-        private string generateKey(string key, string tenant = null)
+        private static string GenerateKey(string key, string tenant = null)
         {
-            return $"{tenant ?? ""}_{key}";
+            return $"{tenant ?? string.Empty}_{key}";
         }
     }
 }

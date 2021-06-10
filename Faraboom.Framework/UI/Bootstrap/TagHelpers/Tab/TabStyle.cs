@@ -4,6 +4,6 @@
     {
         Tab,
         Pill,
-        PillVertical
+        PillVertical,
     }
 }

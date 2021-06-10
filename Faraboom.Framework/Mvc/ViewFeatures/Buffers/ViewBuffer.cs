@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
-
-namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
+﻿namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Runtime.CompilerServices;
+    using System.Text.Encodings.Web;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Html;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
+
     [DebuggerDisplay("{DebuggerToString()}")]
     internal class ViewBuffer : IHtmlContentBuilder
     {
@@ -19,11 +18,11 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
         public static readonly int ViewComponentPageSize = 32;
         public static readonly int ViewPageSize = 256;
 
-        private readonly IViewBufferScope _bufferScope;
-        private readonly string _name;
-        private readonly int _pageSize;
-        private ViewBufferPage _currentPage;         // Limits allocation if the ViewBuffer has only one page (frequent case).
-        private List<ViewBufferPage> _multiplePages; // Allocated only if necessary
+        private readonly IViewBufferScope bufferScope;
+        private readonly string name;
+        private readonly int pageSize;
+        private ViewBufferPage currentPage;         // Limits allocation if the ViewBuffer has only one page (frequent case).
+        private List<ViewBufferPage> multiplePages; // Allocated only if necessary
 
         /// <summary>
         /// Initializes a new instance of <see cref="ViewBuffer"/>.
@@ -33,19 +32,14 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
         /// <param name="pageSize">The size of buffer pages.</param>
         public ViewBuffer(IViewBufferScope bufferScope, string name, int pageSize)
         {
-            if (bufferScope == null)
-            {
-                throw new ArgumentNullException(nameof(bufferScope));
-            }
-
             if (pageSize <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(pageSize));
             }
 
-            _bufferScope = bufferScope;
-            _name = name;
-            _pageSize = pageSize;
+            this.bufferScope = bufferScope ?? throw new ArgumentNullException(nameof(bufferScope));
+            this.name = name;
+            this.pageSize = pageSize;
         }
 
         /// <summary>
@@ -55,14 +49,16 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
         {
             get
             {
-                if (_multiplePages != null)
+                if (multiplePages != null)
                 {
-                    return _multiplePages.Count;
+                    return multiplePages.Count;
                 }
-                if (_currentPage != null)
+
+                if (currentPage != null)
                 {
                     return 1;
                 }
+
                 return 0;
             }
         }
@@ -74,19 +70,20 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
         {
             get
             {
-                if (_multiplePages != null)
+                if (multiplePages != null)
                 {
-                    return _multiplePages[index];
+                    return multiplePages[index];
                 }
-                if (index == 0 && _currentPage != null)
+
+                if (index == 0 && currentPage != null)
                 {
-                    return _currentPage;
+                    return currentPage;
                 }
+
                 throw new IndexOutOfRangeException();
             }
         }
 
-        /// <inheritdoc />
         // Very common trivial method; nudge it to inline https://github.com/aspnet/Mvc/pull/8339
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IHtmlContentBuilder Append(string unencoded)
@@ -101,7 +98,6 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
             return this;
         }
 
-        /// <inheritdoc />
         // Very common trivial method; nudge it to inline https://github.com/aspnet/Mvc/pull/8339
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IHtmlContentBuilder AppendHtml(IHtmlContent content)
@@ -127,57 +123,11 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
             return this;
         }
 
-        // Very common trivial method; nudge it to inline https://github.com/aspnet/Mvc/pull/8339
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void AppendValue(ViewBufferValue value)
-        {
-            var page = GetCurrentPage();
-            page.Append(value);
-        }
-
-        // Very common trivial method; nudge it to inline https://github.com/aspnet/Mvc/pull/8339
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ViewBufferPage GetCurrentPage()
-        {
-            var currentPage = _currentPage;
-            if (currentPage == null || currentPage.IsFull)
-            {
-                // Uncommon slow-path
-                return AppendNewPage();
-            }
-
-            return currentPage;
-        }
-
-        // Slow path for above, don't inline
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private ViewBufferPage AppendNewPage()
-        {
-            AddPage(new ViewBufferPage(_bufferScope.GetPage(_pageSize)));
-            return _currentPage;
-        }
-
-        private void AddPage(ViewBufferPage page)
-        {
-            if (_multiplePages != null)
-            {
-                _multiplePages.Add(page);
-            }
-            else if (_currentPage != null)
-            {
-                _multiplePages = new List<ViewBufferPage>(2);
-                _multiplePages.Add(_currentPage);
-                _multiplePages.Add(page);
-            }
-
-            _currentPage = page;
-        }
-
         /// <inheritdoc />
         public IHtmlContentBuilder Clear()
         {
-            _multiplePages = null;
-            _currentPage = null;
+            multiplePages = null;
+            currentPage = null;
             return this;
         }
 
@@ -263,8 +213,6 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
             }
         }
 
-        private string DebuggerToString() => _name;
-
         public void CopyTo(IHtmlContentBuilder destination)
         {
             if (destination == null)
@@ -278,14 +226,11 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
                 for (var j = 0; j < page.Count; j++)
                 {
                     var value = page.Buffer[j];
-
-                    string valueAsString;
-                    IHtmlContentContainer valueAsContainer;
-                    if ((valueAsString = value.Value as string) != null)
+                    if (value.Value is string valueAsString)
                     {
                         destination.AppendHtml(valueAsString);
                     }
-                    else if ((valueAsContainer = value.Value as IHtmlContentContainer) != null)
+                    else if (value.Value is IHtmlContentContainer valueAsContainer)
                     {
                         valueAsContainer.CopyTo(destination);
                     }
@@ -318,14 +263,11 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
                 for (var j = 0; j < page.Count; j++)
                 {
                     var value = page.Buffer[j];
-
-                    string valueAsString;
-                    IHtmlContentContainer valueAsContainer;
-                    if ((valueAsString = value.Value as string) != null)
+                    if (value.Value is string valueAsString)
                     {
                         destination.AppendHtml(valueAsString);
                     }
-                    else if ((valueAsContainer = value.Value as IHtmlContentContainer) != null)
+                    else if (value.Value is IHtmlContentContainer valueAsContainer)
                     {
                         valueAsContainer.MoveTo(destination);
                     }
@@ -340,10 +282,58 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
             {
                 var page = this[i];
                 Array.Clear(page.Buffer, 0, page.Count);
-                _bufferScope.ReturnSegment(page.Buffer);
+                bufferScope.ReturnSegment(page.Buffer);
             }
 
             Clear();
+        }
+
+        // Very common trivial method; nudge it to inline https://github.com/aspnet/Mvc/pull/8339
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void AppendValue(ViewBufferValue value)
+        {
+            var page = GetCurrentPage();
+            page.Append(value);
+        }
+
+        // Very common trivial method; nudge it to inline https://github.com/aspnet/Mvc/pull/8339
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ViewBufferPage GetCurrentPage()
+        {
+            var currentPage = this.currentPage;
+            if (currentPage == null || currentPage.IsFull)
+            {
+                // Uncommon slow-path
+                return AppendNewPage();
+            }
+
+            return currentPage;
+        }
+
+        // Slow path for above, don't inline
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private ViewBufferPage AppendNewPage()
+        {
+            AddPage(new ViewBufferPage(bufferScope.GetPage(pageSize)));
+            return currentPage;
+        }
+
+        private void AddPage(ViewBufferPage page)
+        {
+            if (multiplePages != null)
+            {
+                multiplePages.Add(page);
+            }
+            else if (currentPage != null)
+            {
+                multiplePages = new List<ViewBufferPage>(2)
+                {
+                    currentPage,
+                    page,
+                };
+            }
+
+            currentPage = page;
         }
 
         private void MoveTo(ViewBuffer destination)
@@ -373,15 +363,13 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
 
                     // Now we can return the source page, and it can be reused in the scope of this request.
                     Array.Clear(page.Buffer, 0, page.Count);
-                    _bufferScope.ReturnSegment(page.Buffer);
-
+                    bufferScope.ReturnSegment(page.Buffer);
                 }
                 else
                 {
                     // Otherwise, let's just add the source page to the other buffer.
                     destination.AddPage(page);
                 }
-
             }
 
             Clear();
@@ -389,16 +377,16 @@ namespace Faraboom.Framework.Mvc.ViewFeatures.Buffers
 
         private class EncodingWrapper : IHtmlContent
         {
-            private readonly string _unencoded;
+            private readonly string unencoded;
 
             public EncodingWrapper(string unencoded)
             {
-                _unencoded = unencoded;
+                this.unencoded = unencoded;
             }
 
             public void WriteTo(TextWriter writer, HtmlEncoder encoder)
             {
-                encoder.Encode(writer, _unencoded);
+                encoder.Encode(writer, unencoded);
             }
         }
     }

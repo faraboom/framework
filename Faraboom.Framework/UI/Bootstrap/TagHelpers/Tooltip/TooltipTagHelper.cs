@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tooltip
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tooltip
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("button", Attributes = "frb-tooltip")]
     [HtmlTargetElement("button", Attributes = "frb-tooltip-right")]
@@ -17,6 +17,11 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tooltip
     [HtmlTargetElement("frb-button", Attributes = "frb-tooltip-bottom")]
     public class TooltipTagHelper : TagHelper<TooltipTagHelper, TooltipTagHelperService>
     {
+        public TooltipTagHelper(TooltipTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-tooltip")]
         public string Tooltip { get; set; }
 
@@ -34,11 +39,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Tooltip
 
         [HtmlAttributeName("frb-title")]
         public string Title { get; set; }
-
-        public TooltipTagHelper(TooltipTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
     }
 }

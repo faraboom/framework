@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-
-namespace Faraboom.Framework.Data
+﻿namespace Faraboom.Framework.Data
 {
+    using System.Collections.Generic;
+
     public class LocalizableString
     {
         public string Value { get; set; }
 
-        public List<LocalizedValue> LocalizedValues { get; set; }
+        public IReadOnlyList<LocalizedValue> LocalizedValues { get; set; }
 
         public override string ToString()
         {

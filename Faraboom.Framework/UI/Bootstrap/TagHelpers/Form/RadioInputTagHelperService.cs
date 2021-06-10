@@ -1,18 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-
-using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
-
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Localization;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Text;
+
+    using Faraboom.Framework.UI.Bootstrap.TagHelpers.Extensions;
+
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class RadioInputTagHelperService : TagHelperService<RadioInputTagHelper>
     {
@@ -44,17 +43,17 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             }
         }
 
-        protected virtual string GetHtml(TagHelperContext context, TagHelperOutput output, List<SelectListItem> selectItems)
+        protected virtual string GetHtml(TagHelperContext context, TagHelperOutput output, IList<SelectListItem> selectItems)
         {
-            var html = new StringBuilder("");
+            var html = new StringBuilder(string.Empty);
 
             foreach (var selectItem in selectItems)
             {
-                var inlineClass = (TagHelper.Inline ?? false) ? " custom-control-inline" : "";
+                var inlineClass = (TagHelper.Inline ?? false) ? " custom-control-inline" : string.Empty;
                 var id = TagHelper.For.Name + "Radio" + selectItem.Value;
                 var name = TagHelper.For.Name;
-                var selected = selectItem.Selected ? " checked=\"checked\"" : "";
-                var disabled = (TagHelper.Disabled ?? false) ? " disabled" : "";
+                var selected = selectItem.Selected ? " checked=\"checked\"" : string.Empty;
+                var disabled = (TagHelper.Disabled ?? false) ? " disabled" : string.Empty;
 
                 var htmlPart = "<div class=\"custom-control custom-radio" + inlineClass + "\">\r\n" +
                                "  <input type=\"radio\" id=\"" + id + "\" name=\"" + name + "\" value=\"" + selectItem.Value + "\"" + selected + " class=\"custom-control-input\"" + disabled + ">\r\n" +
@@ -67,7 +66,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             return html.ToString();
         }
 
-        protected virtual List<SelectListItem> GetSelectItems(TagHelperContext context, TagHelperOutput output)
+        protected virtual IList<SelectListItem> GetSelectItems(TagHelperContext context, TagHelperOutput output)
         {
             if (TagHelper.Items != null)
             {
@@ -88,7 +87,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             throw new Exception("No items provided for select attribute.");
         }
 
-        protected virtual List<SelectListItem> GetSelectItemsFromEnum(TagHelperContext context, TagHelperOutput output, ModelExplorer explorer)
+        protected virtual IList<SelectListItem> GetSelectItemsFromEnum(TagHelperContext context, TagHelperOutput output, ModelExplorer explorer)
         {
             var selectItems = explorer.Metadata.IsEnum ? explorer.ModelType.GetTypeInfo().GetMembers(BindingFlags.Public | BindingFlags.Static)
                 .Select((t, i) => new SelectListItem { Value = i.ToString(), Text = t.Name }).ToList() : null;
@@ -96,7 +95,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             return selectItems;
         }
 
-        protected virtual List<SelectListItem> GetSelectItemsFromAttribute(
+        protected virtual IList<SelectListItem> GetSelectItemsFromAttribute(
             SelectItemsAttribute selectItemsAttribute,
             ModelExplorer explorer)
         {
@@ -110,7 +109,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
             return selectItems;
         }
 
-        protected virtual void SetSelectedValue(TagHelperContext context, TagHelperOutput output, List<SelectListItem> selectItems)
+        protected virtual void SetSelectedValue(TagHelperContext context, TagHelperOutput output, IList<SelectListItem> selectItems)
         {
             var selectedValue = GetSelectedValue(context, output);
 
@@ -137,7 +136,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 }
 
                 var valueAsString = Convert.ChangeType(TagHelper.For.ModelExplorer.Model, baseType);
-                return valueAsString != null ? valueAsString.ToString() : "";
+                return valueAsString != null ? valueAsString.ToString() : string.Empty;
             }
 
             return TagHelper.For.ModelExplorer.Model?.ToString();
@@ -154,7 +153,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Form
                 {
                     HtmlContent = html,
                     Order = order,
-                    PropertyName = propertyName
+                    PropertyName = propertyName,
                 });
             }
         }

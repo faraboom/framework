@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class ColumnTagHelperService : TagHelperService<ColumnTagHelper>
     {
@@ -19,7 +19,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
 
         protected virtual void ProcessSizeClasses(TagHelperContext context, TagHelperOutput output)
         {
-            ProcessSizeClass(context, output, TagHelper.Size, "");
+            ProcessSizeClass(context, output, TagHelper.Size, string.Empty);
             ProcessSizeClass(context, output, TagHelper.SizeSm, "-sm");
             ProcessSizeClass(context, output, TagHelper.SizeMd, "-md");
             ProcessSizeClass(context, output, TagHelper.SizeLg, "-lg");
@@ -28,7 +28,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
 
         protected virtual void ProcessOffsetClasses(TagHelperContext context, TagHelperOutput output)
         {
-            ProcessOffsetClass(context, output, TagHelper.Offset, "");
+            ProcessOffsetClass(context, output, TagHelper.Offset, string.Empty);
             ProcessOffsetClass(context, output, TagHelper.OffsetSm, "-sm");
             ProcessOffsetClass(context, output, TagHelper.OffsetMd, "-md");
             ProcessOffsetClass(context, output, TagHelper.OffsetLg, "-lg");
@@ -105,7 +105,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Grid
             {
                 classString += "last";
             }
-            else 
+            else
             {
                 classString += TagHelper.ColumnOrder.ToString("D");
             }

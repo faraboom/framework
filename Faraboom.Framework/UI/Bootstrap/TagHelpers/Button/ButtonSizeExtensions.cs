@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
 {
+    using System;
+
     public static class ButtonSizeExtensions
     {
         public static string ToClassName(this ButtonSize size)
@@ -23,7 +23,7 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Button
                 case ButtonSize.Block_Large:
                     return "btn-lg  btn-block";
                 case ButtonSize.Default:
-                    return "";
+                    return string.Empty;
                 default:
                     throw new ArgumentOutOfRangeException($"Unknown {nameof(ButtonSize)}: {size}");
             }

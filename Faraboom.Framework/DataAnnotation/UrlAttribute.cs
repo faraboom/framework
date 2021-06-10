@@ -1,12 +1,10 @@
-﻿using Faraboom.Framework.Core.Extensions.Collections.Generic;
-
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-
-using System;
-using System.Collections.Generic;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System;
+    using System.Collections.Generic;
+    using Faraboom.Framework.Core.Extensions.Collections.Generic;
+    using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
     public sealed class UrlAttribute : ValidationAttribute, IClientModelValidator
     {
         public override bool IsValid(object value)

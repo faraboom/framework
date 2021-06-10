@@ -1,10 +1,10 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Linq.Expressions;
-
-namespace Faraboom.Framework.Core.Extensions.Linq
+﻿namespace Faraboom.Framework.Core.Extensions.Linq
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using System.Linq.Expressions;
+
     public static class QueryableExtensions
     {
         /// <summary>

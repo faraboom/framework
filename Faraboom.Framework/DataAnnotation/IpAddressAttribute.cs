@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Faraboom.Framework.DataAnnotation
+﻿namespace Faraboom.Framework.DataAnnotation
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     public sealed class IpAddressAttribute : ValidationAttribute
     {
         public override bool IsValid(object value)
         {
             if (string.IsNullOrWhiteSpace(value?.ToString()))
+            {
                 return true;
+            }
 
             var lst = value as List<string>;
             return lst?.All(Validate) ?? Validate(value.ToString());
@@ -17,14 +19,17 @@ namespace Faraboom.Framework.DataAnnotation
         private static bool Validate(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
+            {
                 return true;
+            }
 
             var splitValues = value.Split('.');
             if (splitValues.Length != 4)
+            {
                 return false;
+            }
 
-            byte tmp;
-            return splitValues.All(r => byte.TryParse(r, out tmp));
+            return splitValues.All(r => byte.TryParse(r, out byte tmp));
         }
     }
 }

@@ -4,6 +4,6 @@
     {
         Default,
         Light,
-        Dark
+        Dark,
     }
 }

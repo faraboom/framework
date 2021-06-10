@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ProgressBar
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ProgressBar
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("frb-progress-group")]
     public class ProgressGroupTagHelper : TagHelper<ProgressGroupTagHelper, ProgressGroupTagHelperService>
@@ -11,7 +11,6 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.ProgressBar
         public ProgressGroupTagHelper(ProgressGroupTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
             : base(tagHelperService, optionsAccessor)
         {
-
         }
     }
 }

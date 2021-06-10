@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Nav
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Nav
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [DataAnnotation.Injectable]
     public class NavbarNavTagHelperService : TagHelperService<NavbarNavTagHelper>
     {

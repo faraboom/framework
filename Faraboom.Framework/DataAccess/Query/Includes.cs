@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-
-namespace Faraboom.Framework.DataAccess.Query
+﻿namespace Faraboom.Framework.DataAccess.Query
 {
+    using System;
+    using System.Linq;
+
     public class Includes<TEntity>
     {
         public Includes(Func<IQueryable<TEntity>, IQueryable<TEntity>> expression)
@@ -11,6 +11,5 @@ namespace Faraboom.Framework.DataAccess.Query
         }
 
         public Func<IQueryable<TEntity>, IQueryable<TEntity>> Expression { get; private set; }
-
     }
 }

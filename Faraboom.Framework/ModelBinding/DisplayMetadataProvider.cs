@@ -1,23 +1,23 @@
-﻿using Faraboom.Framework.Core;
-using Faraboom.Framework.DataAnnotation;
-
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Resources;
-
-namespace Faraboom.Framework.ModelBinding
+﻿namespace Faraboom.Framework.ModelBinding
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Resources;
+    using Faraboom.Framework.Core;
+    using Faraboom.Framework.DataAnnotation;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+
     public class DisplayMetadataProvider : IDisplayMetadataProvider
     {
         public void CreateDisplayMetadata(DisplayMetadataProviderContext context)
         {
             if (context == null)
+            {
                 throw new ArgumentNullException(nameof(context));
+            }
 
             var attributes = context.Attributes;
             var dataTypeAttribute = attributes.OfType<DataTypeAttribute>().FirstOrDefault();
@@ -37,19 +37,27 @@ namespace Faraboom.Framework.ModelBinding
             // non-null DataFormatString and the DataType.Date and DataType.Time [DisplayFormat] attributes have
             // ApplyFormatInEditMode==true.
             if (displayFormatAttribute == null && dataTypeAttribute != null)
+            {
                 displayFormatAttribute = dataTypeAttribute.DisplayFormat;
+            }
 
             var displayMetadata = context.DisplayMetadata;
 
             // ConvertEmptyStringToNull
             if (displayFormatAttribute != null)
+            {
                 displayMetadata.ConvertEmptyStringToNull = displayFormatAttribute.ConvertEmptyStringToNull;
+            }
 
             // DataTypeName
             if (dataTypeAttribute != null)
+            {
                 displayMetadata.DataTypeName = dataTypeAttribute.GetDataTypeName();
+            }
             else if (displayFormatAttribute != null && !displayFormatAttribute.HtmlEncode)
+            {
                 displayMetadata.DataTypeName = nameof(ElementDataType.Html);
+            }
 
             var containerType = context.Key.ContainerType ?? context.Key.ModelType;
 
@@ -99,7 +107,6 @@ namespace Faraboom.Framework.ModelBinding
                 // Order EnumDisplayNamesAndValues by DisplayAttribute.Order, then by the order of Enum.GetNames().
                 // That method orders by absolute value, then its behavior is undefined (but hopefully stable).
                 // Add to EnumNamesAndValues in same order but Dictionary does not guarantee order will be preserved.
-
                 var groupedDisplayNamesAndValues = new List<KeyValuePair<EnumGroupAndName, string>>();
                 var namesAndValues = new Dictionary<string, string>();
 
@@ -108,9 +115,11 @@ namespace Faraboom.Framework.ModelBinding
                 foreach (var field in enumFields)
                 {
                     if (field == null)
+                    {
                         continue;
+                    }
 
-                    var groupName = Globals.GetLocalizedGroupName(field) ?? "";
+                    var groupName = Globals.GetLocalizedGroupName(field) ?? string.Empty;
                     string value = (field.GetValue(null) as Enum)?.ToString("d");
 
                     groupedDisplayNamesAndValues.Add(new KeyValuePair<EnumGroupAndName, string>(

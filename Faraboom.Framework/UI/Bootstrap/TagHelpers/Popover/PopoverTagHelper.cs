@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
-
-namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Popover
+﻿namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Popover
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Microsoft.Extensions.Options;
+
     [DataAnnotation.Injectable]
     [HtmlTargetElement("button", Attributes = "frb-popover")]
     [HtmlTargetElement("button", Attributes = "frb-popover-right")]
@@ -18,6 +18,11 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Popover
     [HtmlTargetElement("frb-popover")]
     public class PopoverTagHelper : TagHelper<PopoverTagHelper, PopoverTagHelperService>
     {
+        public PopoverTagHelper(PopoverTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
+            : base(tagHelperService, optionsAccessor)
+        {
+        }
+
         [HtmlAttributeName("frb-disabled")]
         public bool? Disabled { get; set; }
 
@@ -41,11 +46,5 @@ namespace Faraboom.Framework.UI.Bootstrap.TagHelpers.Popover
 
         [HtmlAttributeName("frb-popover-bottom")]
         public string PopoverBottom { get; set; }
-
-        public PopoverTagHelper(PopoverTagHelperService tagHelperService, IOptions<MvcViewOptions> optionsAccessor)
-            : base(tagHelperService, optionsAccessor)
-        {
-
-        }
     }
 }

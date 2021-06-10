@@ -4,6 +4,6 @@
     {
         Default,
         Row,
-        Column
+        Column,
     }
 }
