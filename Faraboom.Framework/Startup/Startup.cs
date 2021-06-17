@@ -8,6 +8,7 @@
     using System.Reflection;
     using System.Text.Encodings.Web;
     using System.Text.Unicode;
+
     using Faraboom.Framework.Core;
     using Faraboom.Framework.DataAccess.Context;
     using Faraboom.Framework.DataAnnotation;
@@ -16,6 +17,7 @@
     using Faraboom.Framework.Mapping;
     using Faraboom.Framework.Mvc.Routing;
     using Faraboom.Framework.Mvc.ViewFeatures;
+
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.Hosting;
@@ -31,7 +33,6 @@
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Options;
     using Microsoft.Extensions.WebEncoders;
 
     public abstract class Startup : Startup<Startup, Startup>
@@ -91,7 +92,8 @@
         {
             if (localization)
             {
-                app.UseRequestLocalization(app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value);
+                // app.UseRequestLocalization(app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value);
+                app.UseRequestLocalization(LocalizationExtensions.RequestLocalizationOptions);
             }
 
             if (env.IsDevelopment())

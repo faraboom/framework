@@ -14,9 +14,11 @@
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
+
     using Faraboom.Framework.Core.Extensions;
     using Faraboom.Framework.Data;
     using Faraboom.Framework.DataAnnotation;
+
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.Primitives;
@@ -440,10 +442,10 @@
 
             if (!name.StartsWith("fa", StringComparison.InvariantCultureIgnoreCase))
             {
-                return new CultureInfo(name);
+                return new CultureInfo(name, false);
             }
 
-            var persianCalture = new CultureInfo(name);
+            var persianCalture = new CultureInfo(name, false);
             var info = persianCalture.DateTimeFormat;
             var monthNames = new[] { "فروردين", "ارديبهشت", "خرداد", "تير", "مرداد", "شهريور", "مهر", "آبان", "آذر", "دي", "بهمن", "اسفند", string.Empty };
             var shortestDayNames = new[] { "ى", "د", "س", "چ", "پ", "ج", "ش" };

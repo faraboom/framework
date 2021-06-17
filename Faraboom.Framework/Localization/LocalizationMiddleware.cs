@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
 
     using Faraboom.Framework.Core;
+    using Faraboom.Framework.Core.Extensions;
 
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Routing;
@@ -22,7 +23,7 @@
         public Task Invoke(HttpContext httpContext)
         {
             var culture = httpContext.GetRouteData()?.Values[Constants.LanguageIdentifier] as string;
-            if (!string.IsNullOrWhiteSpace(culture) && CultureExtensions.GetAtomicValues().Contains(culture))
+            if (!culture.IsNullOrEmpty() && CultureExtensions.GetAtomicValues().Contains(culture))
             {
                 CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = Globals.GetCulture(culture);
             }

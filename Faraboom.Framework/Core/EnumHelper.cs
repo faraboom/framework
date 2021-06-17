@@ -14,8 +14,8 @@
                 return string.Empty;
             }
 
-            var result = value.ToString();
-            return Globals.GetLocalizedDisplayName(value.GetType().GetField(result)) ?? result;
+            var items = value.ToString().Split(',', StringSplitOptions.TrimEntries);
+            return string.Join(",", items.Select(t => Globals.GetLocalizedDisplayName(value.GetType().GetField(t)) ?? t));
         }
 
         public static string LocalizeEnum<T>(object value)
@@ -26,25 +26,22 @@
                 return string.Empty;
             }
 
-            var result = value.ToString();
-
-            return Globals.GetLocalizedDisplayName(typeof(T).GetField(result)) ?? result;
+            var items = value.ToString().Split(',', StringSplitOptions.TrimEntries);
+            return string.Join(",", items.Select(t => Globals.GetLocalizedDisplayName(typeof(T).GetField(t)) ?? t));
         }
 
         public static string LocalizedShortName<T>(T value)
             where T : struct
         {
-            var result = value.ToString();
-
-            return Globals.GetLocalizedShortName(typeof(T).GetField(result)) ?? result;
+            var items = value.ToString().Split(',', StringSplitOptions.TrimEntries);
+            return string.Join(",", items.Select(t => Globals.GetLocalizedShortName(typeof(T).GetField(t)) ?? t));
         }
 
         public static string LocalizedDescription<T>(T value)
             where T : struct
         {
-            var result = value.ToString();
-
-            return Globals.GetLocalizedDescription(typeof(T).GetField(result)) ?? result;
+            var items = value.ToString().Split(',', StringSplitOptions.TrimEntries);
+            return string.Join(",", items.Select(t => Globals.GetLocalizedDescription(typeof(T).GetField(t)) ?? t));
         }
 
         public static bool TryParse<T>(this string name, out T t)
