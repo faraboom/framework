@@ -29,8 +29,15 @@
 
         protected abstract string ContentType { get; }
 
+        protected GridDataSource GridDataSource { get; private set; }
+
+        protected ISearch Search { get; private set; }
+
         public FileContentResult Export(GridDataSource gridDataSource, ISearch search, string actionName = null)
         {
+            GridDataSource = gridDataSource;
+            Search = search;
+
             var hasSearchItem = search != null;
             DataSet ds = new();
             DataTable dt = new();
@@ -48,7 +55,7 @@
                     foreach (var info in properties)
                     {
                         var description = Globals.GetLocalizedDescription(info);
-                        var name = description != info.Name ? description : Globals.GetLocalizedDisplayName(info);
+                        var name = description != null && description != info.Name ? description : Globals.GetLocalizedDisplayName(info);
                         var columnType = GetNullableType(info.PropertyType);
                         if (columnType.IsGenericType && columnType.GenericTypeArguments?.FirstOrDefault()?.Name == nameof(ParameterDto))
                         {
@@ -150,7 +157,7 @@
                         foreach (var info in properties)
                         {
                             var description = Globals.GetLocalizedDescription(info);
-                            var name = description != info.Name ? description : Globals.GetLocalizedDisplayName(info);
+                            var name = description != null && description != info.Name ? description : Globals.GetLocalizedDisplayName(info);
                             if (dt.Columns.Contains(name))
                             {
                                 name += i;

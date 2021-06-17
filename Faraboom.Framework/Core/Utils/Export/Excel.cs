@@ -47,7 +47,7 @@
             return data;
         }
 
-        private static void WriteExcelFile(DataSet ds, SpreadsheetDocument spreadsheet, bool hasSearchItem)
+        private static void WriteExcelFile(DataSet dataSet, SpreadsheetDocument spreadsheet, bool hasSearchItem)
         {
             WorkbookPart workbookPart = spreadsheet.AddWorkbookPart();
 
@@ -88,7 +88,7 @@
             uint rowIndex = 0;
             var isFirstTable = true;
 
-            foreach (DataTable dt in ds.Tables)
+            foreach (DataTable dt in dataSet.Tables)
             {
                 WriteDataTableToExcelWorksheet(dt, newWorksheetPart, hasSearchItem, isFirstTable, ref rowIndex);
                 newWorksheetPart.Worksheet.Save();
