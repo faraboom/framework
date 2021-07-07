@@ -220,7 +220,7 @@
     <value>توکن نامعتبر می باشد.</value>
   </data>
   <data name="InvalidUserName" xml:space="preserve">
-    <value>نام کاربری '{0}' نامعتبر می باشد، نام کاربری بایستی فقط شامل حروف و اعداد باشند.</value>
+    <value>نام کاربری '{0}' نامعتبر می باشد، نام کاربری بایستی فقط شامل حروف و اعداد انگلیسی باشد.</value>
   </data>
   <data name="LoginAlreadyAssociated" xml:space="preserve">
     <value>کاربری با این لاگین وجود دارد.</value>

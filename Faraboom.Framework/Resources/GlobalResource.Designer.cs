@@ -133,7 +133,7 @@ namespace Faraboom.Framework.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User name &apos;{0}&apos; is invalid, can only contain letters or digits..
+        ///   Looks up a localized string similar to User name &apos;{0}&apos; is invalid, can only contain english letters or digits..
         /// </summary>
         public static string InvalidUserName {
             get {

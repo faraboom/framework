@@ -220,7 +220,7 @@
     <value>Invalid token.</value>
   </data>
   <data name="InvalidUserName" xml:space="preserve">
-    <value>User name '{0}' is invalid, can only contain letters or digits.</value>
+    <value>User name '{0}' is invalid, can only contain english letters or digits.</value>
   </data>
   <data name="LoginAlreadyAssociated" xml:space="preserve">
     <value>A user with this login already exists.</value>
