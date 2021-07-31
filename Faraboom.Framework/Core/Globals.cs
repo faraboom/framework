@@ -590,7 +590,7 @@
 
         public static bool IsImage(string fileName)
         {
-            return fileName.IsNullOrEmpty() is false && (fileName.StartsWith("data:image") || Constants.ValidImageExtensions.Contains(Path.GetExtension(fileName)?.TrimStart('.'), StringComparison.OrdinalIgnoreCase));
+            return fileName.IsNullOrEmpty() is false && fileName.StartsWith("<svg", StringComparison.InvariantCultureIgnoreCase) is false && (fileName.StartsWith("data:image") || Constants.ValidImageExtensions.Contains(Path.GetExtension(fileName)?.TrimStart('.'), StringComparison.OrdinalIgnoreCase));
         }
 
         internal static string GetLocalizedValueInternal(DisplayAttribute displayAttribute, string propertyName, Constants.ResourceKey resourceKey, ResourceManager cachedResourceManager = null)

@@ -60,7 +60,7 @@
             }
 
             var oldVal = OldValue?.ToString() ?? OldFor?.Model?.ToString();
-            sb.Append($"<label class='custom-file-label' for='{ElementName}'>{(Globals.IsImage(oldVal) ? $"<img class='h-100' src='{oldVal}' alt='{For.Name}' />" : oldVal?.Split('/').LastOrDefault())}</label>");
+            sb.Append($"<label class='custom-file-label' for='{ElementId}'>{(Globals.IsImage(oldVal) ? $"<img class='h-100' src='{oldVal}' alt='{For.Name}' />" : oldVal?.Split('/').LastOrDefault())}</label>");
             sb.Append("</div>");
 
             sb.Append($"<a class='btn btn-light border float-right text-green {(oldVal.IsNullOrEmpty() ? "disabled" : string.Empty)}' {(Globals.IsImage(oldVal) ? "download='image.png'" : string.Empty)} href='{oldVal}'><i class='fas fa-download'></i></a>");
