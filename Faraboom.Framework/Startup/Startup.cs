@@ -246,6 +246,8 @@
 
         private IMvcBuilder ConfigureServicesInternal(IServiceCollection services, string dir, string applicationName)
         {
+            services.AddTransient(typeof(Lazy<>), typeof(Lazier<>));
+
             if (localization)
             {
                 services.TryAddSingleton<Microsoft.Extensions.Localization.IStringLocalizerFactory, ResourceManagerStringLocalizerFactory>();
