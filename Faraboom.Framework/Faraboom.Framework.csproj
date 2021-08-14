@@ -16,7 +16,7 @@
     <Authors>Fariborz khosravi</Authors>
     <Company>Faraboom</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.4.6</Version>
+    <Version>1.4.7</Version>
     <Description>Asp.net Core Application Framework</Description>
     <RepositoryUrl></RepositoryUrl>
     <RepositoryType>public</RepositoryType>
